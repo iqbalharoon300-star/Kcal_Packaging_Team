@@ -1,0 +1,27 @@
+
+KCAL Packaging Team - Deployment Instructions (Render.com)
+
+Prepared for: iqbalharoon300@gmail.com
+Desired URL: https://KcalTeam.onrender.com
+
+Steps to deploy on Render.com:
+
+1) Create a new GitHub repository and push the contents of this folder to it OR upload the repo directly.
+2) Sign in to https://render.com using your email.
+3) Click "New" → "Web Service".
+4) Connect your GitHub, select the repository.
+5) Build Command: pip install -r requirements.txt
+   Start Command: python app.py
+6) Environment: set SECRET_KEY in Render's Environment variables for production.
+7) After deploy, visit the provided URL. Admin users:
+   - Manager: Waqar / Waqar123
+   - Supervisor: Haroon / Haroon123
+   - Employees: Emp01–Emp50 / kcal123
+
+Local testing:
+1) Create virtualenv: python -m venv venv
+2) Activate venv and install: pip install -r requirements.txt
+3) Run: python app.py
+4) Open: http://127.0.0.1:5000
+
+Note: The database 'overtime.db' is pre-populated with users and sample records. For production, consider using managed DB and secure SECRET_KEY.
