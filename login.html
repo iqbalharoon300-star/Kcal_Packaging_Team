@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="card login-card">
+  <h2>Login</h2>
+  <form method="POST">
+    <label>Username</label><input name="username" required>
+    <label>Password</label><input type="password" name="password" required>
+    <div style="margin-top:12px;">
+      <button class="btn" type="submit">Login</button>
+    </div>
+  </form>
+  <p style="margin-top:12px; font-size:13px; color:#666;">Manager: Waqar / Waqar123 · Supervisor: Haroon / Haroon123 · Employees: Emp01–Emp50 / kcal123</p>
+</div>
+{% endblock %}
+
