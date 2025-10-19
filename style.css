@@ -1,0 +1,109 @@
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kcal Life Login</title>
+<style>
+    /* --- CSS CODE STARTS HERE --- */
+
+    /* Reset styles */
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+    body {
+        background: #b8ede3; /* Mint-green background */
+        min-height: 100vh;
+    }
+
+    /* Top-left logo + slogan */
+    .top-left {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .top-left img { width: 80px; }
+    .top-left .text { display:flex; flex-direction:column; }
+    .top-left .text .main { font-weight:bold; font-size:18px; color:#2a2a2a; }
+    .top-left .text .secondary { font-size:14px; color:#555; }
+
+    /* Centered login card */
+    .login-container {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: #fff;
+        padding: 40px 30px;
+        border-radius: 15px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        width: 100%;
+        max-width: 400px;
+        text-align: center;
+        animation: fadeInCard 1s ease forwards;
+    }
+
+    @keyframes fadeInCard { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); } }
+
+    .login-container img {
+        width: 120px;
+        margin-bottom: 20px;
+        animation: logoBounce 1s ease;
+    }
+
+    @keyframes logoBounce { 0% { transform: scale(0); } 60% { transform: scale(1.2); } 100% { transform: scale(1); } }
+
+    form { display:flex; flex-direction:column; gap:15px; }
+
+    input[type="text"], input[type="password"] {
+        padding:12px 15px;
+        border:1px solid #ddd;
+        border-radius:8px;
+        font-size:15px;
+        transition: all 0.3s ease;
+    }
+
+    input[type="text"]:focus, input[type="password"]:focus {
+        border-color:#f17c59;
+        box-shadow:0 0 10px rgba(241,124,89,0.3);
+        outline:none;
+    }
+
+    .button-group { display:flex; justify-content:space-between; align-items:center; gap:10px; }
+    button {
+        padding:12px;
+        background:#f17c59;
+        border:none;
+        border-radius:8px;
+        color:#fff;
+        font-size:16px;
+        cursor:pointer;
+        transition: all 0.3s ease;
+        flex:1;
+    }
+
+    button:hover {
+        background:#e86542;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    }
+
+    .clear-btn { background:#aaa; }
+    .clear-btn:hover { background:#888; }
+
+    .forgot-link { text-align:right; font-size:13px; margin-top:-10px; }
+    .forgot-link a { text-decoration:none; color:#f17c59; transition:color 0.3s ease; }
+    .forgot-link a:hover { color:#e86542; }
+
+    .footer-text { margin-top:20px; font-size:12px; color:#aaa; }
+
+    @media (max-width:500px){
+        .login-container { padding:30px 20px; }
+        .top-left .text .main { font-size:16px; }
+        .top-left .text .secondary { font-size:12px; }
+    }
+
+    /* --- CSS CODE ENDS HERE --- */
+</style>
+</head>
