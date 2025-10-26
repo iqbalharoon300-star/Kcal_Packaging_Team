@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>KPS Overtime</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body data-page="overtime">
+
+  <!-- NAV -->
+  <header class="top-nav">
+    <div class="top-nav-inner">
+      <div class="nav-left">
+        <div class="nav-logo-badge">
+          <img src="./assets/logo.png" alt="Kcal Logo" />
+        </div>
+        <div class="nav-brand-text">
+          <div class="nav-brand-title">KPS Overtime</div>
+          <div class="nav-brand-sub">Kcal Packaging System</div>
+        </div>
+      </div>
+
+      <nav class="nav-links">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="attendance.html">Attendance</a>
+        <a class="active" href="overtime.html">Overtime</a>
+        <button data-logout>Logout</button>
+      </nav>
+
+      <div class="nav-right">
+        <div class="notif-pill">Notifications: <strong id="notif-count">3</strong></div>
+        <div class="user-chip">
+          <div class="user-avatar" id="user-avatar-initials">U</div>
+          <div class="user-meta">
+            <div class="name" id="user-name">User Name</div>
+            <div class="role" id="user-role">Role</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- PAGE CONTENT -->
+  <div class="page-wrapper">
+
+    <section class="page-header-block">
+      <div class="page-eyebrow">Extra Hours</div>
+      <div class="page-title">Overtime Requests & Log</div>
+      <div class="page-desc">
+        Supervisor / Manager can Add Overtime for Users (with reason)
+        and Approve or Reject. Users can view status.
+      </div>
+    </section>
+
+    <!-- OVERTIME FORM -->
+    <section class="section-card">
+      <div class="section-head-row">
+        <div class="section-head-left">
+          <div class="section-eyebrow">Add Overtime</div>
+          <div class="section-title">Request Approval</div>
+          <div class="section-desc">
+            Fill details below. On submit, entry is added with status "Pending Supervisor".
+          </div>
+        </div>
+      </div>
+
+      <form id="overtime-form">
+        <div class="form-grid-2col">
+          <div>
+            <label class="block-label" for="ot-date">Date</label>
+            <input id="ot-date" type="date" class="block-input" required />
+          </div>
+
+          <div>
+            <label class="block-label" for="ot-uid">Employee UID</label>
+            <input id="ot-uid" type="text" class="block-input" placeholder="e.g. 10366" required />
+          </div>
+
+          <div>
+            <label class="block-label" for="ot-name">Employee Name</label>
+            <input id="ot-name" type="text" class="block-input" placeholder="e.g. Sanjay Nayek" required />
+          </div>
+
+          <div>
+            <label class="block-label" for="ot-reason">Reason / Justification</label>
+            <textarea id="ot-reason" class="block-textarea" placeholder="High order volume, shortage, etc."></textarea>
+          </div>
+
+          <div>
+            <label class="block-label" for="ot-in">In-Time</label>
+            <input id="ot-in" type="time" class="block-input" />
+          </div>
+
+          <div>
+            <label class="block-label" for="ot-out">Out-Time</label>
+            <input id="ot-out" type="time" class="block-input" />
+          </div>
+
+          <div>
+            <label class="block-label" for="ot-duty">Duty Hours</label>
+            <input id="ot-duty" type="text" class="block-input" placeholder="11:00" />
+          </div>
+
+          <div>
+            <label class="block-label" for="ot-total">Total Overtime (hrs)</label>
+            <input id="ot-total" type="number" step="0.25" class="block-input" placeholder="1.0" />
+          </div>
+        </div>
+
+        <div style="margin-top:1rem;display:flex;gap:.75rem;flex-wrap:wrap;">
+          <button class="btn btn-primary" type="submit">Submit Overtime</button>
+          <button class="btn btn-outline" type="reset">Clear</button>
+        </div>
+
+        <div style="font-size:.7rem;color:#0f172a;opacity:.7;margin-top:1rem;">
+          After submit: Manager / Supervisor can Edit, Approve or Reject.
+          User will see notification.
+        </div>
+      </form>
+    </section>
+
+    <!-- OVERTIME TABLE -->
+    <section class="section-card">
+      <div class="section-head-row">
+        <div class="section-head-left">
+          <div class="section-eyebrow">Records</div>
+          <div class="section-title">Overtime Log</div>
+          <div class="section-desc">
+            Pulled from Attendance IN/OUT + Manual Overtime entry.
+          </div>
+        </div>
+
+        <div class="inline-group">
+          <div class="inline-field">
+            <label class="inline-label">Status</label>
+            <select class="inline-select">
+              <option>All</option>
+              <option>Pending Supervisor</option>
+              <option>Approved</option>
+              <option>Rejected</option>
+            </select>
+          </div>
+          <button class="btn btn-outline" style="height:fit-content;margin-top:1.4rem;">
+            Export PDF / Excel
+          </button>
+        </div>
+      </div>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>UID / Name</th>
+              <th>In-Out</th>
+              <th>Duty Hrs</th>
+              <th>OT Hrs</th>
+              <th>Reason</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="overtime-tbody">
+            <!-- Injected by JS -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <footer class="footer-note">
+    KPS • Kcal Packaging System • All data confidential •
+    <a href="#" data-logout>Sign Out</a>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
