@@ -1,151 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Deductions • KPS — Developed by Haroon</title>
-  <link rel="stylesheet" href="style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>KPS • Deductions</title>
+  <link rel="stylesheet" href="style.css"/>
   <script src="app.js" defer></script>
 </head>
 <body data-page="deduction">
-  <!-- NAV -->
   <header class="top-nav">
-    <div class="top-nav-inner">
-      <div class="nav-left">
-        <div class="nav-logo-badge"><img src="./assets/logo.png" alt="Logo" /></div>
-        <div class="nav-brand-text">
-          <div class="nav-brand-title">KPS Deductions</div>
-          <div class="nav-brand-sub">Kcal Packaging System (KPS)</div>
-        </div>
-      </div>
-
-      <nav class="nav-links">
-        <a href="dashboard.html">Dashboard</a>
-        <a href="attendance.html">Attendance</a>
-        <a href="overtime.html">Overtime</a>
-        <a class="active" href="deduction.html">Deduction</a>
-        <a href="request.html">Request</a>
-        <a href="notifications.html">Notifications</a>
-        <button data-logout>Logout</button>
-      </nav>
-
-      <div class="nav-right">
-        <div class="notif-pill">Notifications: <strong id="notif-count">0</strong></div>
-        <div class="user-chip">
-          <div class="user-avatar" id="user-avatar-initials">U</div>
-          <div class="user-meta">
-            <div class="name" id="user-name">User Name</div>
-            <div class="role" id="user-role">Role</div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <div class="nav-left"><img src="./assets/logo.png" class="nav-logo"/><div class="brand"><div class="brand-title">Deductions</div><div class="brand-sub">Placeholder</div></div></div>
+    <nav class="nav-links">
+      <a href="dashboard.html">Dashboard</a><a href="attendance.html">Attendance</a>
+      <a href="employees.html">Employees</a><a href="overtime.html">Overtime</a>
+      <a href="notifications.html">Notifications</a><a href="profile.html" onclick="localStorage.removeItem('kps_profile_view_uid')">Profile</a><a href="#" data-logout>Logout</a>
+    </nav>
   </header>
-
-  <!-- PAGE -->
-  <div class="page-wrapper">
-
-    <section class="page-header-block">
-      <div class="page-eyebrow">Salary Impact</div>
-      <div class="page-title">Deductions (AED)</div>
-      <div class="page-desc">
-        Manual deductions for Late, Absence, Damage, etc.
-        Manager / Supervisor can mark status as Approved or Pending.
-        Totals are calculated below.
-      </div>
-    </section>
-
-    <!-- FORM: ADD DEDUCTION -->
-    <section class="section-card">
-      <div class="section-head-row">
-        <div class="section-head-left">
-          <div class="section-eyebrow">Add Deduction</div>
-          <div class="section-title">Record New Deduction</div>
-          <div class="section-desc">
-            Submit a deduction for a staff UID. This also creates a Notification.
-            Amount supports decimals (ex: 150.75 AED).
-          </div>
-        </div>
-      </div>
-
-      <form id="deduction-form">
-        <div class="form-grid-2col">
-          <div>
-            <label class="block-label" for="ded-uid">Employee UID</label>
-            <input id="ded-uid" type="text" class="block-input" placeholder="10366" required />
-          </div>
-          <div>
-            <label class="block-label" for="ded-name">Employee Name</label>
-            <input id="ded-name" type="text" class="block-input" placeholder="Sanjay Nayek" required />
-          </div>
-          <div>
-            <label class="block-label" for="ded-reason">Reason</label>
-            <input id="ded-reason" type="text" class="block-input" placeholder="Late Coming / Absence / Damage..." />
-          </div>
-          <div>
-            <label class="block-label" for="ded-amount">Amount (AED)</label>
-            <input id="ded-amount" type="number" step="0.01" class="block-input" placeholder="150.75" required />
-          </div>
-          <div>
-            <label class="block-label" for="ded-status">Status</label>
-            <select id="ded-status" class="block-input">
-              <option>Pending</option>
-              <option>Approved</option>
-            </select>
-          </div>
-        </div>
-
-        <div style="margin-top:1rem;display:flex;gap:.75rem;flex-wrap:wrap;">
-          <button class="btn btn-primary" type="submit">Add Deduction</button>
-          <button class="btn btn-outline" type="reset">Clear</button>
-        </div>
-      </form>
-    </section>
-
-    <!-- TABLE: DEDUCTIONS -->
-    <section class="section-card">
-      <div class="section-head-row">
-        <div class="section-head-left">
-          <div class="section-eyebrow">Log</div>
-          <div class="section-title">Deduction Records</div>
-          <div class="section-desc">
-            All recorded deductions. These values are stored locally in your browser.
-          </div>
-        </div>
-
-        <div class="inline-group">
-          <button class="btn btn-outline" style="height:fit-content;margin-top:1.4rem;">
-            Export PDF / Excel
-          </button>
-        </div>
-      </div>
-
-      <div class="table-wrapper">
-        <table>
-          <thead>
-            <tr>
-              <th>UID</th>
-              <th>Name</th>
-              <th>Reason</th>
-              <th>Amount (AED)</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody id="deduction-tbody">
-            <!-- JS inject -->
-          </tbody>
-        </table>
-      </div>
-
-      <div style="margin-top:1rem;font-size:.8rem;font-weight:600;">
-        Total Deductions: <span id="deduction-total">0.00 AED</span>
-      </div>
-    </section>
-  </div>
-
-  <footer class="footer-note">
-    Kcal Packaging System (KPS) — Developed by Haroon • All data confidential
-  </footer>
+  <main class="page"><section class="panel"><div class="panel-title">Coming soon</div></section></main>
 </body>
 </html>
