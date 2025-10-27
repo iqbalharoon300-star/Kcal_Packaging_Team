@@ -112,6 +112,33 @@
   <footer class="footer-note">
     Kcal Packaging System (KPS) — Developed by Haroon
   </footer>
+<!-- Edit Attendance Modal -->
+<div class="modal" id="edit-attendance-modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Edit Attendance</h2>
+      <button id="close-edit-modal" class="close-btn">×</button>
+    </div>
+
+    <form id="edit-attendance-form">
+      <label>Employee UID</label>
+      <input type="text" id="edit-uid" readonly />
+
+      <label>Date</label>
+      <input type="text" id="edit-date" readonly />
+
+      <label>Check-IN</label>
+      <input type="time" id="edit-in" required />
+
+      <label>Check-OUT</label>
+      <input type="time" id="edit-out" required />
+
+      <div style="margin-top:1rem;">
+        <button type="submit" class="btn btn-primary full-width">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
 
 </body>
 </html>
