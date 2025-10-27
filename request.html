@@ -1,146 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Requests • KPS — Developed by Haroon</title>
-  <link rel="stylesheet" href="style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>KPS • Requests</title>
+  <link rel="stylesheet" href="style.css"/>
   <script src="app.js" defer></script>
 </head>
 <body data-page="request">
-  <!-- NAV -->
   <header class="top-nav">
-    <div class="top-nav-inner">
-      <div class="nav-left">
-        <div class="nav-logo-badge"><img src="./assets/logo.png" alt="Logo" /></div>
-        <div class="nav-brand-text">
-          <div class="nav-brand-title">KPS Requests</div>
-          <div class="nav-brand-sub">Kcal Packaging System (KPS)</div>
-        </div>
-      </div>
-      <nav class="nav-links">
-        <a href="dashboard.html">Dashboard</a>
-        <a href="attendance.html">Attendance</a>
-        <a href="overtime.html">Overtime</a>
-        <a href="deduction.html">Deduction</a>
-        <a class="active" href="request.html">Request</a>
-        <a href="notifications.html">Notifications</a>
-        <button data-logout>Logout</button>
-      </nav>
-      <div class="nav-right">
-        <div class="notif-pill">Notifications: <strong id="notif-count">0</strong></div>
-        <div class="user-chip">
-          <div class="user-avatar" id="user-avatar-initials">U</div>
-          <div class="user-meta">
-            <div class="name" id="user-name">User Name</div>
-            <div class="role" id="user-role">Role</div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <div class="nav-left"><img src="./assets/logo.png" class="nav-logo"/><div class="brand"><div class="brand-title">Requests</div><div class="brand-sub">Placeholder</div></div></div>
+    <nav class="nav-links">
+      <a href="dashboard.html">Dashboard</a><a href="attendance.html">Attendance</a>
+      <a href="employees.html">Employees</a><a href="overtime.html">Overtime</a>
+      <a href="notifications.html">Notifications</a><a href="profile.html" onclick="localStorage.removeItem('kps_profile_view_uid')">Profile</a><a href="#" data-logout>Logout</a>
+    </nav>
   </header>
-
-  <!-- PAGE -->
-  <div class="page-wrapper">
-    <section class="page-header-block">
-      <div class="page-eyebrow">Internal Requests</div>
-      <div class="page-title">Submit a Request</div>
-      <div class="page-desc">
-        User can request Leave, Uniform, Salary Certificate, etc.
-        On submit:
-        - status = "Pending Supervisor"
-        - notification is created
-        - data is saved in local storage
-      </div>
-    </section>
-
-    <!-- FORM -->
-    <section class="section-card">
-      <div class="section-head-row">
-        <div class="section-head-left">
-          <div class="section-eyebrow">Add Request</div>
-          <div class="section-title">Send to Supervisor / Manager</div>
-          <div class="section-desc">
-            Please enter correct UID, Name, and request details.
-          </div>
-        </div>
-      </div>
-      <form id="request-form">
-        <div class="form-grid-2col">
-          <div>
-            <label class="block-label" for="req-uid">UID</label>
-            <input id="req-uid" type="text" class="block-input" placeholder="10366" required />
-          </div>
-            <div>
-              <label class="block-label" for="req-name">Name</label>
-              <input id="req-name" type="text" class="block-input" placeholder="Sanjay Nayek" required />
-            </div>
-            <div>
-              <label class="block-label" for="req-type">Request Type</label>
-              <select id="req-type" class="block-input" required>
-                <option value="Leave">Leave</option>
-                <option value="Uniform">Uniform</option>
-                <option value="Salary Certificate">Salary Certificate</option>
-                <option value="Payslip">Payslip</option>
-                <option value="Annual Leave Form">Annual Leave Form</option>
-                <option value="Resumption Form">Resumption Form</option>
-              </select>
-            </div>
-            <div>
-              <label class="block-label" for="req-desc">Description / Reason</label>
-              <textarea id="req-desc" class="block-textarea" placeholder="Explain your request..."></textarea>
-            </div>
-        </div>
-        <div style="margin-top:1rem;display:flex;gap:.75rem;flex-wrap:wrap;">
-          <button class="btn btn-primary" type="submit">Submit Request</button>
-          <button class="btn btn-outline" type="reset">Clear</button>
-        </div>
-        <div style="font-size:.7rem;color:#0f172a;opacity:.7;margin-top:1rem;">
-          After review Supervisor / Manager can Approve or Reject.
-          You will see updates in Notifications.
-        </div>
-      </form>
-    </section>
-
-    <!-- TABLE -->
-    <section class="section-card">
-      <div class="section-head-row">
-        <div class="section-head-left">
-          <div class="section-eyebrow">Submitted</div>
-          <div class="section-title">Your Requests</div>
-          <div class="section-desc">
-            These are your submitted requests. Supervisor / Manager can change status.
-          </div>
-        </div>
-        <div class="inline-group">
-          <button class="btn btn-outline" style="height:fit-content;margin-top:1.4rem;">
-            Export PDF / Excel
-          </button>
-        </div>
-      </div>
-      <div class="table-wrapper">
-        <table>
-          <thead>
-            <tr>
-              <th>UID</th>
-              <th>Name</th>
-              <th>Type</th>
-              <th>Description</th>
-              <th>Status</th>
-              <th>Submitted</th>
-            </tr>
-          </thead>
-          <tbody id="request-tbody">
-            <!-- JS inject -->
-          </tbody>
-        </table>
-      </div>
-    </section>
-  </div>
-
-  <footer class="footer-note">
-    Kcal Packaging System (KPS) — Developed by Haroon • All data confidential
-  </footer>
+  <main class="page"><section class="panel"><div class="panel-title">Coming soon</div></section></main>
 </body>
 </html>
