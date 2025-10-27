@@ -14,49 +14,8 @@ function publishUpdate(key){ if(bc) bc.postMessage({type:"ls-update", key, ts:Da
 /* Storage event (other tabs) */
 window.addEventListener("storage", (e)=>{ if(e.key && e.key.startsWith("kps_")) softRerender(); });
 if(bc){ bc.onmessage = ()=> softRerender(); }
-function handleLoginSubmit(e) {
-  e.preventDefault();
-  const idVal = document.getElementById("login-uid").value.trim();
-  const pwVal = document.getElementById("login-pw").value.trim();
-
-  if (!idVal || !pwVal) {
-    alert("Please enter your UID and Password.");
-    return;
-  }
-
-  const KPS_USERS = [
-    { uid: "10001", name: "System Admin", role: "Admin", password: "Admin@123" }
-  ];
-
-  let found = KPS_USERS.find(
-    (u) => u.uid.toString() === idVal.toString() && u.password === pwVal
-  );
-
-  if (!found) {
-    const employees = JSON.parse(localStorage.getItem("kps_employees") || "[]");
-    found = employees.find(
-      (emp) => emp.uid.toString() === idVal.toString() && emp.password === pwVal
-    );
-  }
-
-  if (!found) {
-    alert("❌ Invalid UID or Password!");
-    return;
-  }
-
-  localStorage.setItem("kps_session", JSON.stringify(found));
-  window.location.href = "dashboard.html";
-}
 
 function softRerender(){
-   document.addEventListener("DOMContentLoaded", () => {
-  const page = document.body.dataset.page;
-
-  if (page === "login") {
-    const form = document.getElementById("login-form");
-    if (form) form.addEventListener("submit", handleLoginSubmit);
-  }
-});
   const page = document.body && document.body.dataset ? document.body.dataset.page : "";
   if (!page) return;
   if (page==="dashboard"){ loadDashboardStats(); fillNavUserInfo(); }
