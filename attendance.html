@@ -3,9 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>KPS Attendance</title>
+  <title>Attendance • KPS — Developed by Haroon</title>
   <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="app.js" defer></script>
 </head>
 <body data-page="attendance">
 
@@ -13,12 +14,10 @@
   <header class="top-nav">
     <div class="top-nav-inner">
       <div class="nav-left">
-        <div class="nav-logo-badge">
-          <img src="./assets/logo.png" alt="Kcal Logo" />
-        </div>
+        <div class="nav-logo-badge"><img src="./assets/logo.png" alt="Logo" /></div>
         <div class="nav-brand-text">
           <div class="nav-brand-title">KPS Attendance</div>
-          <div class="nav-brand-sub">Kcal Packaging System</div>
+          <div class="nav-brand-sub">Kcal Packaging System (KPS)</div>
         </div>
       </div>
 
@@ -26,11 +25,14 @@
         <a href="dashboard.html">Dashboard</a>
         <a class="active" href="attendance.html">Attendance</a>
         <a href="overtime.html">Overtime</a>
+        <a href="deduction.html">Deduction</a>
+        <a href="request.html">Request</a>
+        <a href="notifications.html">Notifications</a>
         <button data-logout>Logout</button>
       </nav>
 
       <div class="nav-right">
-        <div class="notif-pill">Notifications: <strong id="notif-count">3</strong></div>
+        <div class="notif-pill">Notifications: <strong id="notif-count">0</strong></div>
         <div class="user-chip">
           <div class="user-avatar" id="user-avatar-initials">U</div>
           <div class="user-meta">
@@ -42,15 +44,16 @@
     </div>
   </header>
 
-  <!-- PAGE CONTENT -->
+  <!-- PAGE -->
   <div class="page-wrapper">
 
     <section class="page-header-block">
       <div class="page-eyebrow">Daily Attendance</div>
-      <div class="page-title">Check IN / Check OUT / Status</div>
+      <div class="page-title">Check IN / OUT / Status</div>
       <div class="page-desc">
-        Each user must enter Check IN and Check OUT. If missing,
-        deduct 10 AED per day. Manager / Supervisor can edit and approve.
+        Each user must enter Check IN and Check OUT.
+        Missing time → Deduct 10 AED per day.
+        Manager / Supervisor can edit and approve.
       </div>
     </section>
 
@@ -60,7 +63,8 @@
           <div class="section-eyebrow">Filter</div>
           <div class="section-title">Attendance Records</div>
           <div class="section-desc">
-            P = Present / SL = Sick Leave / DO = Day Off / AL = Annual Leave / PH = Public Holiday / AB = Absent
+            P = Present / SL = Sick Leave / DO = Day Off / AL = Annual Leave /
+            PH = Public Holiday / AB = Absent
           </div>
         </div>
 
@@ -69,7 +73,6 @@
             <label class="inline-label">Date</label>
             <input type="date" class="inline-input" />
           </div>
-
           <div class="inline-field">
             <label class="inline-label">Status</label>
             <select class="inline-select">
@@ -81,7 +84,6 @@
               <option>AB (Absent)</option>
             </select>
           </div>
-
           <button class="btn btn-outline" style="height:fit-content;margin-top:1.4rem;">
             Export PDF / Excel
           </button>
@@ -102,23 +104,20 @@
             </tr>
           </thead>
           <tbody id="attendance-tbody">
-            <!-- Injected by JS -->
+            <!-- JS inject -->
           </tbody>
         </table>
       </div>
 
       <div style="font-size:.7rem;color:var(--text-main);opacity:.7;margin-top:.75rem;">
-        Manager & Supervisor: Full permission to Preview / Edit / Update / Save.
+        Manager &amp; Supervisor: Full permission to Preview / Edit / Update / Save.
         User: View only.
       </div>
     </section>
   </div>
 
   <footer class="footer-note">
-    KPS • Kcal Packaging System • All data confidential •
-    <a href="#" data-logout>Sign Out</a>
+    Kcal Packaging System (KPS) — Developed by Haroon • All data confidential
   </footer>
-
-  <script src="app.js"></script>
 </body>
 </html>
