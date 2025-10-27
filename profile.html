@@ -1,99 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Profile • KPS — Developed by Haroon</title>
-  <link rel="stylesheet" href="style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>KPS • Profile</title>
+  <link rel="stylesheet" href="style.css"/>
   <script src="app.js" defer></script>
 </head>
 <body data-page="profile">
-
-  <header class="top-nav">
-    <div class="top-nav-inner">
-      <div class="nav-left">
-        <div class="nav-logo-badge"><img src="./assets/logo.png" alt="Logo" /></div>
-        <div class="nav-brand-text">
-          <div class="nav-brand-title">Kcal Packaging System</div>
-          <div class="nav-brand-sub">Profile & Attendance Summary</div>
-        </div>
-      </div>
-
-      <nav class="nav-links">
-        <a href="dashboard.html">Dashboard</a>
-        <a href="attendance.html">Attendance</a>
-        <a href="overtime.html">Overtime</a>
-        <a href="deduction.html">Deduction</a>
-        <a href="request.html">Request</a>
-        <a href="notifications.html">Notifications</a>
-        <a href="employees.html">Employees</a>
-        <a class="active" <a href="profile.html" onclick="localStorage.removeItem('kps_profile_view_uid')">Profile</a>
-        <button data-logout>Logout</button>
-      </nav>
+<header class="top-nav">
+  <div class="nav-left">
+    <img src="./assets/logo.png" class="nav-logo" alt="logo"/>
+    <div class="brand"><div class="brand-title">My Profile</div><div class="brand-sub">Manage your information</div></div>
+  </div>
+  <nav class="nav-links">
+    <a href="dashboard.html">Dashboard</a>
+    <a href="attendance.html">Attendance</a>
+    <a id="nav-employees-link" href="employees.html">Employees</a>
+    <a href="overtime.html">Overtime</a>
+    <a href="notifications.html">Notifications</a>
+    <a class="active" href="profile.html" onclick="localStorage.removeItem('kps_profile_view_uid')">Profile</a>
+    <a href="#" data-logout>Logout</a>
+  </nav>
+  <div class="nav-user">
+    <div id="user-avatar-initials" class="avatar">HI</div>
+    <div class="user-meta">
+      <div id="user-name" class="user-name">—</div>
+      <div id="user-role" class="user-role">—</div>
     </div>
-  </header>
+  </div>
+</header>
 
-  <div class="page-wrapper">
-
-    <!-- PROFILE CARD -->
-    <section class="section-card profile-card">
-      <div class="profile-top">
-        <div class="profile-avatar">
-          <img id="profile-photo" src="./assets/default-avatar.png" alt="Profile" />
-          <input type="file" id="profile-upload" accept="image/*" />
-        </div>
-
-        <div class="profile-info">
-          <h2 id="profile-name">Employee Name</h2>
-          <p id="profile-role">Role</p>
-          <p>UID: <span id="profile-uid"></span></p>
-        </div>
+<main class="page">
+  <section class="profile-grid">
+    <div class="profile-card">
+      <img id="profile-photo" class="profile-photo" src="./assets/default-avatar.png" alt="avatar"/>
+      <div class="profile-info">
+        <div id="profile-name" class="profile-name">—</div>
+        <div id="profile-role" class="profile-role">—</div>
+        <div>ID: <span id="profile-uid">—</span></div>
       </div>
-
       <div class="profile-edit">
-        <label>Email</label>
-        <input type="email" id="profile-email" placeholder="example@kcal.com" />
-        <label>Phone</label>
-        <input type="text" id="profile-phone" placeholder="+971..." />
+        <input id="profile-upload" type="file" accept="image/*"/>
+        <label>Email</label><input id="profile-email" type="email" placeholder="name@kcallife.com"/>
+        <label>Phone</label><input id="profile-phone" type="tel" placeholder="+971 .."/>
         <button id="save-profile" class="btn btn-primary">Save Profile</button>
       </div>
-    </section>
+    </div>
 
-    <!-- ATTENDANCE SUMMARY -->
-    <section class="section-card">
-      <div class="section-head-row">
-        <div class="section-head-left">
-          <div class="section-eyebrow">Summary</div>
-          <div class="section-title">Recent Attendance</div>
-        </div>
-        <div class="inline-group">
-          <button class="btn-text">Export PDF</button>
-          <button class="btn-text">Export Excel</button>
-        </div>
-      </div>
-
-      <div class="table-wrapper">
-        <table>
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Check IN</th>
-              <th>Check OUT</th>
-              <th>Net Duty</th>
-              <th>Overtime</th>
-              <th>Status</th>
-            </tr>
-          </thead>
+    <div class="panel">
+      <div class="panel-title">Recent Attendance (7 latest)</div>
+      <div class="table-container">
+        <table class="data-table">
+          <thead><tr><th>Date</th><th>IN</th><th>OUT</th><th>Duty</th><th>OT</th><th>Status</th></tr></thead>
           <tbody id="profile-attendance-tbody"></tbody>
         </table>
       </div>
-    </section>
-  </div>
-
-  <footer class="footer-note">
-    Kcal Packaging System (KPS) — Developed by Haroon
-  </footer>
-
+    </div>
+  </section>
+</main>
 </body>
 </html>
