@@ -993,8 +993,8 @@ tbody td small {
   box-shadow: none;
 }
 .login-logo img {
-  width: 100px;
-  height: auto;
+  width: 3px;
+  height: 3px;
   filter: drop-shadow(0 2px 5px rgba(0,0,0,0.1));
 }
 }
