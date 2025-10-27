@@ -119,26 +119,30 @@
         <button id="close-modal" class="close-btn">×</button>
       </div>
       <form id="emp-form">
-        <label>UID</label>
-        <input type="text" id="emp-id" required />
+  <label>UID</label>
+  <input type="text" id="emp-id" readonly />
 
-        <label>Name</label>
-        <input type="text" id="emp-name" required />
+  <label>Name</label>
+  <input type="text" id="emp-name" required />
 
-        <label>Role</label>
-        <input type="text" id="emp-role" required />
+  <label>Password <small style="font-weight:normal;">(leave blank to keep current)</small></label>
+  <input type="password" id="emp-password" placeholder="••••••••" />
 
-        <label>Section</label>
-        <input type="text" id="emp-section" />
+  <label>Role</label>
+  <input type="text" id="emp-role" required />
 
-        <label>Shift</label>
-        <input type="text" id="emp-shift" />
+  <label>Section</label>
+  <input type="text" id="emp-section" />
 
-        <label>Join Date</label>
-        <input type="date" id="emp-join" />
+  <label>Shift</label>
+  <input type="text" id="emp-shift" />
 
-        <button type="submit" class="btn btn-primary full-width">Save</button>
-      </form>
+  <label>Join Date</label>
+  <input type="date" id="emp-join" />
+
+  <button type="submit" class="btn btn-primary full-width">Save</button>
+</form>
+
     </div>
   </div>
   <!-- ADD/EDIT MODAL -->
