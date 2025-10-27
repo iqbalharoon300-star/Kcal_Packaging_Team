@@ -155,4 +155,4 @@ function handleCheckOut(){
   if(!row || row.in==="—"){ alert("Please Check IN first."); return; }
   if(row.out!=="—"){ alert("Already checked OUT."); return; }
   row.out=now.timeStr; const duty=computeanalysis
-::contentReference[oaicite:0]{index=0}
+contentReference[oaicite:0]{index=0}
