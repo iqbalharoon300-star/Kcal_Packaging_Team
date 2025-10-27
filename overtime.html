@@ -3,9 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>KPS Overtime</title>
+  <title>Overtime • KPS — Developed by Haroon</title>
   <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="app.js" defer></script>
 </head>
 <body data-page="overtime">
 
@@ -13,12 +14,10 @@
   <header class="top-nav">
     <div class="top-nav-inner">
       <div class="nav-left">
-        <div class="nav-logo-badge">
-          <img src="./assets/logo.png" alt="Kcal Logo" />
-        </div>
+        <div class="nav-logo-badge"><img src="./assets/logo.png" alt="Logo" /></div>
         <div class="nav-brand-text">
           <div class="nav-brand-title">KPS Overtime</div>
-          <div class="nav-brand-sub">Kcal Packaging System</div>
+          <div class="nav-brand-sub">Kcal Packaging System (KPS)</div>
         </div>
       </div>
 
@@ -26,11 +25,14 @@
         <a href="dashboard.html">Dashboard</a>
         <a href="attendance.html">Attendance</a>
         <a class="active" href="overtime.html">Overtime</a>
+        <a href="deduction.html">Deduction</a>
+        <a href="request.html">Request</a>
+        <a href="notifications.html">Notifications</a>
         <button data-logout>Logout</button>
       </nav>
 
       <div class="nav-right">
-        <div class="notif-pill">Notifications: <strong id="notif-count">3</strong></div>
+        <div class="notif-pill">Notifications: <strong id="notif-count">0</strong></div>
         <div class="user-chip">
           <div class="user-avatar" id="user-avatar-initials">U</div>
           <div class="user-meta">
@@ -42,26 +44,27 @@
     </div>
   </header>
 
-  <!-- PAGE CONTENT -->
+  <!-- PAGE -->
   <div class="page-wrapper">
 
     <section class="page-header-block">
       <div class="page-eyebrow">Extra Hours</div>
-      <div class="page-title">Overtime Requests & Log</div>
+      <div class="page-title">Overtime Requests &amp; Log</div>
       <div class="page-desc">
         Supervisor / Manager can Add Overtime for Users (with reason)
         and Approve or Reject. Users can view status.
       </div>
     </section>
 
-    <!-- OVERTIME FORM -->
+    <!-- FORM -->
     <section class="section-card">
       <div class="section-head-row">
         <div class="section-head-left">
           <div class="section-eyebrow">Add Overtime</div>
           <div class="section-title">Request Approval</div>
           <div class="section-desc">
-            Fill details below. On submit, entry is added with status "Pending Supervisor".
+            Fill details below. Submitting adds an entry with status
+            "Pending Supervisor" and creates a notification.
           </div>
         </div>
       </div>
@@ -75,12 +78,12 @@
 
           <div>
             <label class="block-label" for="ot-uid">Employee UID</label>
-            <input id="ot-uid" type="text" class="block-input" placeholder="e.g. 10366" required />
+            <input id="ot-uid" type="text" class="block-input" placeholder="10366" required />
           </div>
 
           <div>
             <label class="block-label" for="ot-name">Employee Name</label>
-            <input id="ot-name" type="text" class="block-input" placeholder="e.g. Sanjay Nayek" required />
+            <input id="ot-name" type="text" class="block-input" placeholder="Sanjay Nayek" required />
           </div>
 
           <div>
@@ -115,20 +118,20 @@
         </div>
 
         <div style="font-size:.7rem;color:#0f172a;opacity:.7;margin-top:1rem;">
-          After submit: Manager / Supervisor can Edit, Approve or Reject.
+          After submit: Supervisor / Manager can Edit, Approve or Reject.
           User will see notification.
         </div>
       </form>
     </section>
 
-    <!-- OVERTIME TABLE -->
+    <!-- TABLE -->
     <section class="section-card">
       <div class="section-head-row">
         <div class="section-head-left">
           <div class="section-eyebrow">Records</div>
           <div class="section-title">Overtime Log</div>
           <div class="section-desc">
-            Pulled from Attendance IN/OUT + Manual Overtime entry.
+            Pulled from Attendance IN/OUT + Manual Overtime entries.
           </div>
         </div>
 
@@ -162,7 +165,7 @@
             </tr>
           </thead>
           <tbody id="overtime-tbody">
-            <!-- Injected by JS -->
+            <!-- JS inject -->
           </tbody>
         </table>
       </div>
@@ -170,10 +173,7 @@
   </div>
 
   <footer class="footer-note">
-    KPS • Kcal Packaging System • All data confidential •
-    <a href="#" data-logout>Sign Out</a>
+    Kcal Packaging System (KPS) — Developed by Haroon • All data confidential
   </footer>
-
-  <script src="app.js"></script>
 </body>
 </html>
