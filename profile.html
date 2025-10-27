@@ -7,218 +7,16 @@
   <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
   <script src="app.js" defer></script>
-  <style>
-    /* profile page layout */
-    .profile-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 2rem;
-    }
-    @media(min-width:900px){
-      .profile-grid {
-        grid-template-columns: 320px 1fr;
-      }
-    }
-
-    .profile-card {
-      background-color: #fff;
-      border-radius: var(--radius-xl);
-      border: 1px solid var(--border-soft);
-      box-shadow: var(--shadow-soft);
-      padding: 1.25rem 1.25rem 1.5rem;
-      position: relative;
-    }
-    .profile-top {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      margin-bottom: 1rem;
-    }
-    .profile-avatar-wrapper {
-      width: 120px;
-      height: 120px;
-      border-radius: 999px;
-      background-color: var(--brand-green-dark);
-      color: #fff;
-      font-size: 1.25rem;
-      font-weight: 600;
-      display: grid;
-      place-items: center;
-      overflow: hidden;
-      box-shadow: var(--shadow-soft);
-      margin-bottom: .75rem;
-    }
-    .profile-avatar-wrapper img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .profile-name {
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--text-main);
-      line-height: 1.3;
-    }
-    .profile-role {
-      font-size: .8rem;
-      color: var(--text-main);
-      opacity: .7;
-      line-height: 1.3;
-    }
-    .profile-uid {
-      font-size: .7rem;
-      color: var(--text-main);
-      opacity: .6;
-      margin-top: .25rem;
-    }
-
-    .profile-form-block {
-      margin-top: 1rem;
-      font-size: .8rem;
-      color: var(--text-main);
-    }
-    .profile-field-group {
-      margin-bottom: .75rem;
-    }
-    .profile-label {
-      font-size: .75rem;
-      font-weight: 500;
-      color: var(--text-main);
-      margin-bottom: .3rem;
-      display:block;
-    }
-    .profile-input {
-      width: 100%;
-      border-radius: var(--radius-lg);
-      border: 1px solid var(--border-soft);
-      background-color: #fff;
-      padding: .7rem .8rem;
-      font-size: .8rem;
-      color: var(--text-main);
-      outline: none;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
-    }
-    .profile-input:focus {
-      border-color: var(--brand-green-dark);
-      box-shadow: 0 0 0 3px var(--brand-green-soft);
-    }
-
-    .profile-upload-row {
-      margin-top: 1rem;
-      font-size: .75rem;
-      color: var(--text-main);
-    }
-
-    .profile-save-row {
-      margin-top: 1rem;
-      display: flex;
-      flex-wrap: wrap;
-      gap: .75rem;
-      justify-content: center;
-    }
-
-    .btn-save-profile {
-      background-color: var(--brand-green-dark);
-      color: #fff;
-      border: 0;
-      border-radius: var(--radius-lg);
-      font-weight: 600;
-      font-size: .8rem;
-      line-height: 1.2;
-      padding: .7rem .9rem;
-      box-shadow: var(--shadow-soft);
-      cursor: pointer;
-    }
-
-    /* Right side content sections */
-    .profile-section-card {
-      background-color: #fff;
-      border-radius: var(--radius-xl);
-      border: 1px solid var(--border-soft);
-      box-shadow: var(--shadow-soft);
-      padding: 1rem 1.25rem 1.5rem;
-      margin-bottom: 2rem;
-    }
-    .profile-section-head {
-      margin-bottom: 1rem;
-    }
-    .profile-eyebrow {
-      font-size: .7rem;
-      font-weight: 600;
-      color: var(--text-main);
-      opacity: .6;
-      letter-spacing: .03em;
-      text-transform: uppercase;
-    }
-    .profile-title {
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--text-main);
-    }
-    .profile-desc {
-      font-size: .8rem;
-      color: var(--text-main);
-      opacity: .7;
-      max-width: 640px;
-      line-height: 1.4;
-    }
-
-    .today-summary-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit,minmax(min(160px,100%),1fr));
-      gap: .75rem;
-    }
-    .summary-box {
-      background-color: var(--brand-green-soft);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-soft);
-      padding: .75rem .9rem;
-      font-size: .75rem;
-      line-height: 1.4;
-      color: var(--text-main);
-    }
-    .summary-label {
-      font-weight: 600;
-      font-size: .7rem;
-      opacity:.8;
-    }
-    .summary-value {
-      font-weight: 600;
-      font-size: .9rem;
-      color: var(--text-main);
-    }
-
-    /* attendance history table in profile */
-    .export-row {
-      text-align: right;
-      font-size: .75rem;
-      color: var(--brand-green-dark);
-      font-weight: 600;
-      margin-bottom: .5rem;
-    }
-    .export-row button {
-      background: none;
-      border: 0;
-      color: var(--brand-green-dark);
-      cursor: pointer;
-      font-weight: 600;
-      font-size: .75rem;
-      text-decoration: underline;
-      padding: .25rem .5rem;
-    }
-  </style>
 </head>
 <body data-page="profile">
 
-  <!-- NAV -->
   <header class="top-nav">
     <div class="top-nav-inner">
       <div class="nav-left">
         <div class="nav-logo-badge"><img src="./assets/logo.png" alt="Logo" /></div>
         <div class="nav-brand-text">
-          <div class="nav-brand-title">KPS Profile</div>
-          <div class="nav-brand-sub">Kcal Packaging System (KPS)</div>
+          <div class="nav-brand-title">Kcal Packaging System</div>
+          <div class="nav-brand-sub">Profile & Attendance Summary</div>
         </div>
       </div>
 
@@ -229,166 +27,72 @@
         <a href="deduction.html">Deduction</a>
         <a href="request.html">Request</a>
         <a href="notifications.html">Notifications</a>
-        <a href="employees.html" id="nav-employees-link">Employees</a>
+        <a href="employees.html">Employees</a>
         <a class="active" href="profile.html">Profile</a>
         <button data-logout>Logout</button>
       </nav>
-
-      <div class="nav-right">
-        <div class="notif-pill">Notifications: <strong id="notif-count">0</strong></div>
-        <div class="user-chip">
-          <div class="user-avatar" id="user-avatar-initials">U</div>
-          <div class="user-meta">
-            <div class="name" id="user-name">User Name</div>
-            <div class="role" id="user-role">Role</div>
-          </div>
-        </div>
-      </div>
     </div>
   </header>
 
-  <!-- PAGE WRAPPER -->
   <div class="page-wrapper">
 
-    <section class="page-header-block">
-      <div class="page-eyebrow">My Account</div>
-      <div class="page-title">Profile & Attendance Summary</div>
-      <div class="page-desc">
-        Update your contact info and review your recent attendance, duty hours and overtime.
+    <!-- PROFILE CARD -->
+    <section class="section-card profile-card">
+      <div class="profile-top">
+        <div class="profile-avatar">
+          <img id="profile-photo" src="./assets/default-avatar.png" alt="Profile" />
+          <input type="file" id="profile-upload" accept="image/*" />
+        </div>
+
+        <div class="profile-info">
+          <h2 id="profile-name">Employee Name</h2>
+          <p id="profile-role">Role</p>
+          <p>UID: <span id="profile-uid"></span></p>
+        </div>
+      </div>
+
+      <div class="profile-edit">
+        <label>Email</label>
+        <input type="email" id="profile-email" placeholder="example@kcal.com" />
+        <label>Phone</label>
+        <input type="text" id="profile-phone" placeholder="+971..." />
+        <button id="save-profile" class="btn btn-primary">Save Profile</button>
       </div>
     </section>
 
-    <div class="profile-grid">
-
-      <!-- LEFT PROFILE CARD -->
-      <section class="profile-card">
-        <div class="profile-top">
-          <div class="profile-avatar-wrapper" id="profile-avatar-wrapper">
-            <!-- Either initials or <img> will be injected -->
-            <span id="profile-avatar-initials">U</span>
-          </div>
-
-          <div class="profile-name" id="profile-name">User Name</div>
-          <div class="profile-role" id="profile-role">Role / Section</div>
-          <div class="profile-uid" id="profile-uid">UID: ---</div>
+    <!-- ATTENDANCE SUMMARY -->
+    <section class="section-card">
+      <div class="section-head-row">
+        <div class="section-head-left">
+          <div class="section-eyebrow">Summary</div>
+          <div class="section-title">Recent Attendance</div>
         </div>
-
-        <div class="profile-form-block">
-          <div class="profile-field-group">
-            <label class="profile-label" for="profile-email">Email</label>
-            <input id="profile-email" class="profile-input" type="email" placeholder="user@example.com" />
-          </div>
-
-          <div class="profile-field-group">
-            <label class="profile-label" for="profile-phone">Phone</label>
-            <input id="profile-phone" class="profile-input" type="text" placeholder="+9715xxxxxxxx" />
-          </div>
-
-          <div class="profile-upload-row">
-            <div style="margin-bottom:.4rem;font-weight:600;font-size:.75rem;color:var(--text-main);">
-              Profile Picture
-            </div>
-            <input id="profile-photo-input" type="file" accept="image/*" style="font-size:.75rem;" />
-            <div style="font-size:.7rem;opacity:.7;margin-top:.25rem;">
-              Choose a new picture. Preview updates immediately, but remember to Save Profile.
-            </div>
-          </div>
-
-          <div class="profile-save-row">
-            <button id="save-profile-btn" class="btn-save-profile" type="button">Save Profile</button>
-          </div>
-
-          <div style="margin-top:1rem;font-size:.7rem;color:var(--text-main);opacity:.7;text-align:center;">
-            Kcal Packaging System (KPS) — Developed by Haroon
-          </div>
+        <div class="inline-group">
+          <button class="btn-text">Export PDF</button>
+          <button class="btn-text">Export Excel</button>
         </div>
-      </section>
-
-      <!-- RIGHT SIDE: ATTENDANCE SUMMARY + HISTORY -->
-      <div>
-
-        <!-- TODAY SUMMARY -->
-        <section class="profile-section-card">
-          <div class="profile-section-head">
-            <div class="profile-eyebrow">Today</div>
-            <div class="profile-title">Your Shift Status</div>
-            <div class="profile-desc">
-              Live view of today's check IN / OUT, duty hours and overtime.
-            </div>
-          </div>
-
-          <div class="today-summary-grid">
-            <div class="summary-box">
-              <div class="summary-label">Date</div>
-              <div class="summary-value" id="prof-today-date">-</div>
-            </div>
-
-            <div class="summary-box">
-              <div class="summary-label">IN</div>
-              <div class="summary-value" id="prof-today-in">--:--</div>
-            </div>
-
-            <div class="summary-box">
-              <div class="summary-label">OUT</div>
-              <div class="summary-value" id="prof-today-out">--:--</div>
-            </div>
-
-            <div class="summary-box">
-              <div class="summary-label">Net Duty</div>
-              <div class="summary-value" id="prof-today-duty">0.00 hr</div>
-            </div>
-
-            <div class="summary-box">
-              <div class="summary-label">Overtime</div>
-              <div class="summary-value" id="prof-today-ot">0.00 hr</div>
-            </div>
-          </div>
-        </section>
-
-        <!-- ATTENDANCE HISTORY -->
-        <section class="profile-section-card">
-          <div class="profile-section-head">
-            <div class="profile-eyebrow">History</div>
-            <div class="profile-title">Last 7 Days Attendance</div>
-            <div class="profile-desc">
-              Your recent Check IN / OUT and Overtime hours.
-            </div>
-          </div>
-
-          <div class="export-row">
-            <button id="export-pdf-btn" type="button">Export PDF</button> |
-            <button id="export-excel-btn" type="button">Export Excel</button>
-          </div>
-
-          <div class="table-wrapper">
-            <table>
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Check IN</th>
-                  <th>Check OUT</th>
-                  <th>Net Duty (hr)</th>
-                  <th>Overtime (hr)</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody id="profile-history-tbody">
-                <!-- JS inject -->
-              </tbody>
-            </table>
-          </div>
-
-          <div style="font-size:.7rem;color:var(--text-main);opacity:.7;margin-top:.75rem;">
-            Overtime = Net Duty - 10 hours (1h break already accounted in Net Duty).
-          </div>
-        </section>
-
       </div>
-    </div>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Check IN</th>
+              <th>Check OUT</th>
+              <th>Net Duty</th>
+              <th>Overtime</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="profile-attendance-tbody"></tbody>
+        </table>
+      </div>
+    </section>
   </div>
 
   <footer class="footer-note">
-    Kcal Packaging System (KPS) — Developed by Haroon • All data confidential
+    Kcal Packaging System (KPS) — Developed by Haroon
   </footer>
 
 </body>
