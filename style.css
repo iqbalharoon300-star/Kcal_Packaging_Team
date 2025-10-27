@@ -992,10 +992,11 @@ tbody td small {
   background: none;
   box-shadow: none;
 }
-.login-logo-badge img {
-  width: 30px;
-  height: 30px;
-  filter: brightness(0) invert(1);
+.login-logo img {
+  width: 100px;
+  height: auto;
+  filter: drop-shadow(0 2px 5px rgba(0,0,0,0.1));
+}
 }
 .login-head-text .login-title {
   font-size: .9rem;
