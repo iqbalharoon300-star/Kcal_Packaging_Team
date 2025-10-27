@@ -1,69 +1,33 @@
 <!DOCTYPE html>
-<html lang="en" data-page="login">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>KPS Login • Kcal Packaging System</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>KPS • Login</title>
   <link rel="stylesheet" href="style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
-  <script defer src="app.js"></script>
+  <script src="app.js" defer></script>
 </head>
-<body data-page="login" class="login-body">
-
-  <div class="login-shell">
-
+<body data-page="login" class="login-bg">
+  <main class="login-wrap">
     <div class="login-card">
-      <div class="login-header">
-        <div class="login-logo">
-  <img src="./assets/logo.png" alt="Kcal Packaging System Logo">
-</div>
-        </div>
-        <div class="login-head-text">
-          <div class="login-title">Kcal Packaging System</div>
-          <div class="login-sub">Attendances • Overtimes • Requests • Records</div>
-        </div>
-      </div>
+      <div class="login-logo"><img src="./assets/logo.png" alt="Kcal Logo" /></div>
+      <h1 class="login-title">Kcal Packaging System</h1>
+      <div class="login-sub">KPS • Attendance • Overtime • HR Portal</div>
 
       <form id="login-form" class="login-form">
-        <div class="login-field-group">
-          <label class="login-label" for="login-uid">User ID</label>
-          <input
-            id="login-uid"
-            class="login-input"
-            type="text"
-            placeholder="e.g. 10001"
-            required
-          />
-        </div>
+        <label>User ID</label>
+        <input id="login-uid" type="text" placeholder="e.g. 10001" required />
 
-        <div class="login-field-group">
-          <label class="login-label" for="login-password">Password</label>
-          <input
-            id="login-password"
-            class="login-input"
-            type="password"
-            placeholder="•••••••"
-            required
-          />
-        </div>
+        <label>Password</label>
+        <input id="login-pw" type="password" placeholder="••••••••" required />
 
-        <div id="login-error" class="login-error" style="display:none;"></div>
-
-        <button type="submit" class="login-submit-btn">
-          Sign In
-        </button>
+        <button type="submit" class="btn btn-primary full">Sign In</button>
       </form>
 
-      <div class="login-footer-note">
-        Admin: UID 10001 / Password Admin@123<br/>
+      <div class="login-hint">
+        Admin: UID <b>10001</b> / Password <b>Admin@123</b>
       </div>
     </div>
-
-    <footer class="login-footer-credit">
-      Kcal Packaging System (KPS) — Developed by Haroon
-    </footer>
-
-  </div>
-
+  </main>
 </body>
 </html>
