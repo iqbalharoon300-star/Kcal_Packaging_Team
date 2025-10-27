@@ -726,7 +726,36 @@ tbody td small {
 /* ================================
    MODAL (Add / Edit Employee)
    ================================ */
-  
+ .modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+.modal-content {
+  background: #fff;
+  padding: 25px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 420px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+.close-btn {
+  border: none;
+  background: transparent;
+  font-size: 1.5em;
+  cursor: pointer;
+}
+ 
 .modal {
   display: none;
   position: fixed;
