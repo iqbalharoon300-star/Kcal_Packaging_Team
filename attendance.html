@@ -1,144 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Attendance • KPS — Developed by Haroon</title>
-  <link rel="stylesheet" href="style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>KPS • Attendance</title>
+  <link rel="stylesheet" href="style.css"/>
   <script src="app.js" defer></script>
 </head>
 <body data-page="attendance">
-
-  <!-- NAV -->
   <header class="top-nav">
-    <div class="top-nav-inner">
-      <div class="nav-left">
-        <div class="nav-logo-badge"><img src="./assets/logo.png" alt="Logo" /></div>
-        <div class="nav-brand-text">
-          <div class="nav-brand-title">Kcal Packaging System</div>
-          <div class="nav-brand-sub">Attendance</div>
-        </div>
-      </div>
-
-      <nav class="nav-links">
-        <a href="dashboard.html">Dashboard</a>
-        <a class="active" href="attendance.html">Attendance</a>
-        <a href="overtime.html">Overtime</a>
-        <a href="deduction.html">Deduction</a>
-        <a href="request.html">Request</a>
-        <a href="notifications.html">Notifications</a>
-        <a href="employees.html">Employees</a>
-        <a href="profile.html">Profile</a>
-        <button data-logout>Logout</button>
-      </nav>
-
-      <div class="nav-right">
-        <div class="notif-pill">Notifications: <strong id="notif-count">0</strong></div>
-        <div class="user-chip">
-          <div class="user-avatar" id="user-avatar-initials">U</div>
-          <div class="user-meta">
-            <div class="name" id="user-name">User Name</div>
-            <div class="role" id="user-role">Role</div>
-          </div>
-        </div>
+    <div class="nav-left">
+      <img src="./assets/logo.png" class="nav-logo" alt="logo"/>
+      <div class="brand"><div class="brand-title">Attendance</div><div class="brand-sub">Staff hours & overtime</div></div>
+    </div>
+    <nav class="nav-links">
+      <a href="dashboard.html">Dashboard</a>
+      <a class="active" href="attendance.html">Attendance</a>
+      <a id="nav-employees-link" href="employees.html">Employees</a>
+      <a href="overtime.html">Overtime</a>
+      <a href="notifications.html">Notifications</a>
+      <a href="profile.html" onclick="localStorage.removeItem('kps_profile_view_uid')">Profile</a>
+      <a href="#" data-logout>Logout</a>
+    </nav>
+    <div class="nav-user">
+      <div id="user-avatar-initials" class="avatar">HI</div>
+      <div class="user-meta">
+        <div id="user-name" class="user-name">—</div>
+        <div id="user-role" class="user-role">—</div>
       </div>
     </div>
   </header>
 
-  <div class="page-wrapper">
-    <section class="page-header-block">
-      <div class="page-eyebrow">Daily Attendance</div>
-      <div class="page-title">Check IN / OUT</div>
-      <div class="page-desc">
-        Mark your attendance. 1-hour break automatically included. Overtime = Net Duty − 10 hrs.
+  <main class="page">
+    <section class="attendance-controls">
+      <h2>Attendance Control</h2>
+      <div class="buttons">
+        <button id="checkin-btn" class="btn btn-primary">🕒 Check In</button>
+        <button id="checkout-btn" class="btn btn-secondary">✅ Check Out</button>
+      </div>
+      <div class="today-strip">
+        <div><b>Today:</b> <span id="today-date-label">—</span></div>
+        <div>IN: <span id="today-in">--:--</span></div>
+        <div>OUT: <span id="today-out">--:--</span></div>
+        <div>Duty: <span id="today-duty">0.00 hr</span></div>
+        <div>OT: <span id="today-ot">0.00 hr</span></div>
+        <div>Status: <span id="today-status">—</span></div>
       </div>
     </section>
 
-    <!-- CHECK-IN / CHECK-OUT SECTION -->
-    <section class="attendance-actions-card">
-      <div class="attendance-actions-toprow">
-        <div class="action-left-block">
-          <div class="action-eyebrow">Your Shift Today</div>
-          <div class="action-title">Mark Attendance</div>
-        </div>
-        <div class="attendance-action-buttons">
-          <button id="checkin-btn" class="btn-check">Check IN</button>
-          <button id="checkout-btn" class="btn-check">Check OUT</button>
-          <div class="today-summary-box" id="today-summary-box">
-            <div><strong>Today:</strong> <span id="today-date-label">-</span></div>
-            <div>IN: <span id="today-in">--:--</span></div>
-            <div>OUT: <span id="today-out">--:--</span></div>
-            <div>Net Duty: <span id="today-duty">0.00 hr</span></div>
-            <div>Overtime: <span id="today-ot">0.00 hr</span></div>
-            <div>Status: <span id="today-status">-</span></div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ATTENDANCE TABLE -->
-    <section class="section-card">
-      <div class="section-head-row">
-        <div class="section-head-left">
-          <div class="section-eyebrow">History</div>
-          <div class="section-title">Attendance Records</div>
-        </div>
-        <div class="inline-group">
-          <button class="btn btn-outline" id="export-attendance">Export</button>
-        </div>
-      </div>
-
-      <div class="table-wrapper">
-        <table>
+    <section class="panel">
+      <div class="panel-title">Attendance Records</div>
+      <div class="table-container">
+        <table class="data-table">
           <thead>
-            <tr>
-              <th>UID</th>
-              <th>Name</th>
-              <th>Date</th>
-              <th>Check IN</th>
-              <th>Check OUT</th>
-              <th>Net Duty</th>
-              <th>Overtime</th>
-              <th>Status</th>
-            </tr>
+          <tr>
+            <th>UID</th><th>Name</th><th>Date</th><th>IN</th><th>OUT</th><th>Duty</th><th>OT</th><th>Status</th><th>Action</th>
+          </tr>
           </thead>
           <tbody id="attendance-tbody"></tbody>
         </table>
       </div>
     </section>
-  </div>
+  </main>
 
-  <footer class="footer-note">
-    Kcal Packaging System (KPS) — Developed by Haroon
-  </footer>
-<!-- Edit Attendance Modal -->
-<div class="modal" id="edit-attendance-modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h2>Edit Attendance</h2>
-      <button id="close-edit-modal" class="close-btn">×</button>
-    </div>
-
-    <form id="edit-attendance-form">
-      <label>Employee UID</label>
-      <input type="text" id="edit-uid" readonly />
-
-      <label>Date</label>
-      <input type="text" id="edit-date" readonly />
-
-      <label>Check-IN</label>
-      <input type="time" id="edit-in" required />
-
-      <label>Check-OUT</label>
-      <input type="time" id="edit-out" required />
-
-      <div style="margin-top:1rem;">
-        <button type="submit" class="btn btn-primary full-width">Save Changes</button>
+  <!-- Edit Attendance Modal -->
+  <div class="modal" id="edit-attendance-modal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2>Edit Attendance</h2>
+        <button id="close-edit-modal" class="modal-close">×</button>
       </div>
-    </form>
+      <form id="edit-attendance-form" class="modal-form">
+        <div class="form-grid">
+          <div class="form-group"><label>Employee UID</label><input id="edit-uid" type="text" readonly></div>
+          <div class="form-group"><label>Date</label><input id="edit-date" type="text" readonly></div>
+          <div class="form-group"><label>Check-IN</label><input id="edit-in" type="time" required></div>
+          <div class="form-group"><label>Check-OUT</label><input id="edit-out" type="time" required></div>
+        </div>
+        <button type="submit" class="btn-save">Save Changes</button>
+      </form>
+    </div>
   </div>
-</div>
-
 </body>
 </html>
