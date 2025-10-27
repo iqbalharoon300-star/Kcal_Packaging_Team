@@ -33,6 +33,34 @@
       </nav>
 
       <div class="nav-right">
+          <main class="page-content">
+    <div class="page-header">
+      <h1>Employees Directory</h1>
+      <div class="page-actions">
+        <input type="text" id="emp-search" placeholder="Search employees..." />
+        <button id="add-emp-btn" class="btn btn-primary">+ Add Employee</button>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>UID</th>
+            <th>Name</th>
+            <th>Role</th>
+            <th>Section</th>
+            <th>Shift</th>
+            <th>Join Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="emp-tbody">
+          <!-- Filled dynamically by app.js -->
+        </tbody>
+      </table>
+    </div>
+  </main>
         <div class="user-chip">
           <div class="user-avatar" id="user-avatar-initials">U</div>
           <div class="user-meta">
@@ -83,7 +111,36 @@
       </div>
     </section>
   </div>
+  <!-- Employee Add/Edit Modal -->
+  <div class="modal" id="emp-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="emp-modal-title">Add Employee</h2>
+        <button id="close-modal" class="close-btn">×</button>
+      </div>
+      <form id="emp-form">
+        <label>UID</label>
+        <input type="text" id="emp-id" required />
 
+        <label>Name</label>
+        <input type="text" id="emp-name" required />
+
+        <label>Role</label>
+        <input type="text" id="emp-role" required />
+
+        <label>Section</label>
+        <input type="text" id="emp-section" />
+
+        <label>Shift</label>
+        <input type="text" id="emp-shift" />
+
+        <label>Join Date</label>
+        <input type="date" id="emp-join" />
+
+        <button type="submit" class="btn btn-primary full-width">Save</button>
+      </form>
+    </div>
+  </div>
   <!-- ADD/EDIT MODAL -->
   <div class="modal" id="emp-modal">
     <div class="modal-content">
