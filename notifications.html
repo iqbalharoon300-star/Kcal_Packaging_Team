@@ -1,56 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Notifications • KPS — Developed by Haroon</title>
-  <link rel="stylesheet" href="style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>KPS • Notifications</title>
+  <link rel="stylesheet" href="style.css"/>
   <script src="app.js" defer></script>
 </head>
 <body data-page="notifications">
-
-  <header class="top-nav">
-    <div class="top-nav-inner">
-      <div class="nav-left">
-        <div class="nav-logo-badge"><img src="./assets/logo.png" alt="Logo" /></div>
-        <div class="nav-brand-text">
-          <div class="nav-brand-title">Kcal Packaging System</div>
-          <div class="nav-brand-sub">Notifications</div>
-        </div>
-      </div>
-
-      <nav class="nav-links">
-        <a href="dashboard.html">Dashboard</a>
-        <a href="attendance.html">Attendance</a>
-        <a href="overtime.html">Overtime</a>
-        <a href="deduction.html">Deduction</a>
-        <a href="request.html">Request</a>
-        <a class="active" href="notifications.html">Notifications</a>
-        <a href="employees.html">Employees</a>
-        <a href="profile.html">Profile</a>
-        <button data-logout>Logout</button>
-      </nav>
-    </div>
-  </header>
-
-  <div class="page-wrapper">
-    <section class="page-header-block">
-      <div class="page-eyebrow">System Updates</div>
-      <div class="page-title">Notifications</div>
-      <div class="page-desc">
-        All messages related to attendance, overtime, and HR updates.
-      </div>
-    </section>
-
-    <section class="section-card">
-      <ul class="notif-list" id="notif-list"></ul>
-    </section>
+<header class="top-nav">
+  <div class="nav-left">
+    <img src="./assets/logo.png" class="nav-logo" alt="logo"/>
+    <div class="brand"><div class="brand-title">Notifications</div><div class="brand-sub">System & Admin actions</div></div>
   </div>
+  <nav class="nav-links">
+    <a href="dashboard.html">Dashboard</a>
+    <a href="attendance.html">Attendance</a>
+    <a id="nav-employees-link" href="employees.html">Employees</a>
+    <a href="overtime.html">Overtime</a>
+    <a class="active" href="notifications.html">Notifications</a>
+    <a href="profile.html" onclick="localStorage.removeItem('kps_profile_view_uid')">Profile</a>
+    <a href="#" data-logout>Logout</a>
+  </nav>
+  <div class="nav-user">
+    <div id="user-avatar-initials" class="avatar">HI</div>
+    <div class="user-meta">
+      <div id="user-name" class="user-name">—</div>
+      <div id="user-role" class="user-role">—</div>
+    </div>
+  </div>
+</header>
 
-  <footer class="footer-note">
-    Kcal Packaging System (KPS) — Developed by Haroon
-  </footer>
-
+<main class="page">
+  <section class="panel">
+    <div class="panel-title">Activity Feed</div>
+    <ul id="notif-list" class="notif-list"></ul>
+  </section>
+</main>
 </body>
 </html>
