@@ -16,8 +16,8 @@
       <div class="nav-left">
         <div class="nav-logo-badge"><img src="./assets/logo.png" alt="Logo" /></div>
         <div class="nav-brand-text">
-          <div class="nav-brand-title">KPS Attendance</div>
-          <div class="nav-brand-sub">Kcal Packaging System (KPS)</div>
+          <div class="nav-brand-title">Kcal Packaging System</div>
+          <div class="nav-brand-sub">Attendance</div>
         </div>
       </div>
 
@@ -28,6 +28,8 @@
         <a href="deduction.html">Deduction</a>
         <a href="request.html">Request</a>
         <a href="notifications.html">Notifications</a>
+        <a href="employees.html">Employees</a>
+        <a href="profile.html">Profile</a>
         <button data-logout>Logout</button>
       </nav>
 
@@ -44,35 +46,25 @@
     </div>
   </header>
 
-  <!-- PAGE CONTENT -->
   <div class="page-wrapper">
-
-    <!-- PAGE HEADER -->
     <section class="page-header-block">
       <div class="page-eyebrow">Daily Attendance</div>
-      <div class="page-title">Check IN / OUT / Status</div>
+      <div class="page-title">Check IN / OUT</div>
       <div class="page-desc">
-        Each user must Check IN and Check OUT. Missing time → Deduct 10 AED.
-        Overtime is any Net Duty above 10 hours (1 hour break already considered).
+        Mark your attendance. 1-hour break automatically included. Overtime = Net Duty − 10 hrs.
       </div>
     </section>
 
-    <!-- ✅ NEW: ACTION BAR FOR CHECK IN / OUT -->
+    <!-- CHECK-IN / CHECK-OUT SECTION -->
     <section class="attendance-actions-card">
       <div class="attendance-actions-toprow">
         <div class="action-left-block">
           <div class="action-eyebrow">Your Shift Today</div>
           <div class="action-title">Mark Attendance</div>
-          <div class="action-desc">
-            Check IN when you start work. Check OUT when you finish.
-            System will auto-calc Net Duty, Break (1h), and Overtime.
-          </div>
         </div>
-
         <div class="attendance-action-buttons">
           <button id="checkin-btn" class="btn-check">Check IN</button>
           <button id="checkout-btn" class="btn-check">Check OUT</button>
-
           <div class="today-summary-box" id="today-summary-box">
             <div><strong>Today:</strong> <span id="today-date-label">-</span></div>
             <div>IN: <span id="today-in">--:--</span></div>
@@ -85,71 +77,41 @@
       </div>
     </section>
 
-    <!-- FILTER / EXPORT AREA -->
+    <!-- ATTENDANCE TABLE -->
     <section class="section-card">
       <div class="section-head-row">
         <div class="section-head-left">
           <div class="section-eyebrow">History</div>
           <div class="section-title">Attendance Records</div>
-          <div class="section-desc">
-            P = Present / SL = Sick Leave / DO = Day Off / AL = Annual Leave /
-            PH = Public Holiday / AB = Absent
-          </div>
         </div>
-
         <div class="inline-group">
-          <div class="inline-field">
-            <label class="inline-label">Date</label>
-            <input type="date" class="inline-input" />
-          </div>
-          <div class="inline-field">
-            <label class="inline-label">Status</label>
-            <select class="inline-select">
-              <option>All</option>
-              <option>Present</option>
-              <option>DO (Day Off)</option>
-              <option>SL (Sick Leave)</option>
-              <option>AL (Annual Leave)</option>
-              <option>AB (Absent)</option>
-            </select>
-          </div>
-          <button class="btn btn-outline" style="height:fit-content;margin-top:1.4rem;">
-            Export PDF / Excel
-          </button>
+          <button class="btn btn-outline" id="export-attendance">Export</button>
         </div>
       </div>
 
-      <!-- TABLE -->
       <div class="table-wrapper">
         <table>
           <thead>
             <tr>
               <th>UID</th>
-              <th>Name / Title</th>
+              <th>Name</th>
               <th>Date</th>
               <th>Check IN</th>
               <th>Check OUT</th>
-              <th>Net Duty (hr)</th>
+              <th>Net Duty</th>
               <th>Overtime</th>
               <th>Status</th>
-              <th>Remarks</th>
             </tr>
           </thead>
-          <tbody id="attendance-tbody">
-            <!-- JS inject -->
-          </tbody>
+          <tbody id="attendance-tbody"></tbody>
         </table>
-      </div>
-
-      <div style="font-size:.7rem;color:var(--text-main);opacity:.7;margin-top:.75rem;">
-        Manager &amp; Supervisor: Full permission to Preview / Edit / Update / Save.
-        User: Can only Check IN / OUT for themself.
       </div>
     </section>
   </div>
 
   <footer class="footer-note">
-    Kcal Packaging System (KPS) — Developed by Haroon • All data confidential
+    Kcal Packaging System (KPS) — Developed by Haroon
   </footer>
+
 </body>
 </html>
