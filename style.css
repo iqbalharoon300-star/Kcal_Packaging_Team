@@ -984,24 +984,21 @@ tbody td small {
   margin-bottom: 1rem;
 }
 .login-logo {
-  width: 100px;
+  width: 110px;
   height: auto;
+  margin: 0 auto 20px;
   display: block;
-  margin: 0 auto 25px;
   border: none;
   background: none;
   box-shadow: none;
 }
-.login-logo {
-  width: 100px;
+
+.login-logo img {
+  width: 110px;
   height: auto;
   display: block;
-  margin: 0 auto 25px;
-  border: none;
-  background: none;
-  box-shadow: none;
-}
-}
+  margin: 0 auto;
+  filter: drop-shadow(0 3px 8px rgba(0, 145, 114, 0.15));
 }
 .login-head-text .login-title {
   font-size: .9rem;
@@ -1016,7 +1013,9 @@ tbody td small {
   color: var(--text-dim);
   text-align: center;
 }
-
+body[data-page="login"] {
+  background: linear-gradient(180deg, #e9f9f3 0%, #ffffff 100%);
+}
 .login-form {
   display: grid;
   gap: .75rem;
