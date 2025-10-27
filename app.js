@@ -630,3 +630,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Other pages (overtime, deduction, etc.) would continue here like in your previous code.
 });
+
