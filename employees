@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Employees • KPS — Developed by Haroon</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="app.js" defer></script>
+  <style>
+    /* Page-specific additions for Employees modal */
+
+    .employees-header-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: .75rem;
+      margin-bottom: 1rem;
+      align-items: flex-start;
+    }
+
+    .employees-actions-right {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .75rem;
+      align-items: flex-start;
+    }
+
+    .search-box-wrap {
+      display: flex;
+      flex-direction: column;
+      font-size: .7rem;
+    }
+    .search-label {
+      font-weight: 500;
+      margin-bottom: .25rem;
+      color: var(--text-main);
+    }
+    .search-input {
+      font-size: .8rem;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-soft);
+      background-color: #fff;
+      padding: .5rem .6rem;
+      min-width: 180px;
+      outline: none;
+    }
+    .search-input:focus {
+      border-color: var(--brand-green-dark);
+      box-shadow: 0 0 0 3px var(--brand-green-soft);
+    }
+
+    .btn-add-employee {
+      background-color: var(--brand-green-dark);
+      color: #fff;
+      border: 0;
+      border-radius: var(--radius-lg);
+      font-weight: 600;
+      font-size: .8rem;
+      line-height: 1.2;
+      padding: .7rem .9rem;
+      box-shadow: var(--shadow-soft);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    /* action buttons inside table rows */
+    .row-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .5rem;
+    }
+    .action-edit,
+    .action-delete,
+    .action-profile {
+      font-size: .7rem;
+      line-height: 1.2;
+      font-weight: 600;
+      border-radius: .6rem;
+      padding: .4rem .6rem;
+      border: 0;
+      cursor: pointer;
+      box-shadow: var(--shadow-soft);
+    }
+    .action-edit {
+      background-color: var(--brand-green-dark);
+      color: #fff;
+    }
+    .action-delete {
+      background-color: #fee2e2;
+      color: #7f1d1d;
+      border: 1px solid rgba(127,29,29,.2);
+    }
+    .action-profile {
+      background-color: var(--brand-green-soft);
+      color: var(--text-main);
+      border: 1px solid var(--border-soft);
+    }
+
+    /* modal backdrop */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.4);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 1rem;
+    }
+    .modal-card {
+      background-color: #fff;
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-card);
+      border: 1px solid var(--border-soft);
+      width: 100%;
+      max-width: 400px;
+      padding: 1rem 1.25rem 1.5rem;
+      position: relative;
+    }
+    .modal-head {
+      margin-bottom: 1rem;
+      line-height: 1.3;
+    }
+    .modal-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+    .modal-desc {
+      font-size: .8rem;
+      color: var(--text-main);
+      opacity: .7;
+    }
+    .modal-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: .75rem;
+    }
+    .modal-label {
+      font-size: .8rem;
+      font-weight: 500;
+      margin-bottom: .4rem;
+      color: var(--text-main);
+    }
+    .modal-input,
+    .modal-select {
+      width: 100%;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-soft);
+      background-color: #fff;
+      padding: .7rem .8rem;
+      font-size: .8rem;
+      color: var(--text-main);
+      outline: none;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    }
+    .modal-input:focus,
+    .modal-select:focus {
+      border-color: var(--brand-green-dark);
+      box-shadow: 0 0 0 3px var(--brand-green-soft);
+    }
+    .modal-actions {
+      margin-top: 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: .75rem;
+      justify-content: flex-end;
+    }
+    .btn-cancel {
+      background-color: #fff;
+      border: 1px solid var(--border-soft);
+      color: var(--text-main);
+      font-weight: 600;
+      font-size: .8rem;
+      line-height: 1.2;
+      border-radius: var(--radius-lg);
+      padding: .7rem .9rem;
+      box-shadow: var(--shadow-soft);
+      cursor: pointer;
+    }
+    .btn-save {
+      background-color: var(--brand-green-dark);
+      color: #fff;
+      font-weight: 600;
+      font-size: .8rem;
+      line-height: 1.2;
+      border-radius: var(--radius-lg);
+      padding: .7rem .9rem;
+      border: 0;
+      box-shadow: var(--shadow-soft);
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body data-page="employees">
+
+  <!-- NAV -->
+  <header class="top-nav">
+    <div class="top-nav-inner">
+      <div class="nav-left">
+        <div class="nav-logo-badge"><img src="./assets/logo.png" alt="Logo" /></div>
+        <div class="nav-brand-text">
+          <div class="nav-brand-title">KPS Employees</div>
+          <div class="nav-brand-sub">Kcal Packaging System (KPS)</div>
+        </div>
+      </div>
+
+      <nav class="nav-links">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="attendance.html">Attendance</a>
+        <a href="overtime.html">Overtime</a>
+        <a href="deduction.html">Deduction</a>
+        <a href="request.html">Request</a>
+        <a href="notifications.html">Notifications</a>
+        <a class="active" href="employees.html" id="nav-employees-link">Employees</a>
+        <a href="profile.html">Profile</a>
+        <button data-logout>Logout</button>
+      </nav>
+
+      <div class="nav-right">
+        <div class="notif-pill">Notifications: <strong id="notif-count">0</strong></div>
+        <div class="user-chip">
+          <div class="user-avatar" id="user-avatar-initials">U</div>
+          <div class="user-meta">
+            <div class="name" id="user-name">User Name</div>
+            <div class="role" id="user-role">Role</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- PAGE BODY -->
+  <div class="page-wrapper">
+
+    <section class="page-header-block">
+      <div class="page-eyebrow">Staff Directory</div>
+      <div class="page-title">Employees</div>
+      <div class="page-desc">
+        View, search, and manage Packaging Department staff. Admin / Manager / Supervisor have full control.
+        Senior Packer can only view.
+      </div>
+    </section>
+
+    <section class="section-card">
+
+      <!-- header row with search + add -->
+      <div class="employees-header-row">
+        <div>
+          <div class="section-eyebrow">Directory</div>
+          <div class="section-title">Current Employees</div>
+          <div class="section-desc">
+            Filtered automatically by your role.
+          </div>
+        </div>
+
+        <div class="employees-actions-right">
+          <div class="search-box-wrap">
+            <label class="search-label" for="emp-search">Search (Name / UID)</label>
+            <input id="emp-search" class="search-input" type="text" placeholder="Search..." />
+          </div>
+
+          <button id="btn-open-modal" class="btn-add-employee">
+            + Add Employee
+          </button>
+        </div>
+      </div>
+
+      <!-- EMPLOYEES TABLE -->
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>UID</th>
+              <th>Name</th>
+              <th>Role</th>
+              <th>Section</th>
+              <th>Shift</th>
+              <th>Join Date</th>
+              <th>Last Updated</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="employees-tbody">
+            <!-- Filled by JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <div style="font-size:.7rem;color:var(--text-main);opacity:.7;margin-top:.75rem;" id="emp-hint-line">
+        Loading...
+      </div>
+    </section>
+  </div>
+
+  <footer class="footer-note">
+    Kcal Packaging System (KPS) — Developed by Haroon • All data confidential
+  </footer>
+
+  <!-- ADD / EDIT EMPLOYEE MODAL -->
+  <div id="emp-modal" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-head">
+        <div class="modal-title" id="emp-modal-title">Add Employee</div>
+        <div class="modal-desc">
+          Fill details below. Save will update Local Storage.
+        </div>
+      </div>
+
+      <div class="modal-grid">
+        <div>
+          <label class="modal-label" for="emp-uid">UID</label>
+          <input id="emp-uid" class="modal-input" type="text" placeholder="10366" />
+        </div>
+
+        <div>
+          <label class="modal-label" for="emp-name">Name</label>
+          <input id="emp-name" class="modal-input" type="text" placeholder="Sanjay Nayek" />
+        </div>
+
+        <div>
+          <label class="modal-label" for="emp-role">Role</label>
+          <select id="emp-role" class="modal-select">
+            <option>Admin</option>
+            <option>Manager</option>
+            <option>Supervisor</option>
+            <option>Senior Packer</option>
+            <option>Junior Packer</option>
+            <option>Helper / Support</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="modal-label" for="emp-section">Section</label>
+          <input id="emp-section" class="modal-input" type="text" placeholder="Packaging - Kcal Life" />
+        </div>
+
+        <div>
+          <label class="modal-label" for="emp-shift">Shift</label>
+          <select id="emp-shift" class="modal-select">
+            <option>Day</option>
+            <option>Night</option>
+            <option>Split</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="modal-label" for="emp-join">Join Date</label>
+          <input id="emp-join" class="modal-input" type="date" />
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button id="emp-cancel" class="btn-cancel" type="button">Cancel</button>
+        <button id="emp-save" class="btn-save" type="button">Save</button>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
