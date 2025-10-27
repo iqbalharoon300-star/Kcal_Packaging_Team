@@ -1025,6 +1025,7 @@ function saveEmployeeFromModal(e) {
   const section = sectionInput.value.trim();
   const shift = shiftInput.value.trim();
   const joinDate = joinInput.value.trim();
+  const password = document.getElementById("emp-password").value.trim();
 
   if (!uid || !name || !role) {
     alert("Please fill UID, Name, Role.");
@@ -1047,15 +1048,16 @@ function saveEmployeeFromModal(e) {
     const idx = list.findIndex(e => e.uid === targetUid);
     if (idx === -1) return;
 
-    list[idx] = {
-      uid,
-      name,
-      role,
-      section,
-      shift,
-      joinDate,
-      updatedAt
-    };
+   list.unshift({
+  uid,
+  name,
+  password,
+  role,
+  section,
+  shift,
+  joinDate,
+  updatedAt
+});
   } else {
     // check duplicate uid
     if (list.find(e => e.uid === uid)) {
