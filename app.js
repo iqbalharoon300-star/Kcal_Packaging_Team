@@ -696,16 +696,21 @@ function renderAttendanceTable() {
       ? `<span class="ot-pill">${row.overtime.toFixed(2)} hr OT</span>`
       : `<span class="ot-pill-zero">0.00 hr</span>`;
 
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${row.uid}</td>
-      <td>${row.name}<br><small>${row.title}</small></td>
-      <td>${row.date}</td>
-      <td>${row.in}</td>
-      <td>${row.out}</td>
-      <td>${row.netHours ? row.netHours.toFixed(2) : "0.00"}</td>
-      <td>${otDisplay}</td>
-      <td><span class="status-pill">${row.status || ""}</span></td>
+    const canReset = ["Admin", "Manager", "Supervisor"].includes(getSession().role);
+const resetBtn = canReset
+  ? `<button class="btn-reset" data-reset="${row.uid}" data-date="${row.date}">↻ Reset</button>`
+  : "";
+
+tr.innerHTML = `
+  <td>${row.uid}</td>
+  <td>${row.name}<br><small>${row.title}</small></td>
+  <td>${row.date}</td>
+  <td>${row.in}</td>
+  <td>${row.out}</td>
+  <td>${row.netHours ? row.netHours.toFixed(2) : "0.00"}</td>
+  <td>${otDisplay}</td>
+  <td><span class="status-pill">${row.status || ""}</span></td>
+  <td>${resetBtn}</td>
     `;
     tbody.appendChild(tr);
   });
@@ -1294,6 +1299,28 @@ function renderProfileAttendanceHistory() {
 
   tbody.innerHTML = "";
   recent.forEach(row => {
+    // Handle reset button click
+tbody.querySelectorAll("[data-reset]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const uid = btn.getAttribute("data-reset");
+    const date = btn.getAttribute("data-date");
+
+    if (!confirm(`Reset attendance for UID ${uid} on ${date}?`)) return;
+
+    let list = getAttendance();
+    list = list.filter(r => !(r.uid === uid && r.date === date));
+    setAttendance(list);
+
+    addNotification({
+      category: "Admin Action",
+      message: `Attendance for UID ${uid} on ${date} was reset by ${getSession().name}`,
+      ts: Date.now()
+    });
+
+    renderAttendanceTable();
+    fillTodaySummaryBox();
+    alert("✅ Attendance entry reset successfully.");
+  });
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td>${row.date}</td>
