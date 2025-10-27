@@ -132,11 +132,11 @@ function handleLoginSubmit(e) {
   const idVal = uidField.value.trim();
   const pwVal = pwField.value.trim();
 
-  const found = KPS_USERS.find(
-    u =>
-      (u.uid === idVal || u.username === idVal) &&
-      u.password === pwVal
-  );
+  let found = KPS_USERS.find(u => u.uid === idVal && u.password === pwVal);
+if (!found) {
+  const employees = lsGet("kps_employees", []);
+  found = employees.find(emp => emp.uid === idVal && emp.password === pwVal);
+}
 
   if (!found) {
     if (errorBox) {
