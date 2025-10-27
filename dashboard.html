@@ -1,173 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Dashboard • KPS — Developed by Haroon</title>
-  <link rel="stylesheet" href="style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>KPS • Dashboard</title>
+  <link rel="stylesheet" href="style.css"/>
   <script src="app.js" defer></script>
 </head>
 <body data-page="dashboard">
-
-  <!-- TOP NAV -->
   <header class="top-nav">
-    <div class="top-nav-inner">
-
-      <div class="nav-left">
-        <div class="nav-logo-badge">
-          <img src="./assets/logo.png" alt="Logo" />
-        </div>
-        <div class="nav-brand-text">
-          <div class="nav-brand-title">Kcal Packaging System</div>
-          <div class="nav-brand-sub">KPS Dashboard</div>
-        </div>
+    <div class="nav-left">
+      <img src="./assets/logo.png" class="nav-logo" alt="logo"/>
+      <div class="brand">
+        <div class="brand-title">KPS Dashboard</div>
+        <div class="brand-sub">Kcal Packaging System (KPS)</div>
       </div>
-
-      <nav class="nav-links">
-        <a class="active" href="dashboard.html">Dashboard</a>
-        <a href="attendance.html">Attendance</a>
-        <a href="overtime.html">Overtime</a>
-        <a href="deduction.html">Deduction</a>
-        <a href="request.html">Request</a>
-        <a href="notifications.html">Notifications</a>
-        <a href="employees.html" id="nav-employees-link">Employees</a>
-        <a href="profile.html" onclick="localStorage.removeItem('kps_profile_view_uid')">Profile</a>
-        <button data-logout>Logout</button>
-      </nav>
-
-      <div class="nav-right">
-        <div class="notif-pill">Notifications: <strong id="notif-count">0</strong></div>
-
-        <div class="user-chip">
-          <div class="user-avatar" id="user-avatar-initials">U</div>
-          <div class="user-meta">
-            <div class="name" id="user-name">User Name</div>
-            <div class="role" id="user-role">Role</div>
-          </div>
-        </div>
+    </div>
+    <nav class="nav-links">
+      <a class="active" href="dashboard.html">Dashboard</a>
+      <a href="attendance.html">Attendance</a>
+      <a id="nav-employees-link" href="employees.html">Employees</a>
+      <a href="overtime.html">Overtime</a>
+      <a href="notifications.html">Notifications</a>
+      <a href="profile.html" onclick="localStorage.removeItem('kps_profile_view_uid')">Profile</a>
+      <a href="#" data-logout>Logout</a>
+    </nav>
+    <div class="nav-user">
+      <div id="user-avatar-initials" class="avatar">HI</div>
+      <div class="user-meta">
+        <div id="user-name" class="user-name">—</div>
+        <div id="user-role" class="user-role">—</div>
       </div>
-
     </div>
   </header>
 
-  <!-- PAGE WRAPPER -->
-  <div class="page-wrapper">
-
-    <!-- Page header -->
-    <section class="page-header-block">
-      <div class="page-eyebrow">Overview</div>
-      <div class="page-title">Team Status & Metrics</div>
-      <div class="page-desc">
-        Live view for Attendance, Overtime and Deductions. All data is stored locally in this browser.
+  <main class="page">
+    <section class="cards">
+      <div class="stat">
+        <div class="stat-title">Attendance</div>
+        <div id="stat-attendance" class="stat-value">—</div>
+      </div>
+      <div class="stat">
+        <div class="stat-title">Overtime</div>
+        <div id="stat-overtime" class="stat-value">—</div>
+      </div>
+      <div class="stat">
+        <div class="stat-title">Deductions</div>
+        <div id="stat-deductions" class="stat-value">—</div>
+      </div>
+      <div class="stat">
+        <div class="stat-title">Notifications</div>
+        <div id="stat-notifications" class="stat-value">—</div>
       </div>
     </section>
 
-    <!-- KPI CARDS -->
-    <section class="cards-grid">
-      <div class="dash-card">
-        <div class="dash-card-head">
-          <div>
-            <div class="dash-eyebrow">Attendance</div>
-            <div class="dash-title" id="stat-attendance">--</div>
-          </div>
-          <div class="dash-icon-circle">
-            <span>⏱</span>
-          </div>
-        </div>
-        <div class="dash-desc">
-          Present vs Absences / Day Off / Sick Leave.
-        </div>
-      </div>
-
-      <div class="dash-card">
-        <div class="dash-card-head">
-          <div>
-            <div class="dash-eyebrow">Overtime</div>
-            <div class="dash-title" id="stat-overtime">--</div>
-          </div>
-          <div class="dash-icon-circle">
-            <span>⏳</span>
-          </div>
-        </div>
-        <div class="dash-desc">
-          Total overtime hours calculated from Check IN / OUT.
-        </div>
-      </div>
-
-      <div class="dash-card">
-        <div class="dash-card-head">
-          <div>
-            <div class="dash-eyebrow">Deductions</div>
-            <div class="dash-title" id="stat-deductions">--</div>
-          </div>
-          <div class="dash-icon-circle">
-            <span>⚠</span>
-          </div>
-        </div>
-        <div class="dash-desc">
-          Total AED deducted for late, missing check out, etc.
-        </div>
-      </div>
-
-      <div class="dash-card">
-        <div class="dash-card-head">
-          <div>
-            <div class="dash-eyebrow">Notifications</div>
-            <div class="dash-title" id="stat-notifications">--</div>
-          </div>
-          <div class="dash-icon-circle">
-            <span>🔔</span>
-          </div>
-        </div>
-        <div class="dash-desc">
-          Latest system alerts: attendance, overtime, requests.
-        </div>
-      </div>
-    </section>
-
-    <!-- Quick Snapshot -->
-    <section class="section-card">
-      <div class="section-head-row">
-        <div class="section-head-left">
-          <div class="section-eyebrow">Snapshot</div>
-          <div class="section-title">Today's Activity</div>
-          <div class="section-desc">
-            Latest Check IN / Check OUT events from staff, plus overtime.
-          </div>
-        </div>
-      </div>
-
-      <div class="table-wrapper">
-        <table>
+    <section class="panel">
+      <div class="panel-title">Latest Attendance</div>
+      <div class="table-container">
+        <table class="data-table">
           <thead>
-            <tr>
-              <th>UID</th>
-              <th>Name / Title</th>
-              <th>Date</th>
-              <th>Check IN</th>
-              <th>Check OUT</th>
-              <th>Net Duty (hr)</th>
-              <th>Overtime</th>
-              <th>Status</th>
-            </tr>
+          <tr>
+            <th>UID</th><th>Name</th><th>Date</th><th>IN</th><th>OUT</th><th>Duty</th><th>OT</th><th>Status</th>
+          </tr>
           </thead>
-          <tbody id="dashboard-attendance-latest">
-            <!-- JS injects 5 most recent attendance rows -->
-          </tbody>
+          <tbody id="dashboard-attendance-latest"></tbody>
         </table>
       </div>
-
-      <div style="font-size:.7rem;color:var(--text-main);opacity:.7;margin-top:.75rem;">
-        Overtime = Net Duty - 10 hours (1 hour break already included inside duty calculation).
-      </div>
     </section>
 
-  </div>
-
-  <footer class="footer-note">
-    Kcal Packaging System (KPS) — Developed by Haroon • All data confidential
-  </footer>
-
+    <footer class="footer-note">
+      Kcal Packaging System (KPS) — Developed by Haroon • All data confidential
+    </footer>
+  </main>
 </body>
 </html>
