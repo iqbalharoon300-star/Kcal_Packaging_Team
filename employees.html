@@ -146,38 +146,60 @@
     </div>
   </div>
   <!-- ADD/EDIT MODAL -->
-  <div class="modal" id="emp-modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3 id="emp-modal-title">Add Employee</h3>
-        <button id="close-modal">×</button>
-      </div>
-      <form id="emp-form">
-  <label>UID</label>
-  <input type="text" id="emp-id" required />
-
-  <label>FullName</label>
-  <input type="text" id="emp-name" required />
-
-  <label>Password</label>
-  <input type="password" id="emp-password" placeholder="Enter Password" required />
-
-  <label>Role</label>
-  <input type="text" id="emp-role" required />
-
-  <label>Section</label>
-  <input type="text" id="emp-section" required />
-
-  <label>Shift</label>
-  <input type="text" id="emp-shift" required />
-
-  <label>Join Date</label>
-  <input type="date" id="emp-join" />
-
-  <button type="submit" class="btn btn-primary full-width">Save</button>
-</form>
+  <!-- Employee Modal -->
+<div class="modal" id="emp-modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h2 id="emp-modal-title">Add Employee</h2>
+      <button type="button" class="modal-close" id="close-emp-modal">×</button>
     </div>
+
+    <form id="emp-form" class="modal-form">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>UID</label>
+          <input type="text" id="emp-id" required placeholder="e.g. 10001" />
+        </div>
+
+        <div class="form-group">
+          <label>Name</label>
+          <input type="text" id="emp-name" required placeholder="Full name" />
+        </div>
+
+        <div class="form-group full">
+          <label>Password <span class="hint">(leave blank to keep current)</span></label>
+          <div class="password-wrapper">
+            <input type="password" id="emp-password" placeholder="Enter or leave blank" />
+            <button type="button" id="generate-pw" class="btn-generate">Generate</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Role</label>
+          <input type="text" id="emp-role" required placeholder="e.g. Admin" />
+        </div>
+
+        <div class="form-group">
+          <label>Section</label>
+          <input type="text" id="emp-section" placeholder="e.g. Central Admin" />
+        </div>
+
+        <div class="form-group">
+          <label>Shift</label>
+          <input type="text" id="emp-shift" placeholder="Day / Night" />
+        </div>
+
+        <div class="form-group">
+          <label>Join Date</label>
+          <input type="date" id="emp-join" />
+        </div>
+      </div>
+
+      <button type="submit" class="btn-save">Save Employee</button>
+    </form>
   </div>
+</div>
+
 
   <footer class="footer-note">
     Kcal Packaging System (KPS) — Developed by Haroon
