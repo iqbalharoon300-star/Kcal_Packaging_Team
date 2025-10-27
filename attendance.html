@@ -44,23 +44,52 @@
     </div>
   </header>
 
-  <!-- PAGE -->
+  <!-- PAGE CONTENT -->
   <div class="page-wrapper">
 
+    <!-- PAGE HEADER -->
     <section class="page-header-block">
       <div class="page-eyebrow">Daily Attendance</div>
       <div class="page-title">Check IN / OUT / Status</div>
       <div class="page-desc">
-        Each user must enter Check IN and Check OUT.
-        Missing time → Deduct 10 AED per day.
-        Manager / Supervisor can edit and approve.
+        Each user must Check IN and Check OUT. Missing time → Deduct 10 AED.
+        Overtime is any Net Duty above 10 hours (1 hour break already considered).
       </div>
     </section>
 
+    <!-- ✅ NEW: ACTION BAR FOR CHECK IN / OUT -->
+    <section class="attendance-actions-card">
+      <div class="attendance-actions-toprow">
+        <div class="action-left-block">
+          <div class="action-eyebrow">Your Shift Today</div>
+          <div class="action-title">Mark Attendance</div>
+          <div class="action-desc">
+            Check IN when you start work. Check OUT when you finish.
+            System will auto-calc Net Duty, Break (1h), and Overtime.
+          </div>
+        </div>
+
+        <div class="attendance-action-buttons">
+          <button id="checkin-btn" class="btn-check">Check IN</button>
+          <button id="checkout-btn" class="btn-check">Check OUT</button>
+
+          <div class="today-summary-box" id="today-summary-box">
+            <div><strong>Today:</strong> <span id="today-date-label">-</span></div>
+            <div>IN: <span id="today-in">--:--</span></div>
+            <div>OUT: <span id="today-out">--:--</span></div>
+            <div>Net Duty: <span id="today-duty">0.00 hr</span></div>
+            <div>Overtime: <span id="today-ot">0.00 hr</span></div>
+            <div>Status: <span id="today-status">-</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FILTER / EXPORT AREA -->
     <section class="section-card">
       <div class="section-head-row">
         <div class="section-head-left">
-          <div class="section-eyebrow">Filter</div>
+          <div class="section-eyebrow">History</div>
           <div class="section-title">Attendance Records</div>
           <div class="section-desc">
             P = Present / SL = Sick Leave / DO = Day Off / AL = Annual Leave /
@@ -77,7 +106,7 @@
             <label class="inline-label">Status</label>
             <select class="inline-select">
               <option>All</option>
-              <option>P (Present)</option>
+              <option>Present</option>
               <option>DO (Day Off)</option>
               <option>SL (Sick Leave)</option>
               <option>AL (Annual Leave)</option>
@@ -90,6 +119,7 @@
         </div>
       </div>
 
+      <!-- TABLE -->
       <div class="table-wrapper">
         <table>
           <thead>
@@ -99,6 +129,8 @@
               <th>Date</th>
               <th>Check IN</th>
               <th>Check OUT</th>
+              <th>Net Duty (hr)</th>
+              <th>Overtime</th>
               <th>Status</th>
               <th>Remarks</th>
             </tr>
@@ -111,7 +143,7 @@
 
       <div style="font-size:.7rem;color:var(--text-main);opacity:.7;margin-top:.75rem;">
         Manager &amp; Supervisor: Full permission to Preview / Edit / Update / Save.
-        User: View only.
+        User: Can only Check IN / OUT for themself.
       </div>
     </section>
   </div>
