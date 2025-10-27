@@ -1,71 +1,71 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-page="login">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>KPS Login • Kcal Packaging System (KPS) — Developed by Haroon</title>
+  <title>KPS Login • Kcal Packaging System</title>
   <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
-  <script src="app.js" defer></script>
+  <script defer src="app.js"></script>
 </head>
-<body data-page="login" class="auth-layout">
+<body data-page="login" class="login-body">
 
-  <!-- LEFT INFO CARD -->
-  <aside class="brand-card">
-    <div class="brand-head">
-      <div class="brand-logo-badge">
-        <img src="./assets/logo.png" alt="Kcal Logo" />
-      </div>
-      <div class="brand-identity">
-        <div class="brand-name">Kcal Packaging System (KPS)</div>
-        <div class="brand-slogan">
-          "Healthy Eat, Healthy Life"<br/>
-          Packaging Department
+  <div class="login-shell">
+
+    <div class="login-card">
+      <div class="login-header">
+        <div class="login-logo-badge">
+          <img src="./assets/logo.png" alt="KPS Logo" />
+        </div>
+        <div class="login-head-text">
+          <div class="login-title">Kcal Packaging System</div>
+          <div class="login-sub">KPS • Attendance • Overtime • HR Portal</div>
         </div>
       </div>
+
+      <form id="login-form" class="login-form">
+        <div class="login-field-group">
+          <label class="login-label" for="login-uid">User ID</label>
+          <input
+            id="login-uid"
+            class="login-input"
+            type="text"
+            placeholder="e.g. 10001"
+            required
+          />
+        </div>
+
+        <div class="login-field-group">
+          <label class="login-label" for="login-password">Password</label>
+          <input
+            id="login-password"
+            class="login-input"
+            type="password"
+            placeholder="•••••••"
+            required
+          />
+        </div>
+
+        <div id="login-error" class="login-error" style="display:none;"></div>
+
+        <button type="submit" class="login-submit-btn">
+          Sign In
+        </button>
+      </form>
+
+      <div class="login-footer-note">
+        Admin: UID 10001 / Password Admin@123<br/>
+        Manager: UID 10032 / Password Manager@123<br/>
+        Supervisor: UID 10489 / Password Supervisor@123<br/>
+        Staff: UID 10366 / Password User@123
+      </div>
     </div>
-    <div class="brand-desc">
-      KPS — Attendance, Overtime, Deductions, Requests, and Notifications for
-      Day &amp; Night shifts across Kcal Meal Plan, Kcal Life, FuelUp, Spring, Kcal Lunch.
-    </div>
-  </aside>
 
-  <!-- LOGIN CARD -->
-  <main class="login-col">
-    <form id="login-form" class="login-card">
-      <header class="login-header">
-        <div class="login-title">Sign in to KPS</div>
-        <div class="login-sub">Enter your UID / Username and Password.</div>
-      </header>
+    <footer class="login-footer-credit">
+      Kcal Packaging System (KPS) — Developed by Haroon
+    </footer>
 
-      <div id="login-error" class="error-box">Invalid ID or Password.</div>
+  </div>
 
-      <div class="form-field">
-        <label class="form-label" for="login-uid">UID / Username</label>
-        <input id="login-uid" type="text" class="form-input" placeholder="10032" required />
-      </div>
-
-      <div class="form-field">
-        <label class="form-label" for="login-password">Password</label>
-        <input id="login-password" type="password" class="form-input" placeholder="Manager@123" required />
-      </div>
-
-      <div class="form-hint-row">
-        <div>Password format: Aa@123</div>
-        <a href="#">Forgot password?</a>
-      </div>
-
-      <button class="btn btn-primary" type="submit">Sign In</button>
-
-      <div style="margin-top:1.5rem;font-size:.7rem;color:#0f172a;opacity:.6;line-height:1.4;">
-        Too many wrong attempts? Supervisor / Manager can reset.
-        If Supervisor / Manager forgets password, Admin can reset.
-      </div>
-
-      <div class="footer-note" style="margin-top:2rem;">
-        Kcal Packaging System (KPS) — Developed by Haroon
-      </div>
-    </form>
-  </main>
 </body>
 </html>
