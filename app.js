@@ -44,51 +44,10 @@ const KPS_USERS = [
     name: "System Admin",
     role: "Admin",
     section: "Central Admin",
-    shift: "Day",
-    joinDate: "2023-01-01"
+    shift: "Both",
+    joinDate: "2025-10-01"
   },
-  {
-    uid: "10032",
-    username: "10032",
-    password: "Manager@123",
-    name: "Muhammad Waqar",
-    role: "Manager",
-    section: "Packaging - Meal Plan / Day",
-    shift: "Day",
-    joinDate: "2022-06-15"
-  },
-  {
-    uid: "10489",
-    username: "10489",
-    password: "Supervisor@123",
-    name: "Haroon Iqbal",
-    role: "Supervisor",
-    section: "Packaging - Kcal Life / Night",
-    shift: "Night",
-    joinDate: "2022-11-03"
-  },
-  {
-    uid: "10366",
-    username: "10366",
-    password: "User@123",
-    name: "Sanjay Nayek",
-    role: "Senior Packer",
-    section: "Packaging - Kcal Life",
-    shift: "Day",
-    joinDate: "2021-09-20"
-  },
-  {
-    uid: "11032",
-    username: "11032",
-    password: "User@123",
-    name: "Yogesh Sundas",
-    role: "Junior Packer",
-    section: "Packaging - Spring",
-    shift: "Night",
-    joinDate: "2024-03-12"
-  }
-];
-
+  
 /* =========================================================
    SESSION MANAGEMENT
    ========================================================= */
