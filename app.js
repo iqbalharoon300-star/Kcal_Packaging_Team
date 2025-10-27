@@ -1,313 +1,135 @@
-/* ---------------------------------------------
-   KCAL PACKAGING SYSTEM (KPS)
-   Developed by Haroon
-   Version 3.5 - Full HR + Attendance Module
-----------------------------------------------*/
+/* =========================================================
+   KPS — KCAL PACKAGING SYSTEM (Frontend Only)
+   Author: Haroon
+   ========================================================= */
 
-// --- Local Storage Helpers ---
-function lsGet(key, fallback) {
-  try {
-    const val = localStorage.getItem(key);
-    return val ? JSON.parse(val) : fallback;
-  } catch {
-    return fallback;
-  }
-}
-function lsSet(key, value) {
-  localStorage.setItem(key, JSON.stringify(value));
+/* ---------- LocalStorage helpers with soft realtime ---------- */
+function lsGet(key, fallback){ try{const v=localStorage.getItem(key);return v?JSON.parse(v):fallback;}catch{return fallback;}}
+function lsSet(key, val){ localStorage.setItem(key, JSON.stringify(val)); publishUpdate(key); }
+
+/* Realtime (same device / multiple tabs) */
+const bc = ("BroadcastChannel" in window) ? new BroadcastChannel("kps-bus") : null;
+function publishUpdate(key){ if(bc) bc.postMessage({type:"ls-update", key, ts:Date.now()}); }
+
+/* Storage event (other tabs) */
+window.addEventListener("storage", (e)=>{ if(e.key && e.key.startsWith("kps_")) softRerender(); });
+if(bc){ bc.onmessage = ()=> softRerender(); }
+
+function softRerender(){
+  const page = document.body && document.body.dataset ? document.body.dataset.page : "";
+  if (!page) return;
+  if (page==="dashboard"){ loadDashboardStats(); fillNavUserInfo(); }
+  if (page==="attendance"){ renderAttendanceTable(); fillTodaySummaryBox(); updateCheckButtonsState(); }
+  if (page==="employees"){ renderEmployeesTable(); }
+  if (page==="profile"){ renderProfileHeader(); renderProfileAttendanceHistory(); }
+  if (page==="notifications"){ renderNotificationsPage(); }
+  if (page==="overtime"){ renderOvertimeTable(); }
 }
 
-// --- Predefined Admin/Managers ---
+/* ---------- Built-in accounts (ONLY ADMIN by default) ---------- */
 const KPS_USERS = [
-  { uid: "10001", name: "System Admin", role: "Admin", password: "Admin@123" },
-  { uid: "10032", name: "Operations Manager", role: "Manager", password: "Manager@123" },
-  { uid: "10489", name: "Haroon Iqbal", role: "Supervisor", password: "Supervisor@123" },
-  { uid: "10366", name: "Packaging Staff", role: "Staff", password: "User@123" }
+  { uid:"10001", name:"System Admin", role:"Admin", password:"Admin@123", section:"Head Office", shift:"Day", joinDate:"2023-01-01" }
 ];
 
-// --- Session Management ---
-function setSession(user) {
-  localStorage.setItem("kps_session", JSON.stringify(user));
+/* ---------- First run initializer ---------- */
+function currentYearMonth(){
+  const now=new Date(); const y=now.getFullYear(); const m=String(now.getMonth()+1).padStart(2,"0"); return `${y}-${m}`;
 }
-function getSession() {
-  return JSON.parse(localStorage.getItem("kps_session") || "null");
+function bootstrapOnce(){
+  if(localStorage.getItem("kps_bootstrap_v2")) return;
+  lsSet("kps_employees", []);                 // no demo employees
+  lsSet("kps_attendance", []);                // clean attendance
+  lsSet("kps_notifications", []);             // empty feed
+  localStorage.setItem("kps_attendance_month", currentYearMonth());
+  localStorage.setItem("kps_bootstrap_v2","true");
 }
-function clearSession() {
-  localStorage.removeItem("kps_session");
+bootstrapOnce();
+
+/* ---------- Session ---------- */
+function setSession(user){ localStorage.setItem("kps_session", JSON.stringify(user)); }
+function getSession(){ return JSON.parse(localStorage.getItem("kps_session") || "null"); }
+function requireSessionOrRedirect(){ const s=getSession(); if(!s){ window.location.href="index.html"; return null; } return s; }
+function signOut(){ localStorage.removeItem("kps_session"); window.location.href="index.html"; }
+
+/* ---------- Monthly rollover (archives) ---------- */
+function monthlyAttendanceRollover(){
+  const thisYM=currentYearMonth(); const stored=localStorage.getItem("kps_attendance_month");
+  if(!stored){ localStorage.setItem("kps_attendance_month", thisYM); return; }
+  if(stored===thisYM) return;
+  const prev = lsGet("kps_attendance", []);
+  if(prev.length){ lsSet("kps_attendance_archive_"+stored.replace("-","_"), prev); }
+  lsSet("kps_attendance", []);
+  localStorage.setItem("kps_attendance_month", thisYM);
 }
 
-// --- LOGIN SYSTEM ---
-function handleLoginSubmit(e) {
+/* ---------- Login ---------- */
+function handleLoginSubmit(e){
   e.preventDefault();
   const idVal = document.getElementById("login-uid").value.trim();
   const pwVal = document.getElementById("login-pw").value.trim();
+  if(!idVal || !pwVal){ alert("Enter UID & Password"); return; }
 
-  if (!idVal || !pwVal) return alert("Please enter your UID and Password.");
-
-  let found = KPS_USERS.find(
-    u => u.uid.toString() === idVal.toString() && u.password === pwVal
-  );
-
-  if (!found) {
-    const employees = lsGet("kps_employees", []);
-    found = employees.find(
-      emp => emp.uid.toString() === idVal.toString() && emp.password === pwVal
-    );
+  let found = KPS_USERS.find(u=>u.uid.toString()===idVal.toString() && u.password===pwVal);
+  if(!found){
+    const emps = lsGet("kps_employees", []);
+    found = emps.find(emp=>emp.uid.toString()===idVal.toString() && emp.password===pwVal);
   }
-
-  if (!found) {
-    alert("Invalid UID or Password!");
-    return;
-  }
+  if(!found){ alert("Invalid UID or Password!"); return; }
 
   setSession(found);
-  window.location.href = "dashboard.html";
+  monthlyAttendanceRollover();
+  window.location.href="dashboard.html";
 }
 
-// --- LOGOUT ---
-function logoutUser() {
-  if (confirm("Do you really want to log out?")) {
-    clearSession();
-    window.location.href = "index.html";
-  }
+/* ---------- NAV / Header ---------- */
+function canManageEmployees(role){ return role==="Admin" || role==="Manager" || role==="Supervisor"; }
+function getAvatarData(uid, name){
+  const profiles=lsGet("kps_profiles",{}); const p=profiles[uid];
+  if(p && p.photoDataUrl) return {type:"img",src:p.photoDataUrl};
+  const initials=(name||"U").split(" ").map(s=>s[0]||"").join("").slice(0,2).toUpperCase();
+  return {type:"text",txt:initials};
 }
-
-// --- Load User Info on Dashboard ---
-function loadSessionUser() {
-  const session = getSession();
-  if (!session) return (window.location.href = "index.html");
-
-  const userName = document.getElementById("user-name");
-  const userRole = document.getElementById("user-role");
-  if (userName) userName.textContent = session.name;
-  if (userRole) userRole.textContent = session.role;
+function fillNavUserInfo(){
+  const s=getSession(); if(!s) return;
+  const nameEl=document.getElementById("user-name"); const roleEl=document.getElementById("user-role");
+  const avatarEl=document.getElementById("user-avatar-initials"); const navEmployeesLink=document.getElementById("nav-employees-link");
+  if(nameEl) nameEl.textContent=s.name; if(roleEl) roleEl.textContent=s.role;
+  if(avatarEl){ const av=getAvatarData(s.uid,s.name); if(av.type==="img"){ avatarEl.innerHTML=`<img src="${av.src}" alt="a"/>`; } else { avatarEl.textContent=av.txt; } }
+  if(navEmployeesLink && !canManageEmployees(s.role)) navEmployeesLink.style.display="none";
 }
+function wireGlobalLogout(){ document.querySelectorAll("[data-logout]").forEach(btn=>btn.addEventListener("click", signOut)); }
 
-// --- EMPLOYEE FUNCTIONS ---
-function getEmployees() {
-  return lsGet("kps_employees", []);
+/* ---------- TIME & attendance helpers ---------- */
+function getNow(){ const d=new Date(); const pad=n=>String(n).padStart(2,"0"); return { dateStr:`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`, timeStr:`${pad(d.getHours())}:${pad(d.getMinutes())}` }; }
+function diffHours(a,b){ if(!a||!b||a==="—"||b==="—") return 0; const [ah,am]=a.split(":").map(Number); const [bh,bm]=b.split(":").map(Number); return (bh+bm/60)-(ah+am/60); }
+function computeDuty(inT,outT){ let net=diffHours(inT,outT)-1; if(net<0) net=0; let ot=net-10; if(ot<0) ot=0; return {netHours:+net.toFixed(2), overtime:+ot.toFixed(2)}; }
+function rowStatus(inT,outT){ if(inT!=="—"&&outT!=="—") return "Present"; if(inT!=="—"&&outT==="—") return "Half Day"; if(inT==="—"&&outT==="—") return "AB"; return "Present"; }
+
+/* ---------- Attendance store ---------- */
+function getAttendance(){ return lsGet("kps_attendance", []); }
+function setAttendance(list){ lsSet("kps_attendance", list); }
+function addNotification(n){ const list=lsGet("kps_notifications",[]); list.unshift(n); lsSet("kps_notifications", list); }
+
+/* ---------- Attendance actions ---------- */
+function ensureTodayRowForUser(user){
+  const now=getNow(); const list=getAttendance();
+  let row=list.find(r=>r.uid===user.uid && r.date===now.dateStr);
+  if(!row){ row={uid:user.uid,name:user.name,title:user.role,date:now.dateStr,in:"—",out:"—",netHours:0,overtime:0,status:"AB"}; list.unshift(row); setAttendance(list); }
+  return row;
 }
-function setEmployees(list) {
-  lsSet("kps_employees", list);
+function handleCheckIn(){
+  const s=requireSessionOrRedirect(); if(!s) return;
+  const now=getNow(); const list=getAttendance(); let row=list.find(r=>r.uid===s.uid && r.date===now.dateStr);
+  if(!row){ row={uid:s.uid,name:s.name,title:s.role,date:now.dateStr,in:now.timeStr,out:"—",netHours:0,overtime:0,status:"Present"}; list.unshift(row); }
+  else if(row.in!=="—"){ alert("Already checked IN."); return; } else { row.in=now.timeStr; row.status="Present"; }
+  setAttendance(list);
+  addNotification({category:"Attendance",message:`${s.name} checked IN at ${now.timeStr}`,ts:Date.now()});
+  renderAttendanceTable(); fillTodaySummaryBox(); updateCheckButtonsState();
 }
-
-function saveEmployeeFromModal(e) {
-  e.preventDefault();
-  const uid = document.getElementById("emp-id").value.trim();
-  const name = document.getElementById("emp-name").value.trim();
-  const password = document.getElementById("emp-password").value.trim();
-  const role = document.getElementById("emp-role").value.trim();
-  const section = document.getElementById("emp-section").value.trim();
-  const shift = document.getElementById("emp-shift").value.trim();
-  const joinDate = document.getElementById("emp-join").value.trim();
-
-  if (!uid || !name || !role) return alert("Please fill UID, Name, and Role.");
-
-  let list = getEmployees();
-  const existing = list.findIndex(emp => emp.uid === uid);
-  if (existing >= 0) {
-    list[existing] = {
-      ...list[existing],
-      name,
-      role,
-      section,
-      shift,
-      joinDate,
-      ...(password ? { password } : {})
-    };
-  } else {
-    list.unshift({
-      uid,
-      name,
-      password: password || "KPS@1234",
-      role,
-      section,
-      shift,
-      joinDate,
-      createdAt: Date.now()
-    });
-  }
-
-  setEmployees(list);
-  alert("✅ Employee saved successfully.");
-  document.getElementById("emp-form").reset();
-  document.getElementById("emp-modal").style.display = "none";
-  renderEmployees();
-}
-
-// --- Password Generator ---
-document.getElementById("generate-pw")?.addEventListener("click", () => {
-  const newPw = "KPS@" + Math.floor(1000 + Math.random() * 9000);
-  document.getElementById("emp-password").value = newPw;
-  alert(`Generated Password: ${newPw}`);
-});
-
-// --- Render Employee Table ---
-function renderEmployees() {
-  const list = getEmployees();
-  const tbody = document.getElementById("emp-tbody");
-  if (!tbody) return;
-  tbody.innerHTML = "";
-  list.forEach(emp => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${emp.uid}</td>
-      <td>${emp.name}</td>
-      <td>${emp.role}</td>
-      <td>${emp.section || "-"}</td>
-      <td>${emp.shift || "-"}</td>
-      <td>${emp.joinDate || "-"}</td>
-      <td>
-        <button class="btn-edit" data-edit="${emp.uid}">✏️</button>
-        <button class="btn-delete" data-del="${emp.uid}">🗑</button>
-      </td>
-    `;
-    tbody.appendChild(tr);
-  });
-
-  tbody.querySelectorAll("[data-edit]").forEach(btn =>
-    btn.addEventListener("click", () => openEmployeeForEdit(btn.dataset.edit))
-  );
-
-  tbody.querySelectorAll("[data-del]").forEach(btn =>
-    btn.addEventListener("click", () => deleteEmployee(btn.dataset.del))
-  );
-}
-
-function openEmployeeForEdit(uid) {
-  const emp = getEmployees().find(e => e.uid === uid);
-  if (!emp) return;
-  document.getElementById("emp-modal").style.display = "flex";
-  document.getElementById("emp-id").value = emp.uid;
-  document.getElementById("emp-name").value = emp.name;
-  document.getElementById("emp-role").value = emp.role;
-  document.getElementById("emp-section").value = emp.section || "";
-  document.getElementById("emp-shift").value = emp.shift || "";
-  document.getElementById("emp-join").value = emp.joinDate || "";
-}
-
-function deleteEmployee(uid) {
-  if (!confirm("Delete this employee?")) return;
-  let list = getEmployees();
-  list = list.filter(e => e.uid !== uid);
-  setEmployees(list);
-  renderEmployees();
-}
-
-// --- ATTENDANCE MANAGEMENT ---
-function getAttendance() {
-  return lsGet("kps_attendance", []);
-}
-function setAttendance(list) {
-  lsSet("kps_attendance", list);
-}
-
-function checkIn() {
-  const user = getSession();
-  if (!user) return alert("Please log in first.");
-  const today = new Date().toISOString().split("T")[0];
-  let attendance = getAttendance();
-  if (attendance.find(r => r.uid === user.uid && r.date === today)) {
-    return alert("Already checked in today!");
-  }
-  attendance.push({
-    uid: user.uid,
-    name: user.name,
-    role: user.role,
-    date: today,
-    in: new Date().toLocaleTimeString(),
-    out: "",
-    status: "Present"
-  });
-  setAttendance(attendance);
-  alert("✅ Checked in successfully!");
-}
-
-function checkOut() {
-  const user = getSession();
-  if (!user) return alert("Please log in first.");
-  const today = new Date().toISOString().split("T")[0];
-  let attendance = getAttendance();
-  const record = attendance.find(r => r.uid === user.uid && r.date === today);
-  if (!record) return alert("Please check in first!");
-  if (record.out) return alert("Already checked out!");
-
-  const inTime = new Date(`${today} ${record.in}`);
-  const outTime = new Date();
-  const totalHours = (outTime - inTime) / (1000 * 60 * 60) - 1; // 1-hour break
-  const overtime = totalHours > 10 ? totalHours - 10 : 0;
-
-  record.out = outTime.toLocaleTimeString();
-  record.netHours = totalHours;
-  record.overtime = overtime;
-  record.status = "Completed";
-
-  setAttendance(attendance);
-  alert("✅ Checked out successfully!");
-}
-
-// --- Edit & Reset Attendance (Admin / Manager / Supervisor) ---
-function renderAttendanceTable() {
-  const list = getAttendance();
-  const tbody = document.getElementById("attendance-tbody");
-  if (!tbody) return;
-  tbody.innerHTML = "";
-
-  const session = getSession();
-  const canModify = ["Admin", "Manager", "Supervisor"].includes(session.role);
-
-  list.forEach(row => {
-    const tr = document.createElement("tr");
-    const otDisplay = row.overtime ? row.overtime.toFixed(2) : "0.00";
-    tr.innerHTML = `
-      <td>${row.uid}</td>
-      <td>${row.name}</td>
-      <td>${row.date}</td>
-      <td>${row.in}</td>
-      <td>${row.out}</td>
-      <td>${row.netHours ? row.netHours.toFixed(2) : "0.00"}</td>
-      <td>${otDisplay}</td>
-      <td>${row.status}</td>
-      <td>${canModify ? `
-        <button class="btn-edit" data-edit="${row.uid}" data-date="${row.date}">✏️</button>
-        <button class="btn-reset" data-reset="${row.uid}" data-date="${row.date}">↻</button>` : ""}
-      </td>
-    `;
-    tbody.appendChild(tr);
-  });
-}
-
-// --- Notifications ---
-function addNotification(obj) {
-  const list = lsGet("kps_notifications", []);
-  list.unshift(obj);
-  lsSet("kps_notifications", list);
-}
-
-// --- Page Init ---
-document.addEventListener("DOMContentLoaded", () => {
-  const page = document.body.dataset.page;
-
-  if (page === "login") {
-    document.getElementById("login-form")?.addEventListener("submit", handleLoginSubmit);
-  }
-
-  if (page === "employees") {
-    renderEmployees();
-    document.getElementById("emp-form")?.addEventListener("submit", saveEmployeeFromModal);
-    document.getElementById("close-emp-modal")?.addEventListener("click", () => {
-      document.getElementById("emp-modal").style.display = "none";
-    });
-  }
-
-  if (page === "dashboard" || page === "attendance") {
-    loadSessionUser();
-  }
-
-  document.getElementById("check-in-btn")?.addEventListener("click", checkIn);
-  document.getElementById("check-out-btn")?.addEventListener("click", checkOut);
-
-  document.querySelectorAll("[data-logout]")?.forEach(btn =>
-    btn.addEventListener("click", logoutUser)
-  );
-});
+function handleCheckOut(){
+  const s=requireSessionOrRedirect(); if(!s) return;
+  const now=getNow(); const list=getAttendance(); let row=list.find(r=>r.uid===s.uid && r.date===now.dateStr);
+  if(!row || row.in==="—"){ alert("Please Check IN first."); return; }
+  if(row.out!=="—"){ alert("Already checked OUT."); return; }
+  row.out=now.timeStr; const duty=computeanalysis
+::contentReference[oaicite:0]{index=0}
