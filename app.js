@@ -1357,7 +1357,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     return;
   }
-
+// Always reset profile view when using nav link
+document.addEventListener("click", (e) => {
+  if (e.target.tagName === "A" && e.target.getAttribute("href") === "profile.html") {
+    localStorage.removeItem("kps_profile_view_uid");
+  }
+});
   // ALL OTHER PAGES REQUIRE LOGIN
   initDataStore();
   monthlyAttendanceRollover();
