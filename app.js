@@ -1326,41 +1326,67 @@ tbody.querySelectorAll("[data-reset]").forEach(btn => {
 });
 
 // Handle edit attendance
+// --- Edit Attendance (Modal Version) ---
 tbody.querySelectorAll("[data-edit]").forEach(btn => {
   btn.addEventListener("click", () => {
     const uid = btn.getAttribute("data-edit");
     const date = btn.getAttribute("data-date");
-    let list = getAttendance();
+    const list = getAttendance();
     const record = list.find(r => r.uid === uid && r.date === date);
     if (!record) return alert("Record not found!");
 
-    const newIn = prompt(`Enter new Check-IN time (HH:MM)`, record.in || "08:00");
-    const newOut = prompt(`Enter new Check-OUT time (HH:MM)`, record.out || "17:00");
-    if (!newIn || !newOut) return;
+    // Fill modal fields
+    document.getElementById("edit-uid").value = uid;
+    document.getElementById("edit-date").value = date;
+    document.getElementById("edit-in").value = record.in || "08:00";
+    document.getElementById("edit-out").value = record.out || "17:00";
 
-    const [inH, inM] = newIn.split(":").map(Number);
-    const [outH, outM] = newOut.split(":").map(Number);
-    const totalHours = (outH + outM / 60) - (inH + inM / 60) - 1; // minus 1-hour break
-    const overtime = totalHours > 10 ? totalHours - 10 : 0;
-
-    record.in = newIn;
-    record.out = newOut;
-    record.netHours = totalHours;
-    record.overtime = overtime;
-    record.status = "Edited";
-
-    setAttendance(list);
-
-    addNotification({
-      category: "Admin Action",
-      message: `Attendance for UID ${uid} on ${date} was edited by ${getSession().name}`,
-      ts: Date.now()
-    });
-
-    renderAttendanceTable();
-    fillTodaySummaryBox();
-    alert("✅ Attendance updated successfully.");
+    // Show modal
+    document.getElementById("edit-attendance-modal").style.display = "flex";
   });
+});
+
+// --- Close Modal ---
+document.getElementById("close-edit-modal").addEventListener("click", () => {
+  document.getElementById("edit-attendance-modal").style.display = "none";
+});
+
+// --- Save Edits ---
+document.getElementById("edit-attendance-form").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const uid = document.getElementById("edit-uid").value;
+  const date = document.getElementById("edit-date").value;
+  const newIn = document.getElementById("edit-in").value;
+  const newOut = document.getElementById("edit-out").value;
+
+  const [inH, inM] = newIn.split(":").map(Number);
+  const [outH, outM] = newOut.split(":").map(Number);
+  const totalHours = (outH + outM/60) - (inH + inM/60) - 1; // 1h break
+  const overtime = totalHours > 10 ? totalHours - 10 : 0;
+
+  let list = getAttendance();
+  const rec = list.find(r => r.uid === uid && r.date === date);
+  if (!rec) return alert("Record missing!");
+
+  rec.in = newIn;
+  rec.out = newOut;
+  rec.netHours = totalHours;
+  rec.overtime = overtime;
+  rec.status = "Edited";
+
+  setAttendance(list);
+
+  addNotification({
+    category: "Admin Action",
+    message: `Attendance for UID ${uid} on ${date} edited by ${getSession().name}`,
+    ts: Date.now()
+  });
+
+  document.getElementById("edit-attendance-modal").style.display = "none";
+  renderAttendanceTable();
+  fillTodaySummaryBox();
+  alert("✅ Attendance updated successfully.");
+});
     tbody.appendChild(tr);
   });
 }
