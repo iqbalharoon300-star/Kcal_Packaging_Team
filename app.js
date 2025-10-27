@@ -696,10 +696,7 @@ function renderAttendanceTable() {
       ? `<span class="ot-pill">${row.overtime.toFixed(2)} hr OT</span>`
       : `<span class="ot-pill-zero">0.00 hr</span>`;
 
-    const canReset = ["Admin", "Manager", "Supervisor"].includes(getSession().role);
-const resetBtn = canReset
-  ? `<button class="btn-reset" data-reset="${row.uid}" data-date="${row.date}">↻ Reset</button>`
-  : "";
+    const canModify = ["Admin", "Manager", "Supervisor"].includes(getSession().role);
 
 tr.innerHTML = `
   <td>${row.uid}</td>
@@ -710,8 +707,13 @@ tr.innerHTML = `
   <td>${row.netHours ? row.netHours.toFixed(2) : "0.00"}</td>
   <td>${otDisplay}</td>
   <td><span class="status-pill">${row.status || ""}</span></td>
-  <td>${resetBtn}</td>
-    `;
+  <td>
+    ${canModify ? `
+      <button class="btn-edit" data-edit="${row.uid}" data-date="${row.date}">✏️</button>
+      <button class="btn-reset" data-reset="${row.uid}" data-date="${row.date}">↻</button>
+    ` : ""}
+  </td>
+`;
     tbody.appendChild(tr);
   });
 }
@@ -1299,7 +1301,7 @@ function renderProfileAttendanceHistory() {
 
   tbody.innerHTML = "";
   recent.forEach(row => {
-    // Handle reset button click
+    // Handle reset attendance
 tbody.querySelectorAll("[data-reset]").forEach(btn => {
   btn.addEventListener("click", () => {
     const uid = btn.getAttribute("data-reset");
@@ -1321,15 +1323,44 @@ tbody.querySelectorAll("[data-reset]").forEach(btn => {
     fillTodaySummaryBox();
     alert("✅ Attendance entry reset successfully.");
   });
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${row.date}</td>
-      <td>${row.in}</td>
-      <td>${row.out}</td>
-      <td>${row.netHours ? row.netHours.toFixed(2) : "0.00"}</td>
-      <td>${row.overtime ? row.overtime.toFixed(2) : "0.00"}</td>
-      <td><span class="status-pill">${row.status || ""}</span></td>
-    `;
+});
+
+// Handle edit attendance
+tbody.querySelectorAll("[data-edit]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const uid = btn.getAttribute("data-edit");
+    const date = btn.getAttribute("data-date");
+    let list = getAttendance();
+    const record = list.find(r => r.uid === uid && r.date === date);
+    if (!record) return alert("Record not found!");
+
+    const newIn = prompt(`Enter new Check-IN time (HH:MM)`, record.in || "08:00");
+    const newOut = prompt(`Enter new Check-OUT time (HH:MM)`, record.out || "17:00");
+    if (!newIn || !newOut) return;
+
+    const [inH, inM] = newIn.split(":").map(Number);
+    const [outH, outM] = newOut.split(":").map(Number);
+    const totalHours = (outH + outM / 60) - (inH + inM / 60) - 1; // minus 1-hour break
+    const overtime = totalHours > 10 ? totalHours - 10 : 0;
+
+    record.in = newIn;
+    record.out = newOut;
+    record.netHours = totalHours;
+    record.overtime = overtime;
+    record.status = "Edited";
+
+    setAttendance(list);
+
+    addNotification({
+      category: "Admin Action",
+      message: `Attendance for UID ${uid} on ${date} was edited by ${getSession().name}`,
+      ts: Date.now()
+    });
+
+    renderAttendanceTable();
+    fillTodaySummaryBox();
+    alert("✅ Attendance updated successfully.");
+  });
     tbody.appendChild(tr);
   });
 }
