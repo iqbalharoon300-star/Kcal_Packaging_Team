@@ -895,7 +895,7 @@ function renderEmployeesTable() {
       !q
         ? true
         : (emp.name || "").toLowerCase().includes(q) ||
-          (emp.uid || "").toLowerCase().includes(q)
+          (emp.uid || "").toLowerCase().includes(q)  ||
     )
     .forEach(emp => {
       const row = document.createElement("tr");
@@ -1390,6 +1390,11 @@ document.getElementById("edit-attendance-form").addEventListener("submit", (e) =
     tbody.appendChild(tr);
   });
 }
+document.getElementById("generate-pw")?.addEventListener("click", () => {
+  const newPw = "KPS@" + Math.floor(1000 + Math.random() * 9000);
+  document.getElementById("emp-password").value = newPw;
+  alert(`Generated Password: ${newPw}`);
+});
 
 /* Keep profile page synced with today's attendance after Check IN/OUT */
 function fillProfileDataFromAttendance() {
