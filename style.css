@@ -983,14 +983,14 @@ tbody td small {
   gap: .75rem;
   margin-bottom: 1rem;
 }
-.login-logo-badge {
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radius-lg);
-  background: linear-gradient(135deg, var(--brand-green-dark) 0%, var(--brand-green-accent) 100%);
-  display: grid;
-  place-items: center;
-  box-shadow: var(--shadow-float);
+.login-logo {
+  width: 100px;
+  height: auto;
+  display: block;
+  margin: 0 auto 25px;
+  border: none;
+  background: none;
+  box-shadow: none;
 }
 .login-logo-badge img {
   width: 30px;
