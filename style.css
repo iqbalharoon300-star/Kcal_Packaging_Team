@@ -992,10 +992,15 @@ tbody td small {
   background: none;
   box-shadow: none;
 }
-.login-logo img {
-  width: 3px;
-  height: 3px;
-  filter: drop-shadow(0 2px 5px rgba(0,0,0,0.1));
+.login-logo {
+  width: 100px;
+  height: auto;
+  display: block;
+  margin: 0 auto 25px;
+  border: none;
+  background: none;
+  box-shadow: none;
+}
 }
 }
 .login-head-text .login-title {
