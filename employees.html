@@ -1,39 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Employees • KPS — Developed by Haroon</title>
-  <link rel="stylesheet" href="style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>KPS • Employees</title>
+  <link rel="stylesheet" href="style.css"/>
   <script src="app.js" defer></script>
 </head>
 <body data-page="employees">
-
   <header class="top-nav">
-    <div class="top-nav-inner">
-      <div class="nav-left">
-        <div class="nav-logo-badge"><img src="./assets/logo.png" alt="Logo" /></div>
-        <div class="nav-brand-text">
-          <div class="nav-brand-title">Kcal Packaging System</div>
-          <div class="nav-brand-sub">Employee Management</div>
-        </div>
+    <div class="nav-left">
+      <img src="./assets/logo.png" class="nav-logo" alt="logo"/>
+      <div class="brand"><div class="brand-title">Employee Management</div><div class="brand-sub">Add, Edit & Assign</div></div>
+    </div>
+    <nav class="nav-links">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="attendance.html">Attendance</a>
+      <a class="active" href="employees.html">Employees</a>
+      <a href="overtime.html">Overtime</a>
+      <a href="notifications.html">Notifications</a>
+      <a href="profile.html" onclick="localStorage.removeItem('kps_profile_view_uid')">Profile</a>
+      <a href="#" data-logout>Logout</a>
+    </nav>
+    <div class="nav-user">
+      <div id="user-avatar-initials" class="avatar">HI</div>
+      <div class="user-meta">
+        <div id="user-name" class="user-name">—</div>
+        <div id="user-role" class="user-role">—</div>
       </div>
+    </div>
+  </header>
 
-      <nav class="nav-links">
-        <a href="dashboard.html">Dashboard</a>
-        <a href="attendance.html">Attendance</a>
-        <a href="overtime.html">Overtime</a>
-        <a href="deduction.html">Deduction</a>
-        <a href="request.html">Request</a>
-        <a href="notifications.html">Notifications</a>
-        <a class="active" href="employees.html">Employees</a>
-        <a href="profile.html">Profile</a>
-        <button data-logout>Logout</button>
-      </nav>
-
-      <div class="nav-right">
-          <main class="page-content">
+  <main class="page">
     <div class="page-header">
       <h1>Employees Directory</h1>
       <div class="page-actions">
@@ -42,168 +40,49 @@
       </div>
     </div>
 
-    <div class="table-container">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>UID</th>
-            <th>Name</th>
-            <th>Role</th>
-            <th>Section</th>
-            <th>Shift</th>
-            <th>Join Date</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody id="emp-tbody">
-          <!-- Filled dynamically by app.js -->
-        </tbody>
-      </table>
-    </div>
-  </main>
-        <div class="user-chip">
-          <div class="user-avatar" id="user-avatar-initials">U</div>
-          <div class="user-meta">
-            <div class="name" id="user-name">User Name</div>
-            <div class="role" id="user-role">Role</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </header>
-
-  <div class="page-wrapper">
-    <section class="page-header-block">
-      <div class="page-eyebrow">Employee Records</div>
-      <div class="page-title">Staff Directory & Management</div>
-      <div class="page-desc">
-        Add, Edit or Remove employees. Managers see only their department.
-      </div>
-    </section>
-
-    <section class="section-card">
-      <div class="section-head-row">
-        <div class="section-head-left">
-          <div class="section-eyebrow">Current Staff</div>
-          <div class="section-title">Employees List</div>
-        </div>
-        <div class="inline-group">
-          <input type="text" id="emp-search" placeholder="Search by name or UID" class="inline-input" />
-          <button id="add-emp-btn" class="btn btn-primary">+ Add Employee</button>
-        </div>
-      </div>
-
-      <div class="table-wrapper">
-        <table>
+    <div class="panel">
+      <div class="table-container">
+        <table class="data-table">
           <thead>
-            <tr>
-              <th>UID</th>
-              <th>Name</th>
-              <th>Role</th>
-              <th>Section</th>
-              <th>Shift</th>
-              <th>Join Date</th>
-              <th>Actions</th>
-            </tr>
+          <tr>
+            <th>UID</th><th>Name</th><th>Role</th><th>Section</th><th>Shift</th><th>Join Date</th><th>Actions</th>
+          </tr>
           </thead>
           <tbody id="emp-tbody"></tbody>
         </table>
       </div>
-    </section>
-  </div>
-  <!-- Employee Add/Edit Modal -->
+    </div>
+  </main>
+
+  <!-- Employee Modal -->
   <div class="modal" id="emp-modal">
-    <div class="modal-content">
+    <div class="modal-box">
       <div class="modal-header">
         <h2 id="emp-modal-title">Add Employee</h2>
-        <button id="close-modal" class="close-btn">×</button>
+        <button type="button" class="modal-close" id="close-emp-modal">×</button>
       </div>
-      <form id="emp-form">
-  <label>UID</label>
-  <input type="text" id="emp-id" readonly />
 
-  <label>Name</label>
-  <input type="text" id="emp-name" required />
+      <form id="emp-form" class="modal-form">
+        <div class="form-grid">
+          <div class="form-group"><label>UID</label><input type="text" id="emp-id" required placeholder="e.g. 10011"/></div>
+          <div class="form-group"><label>Name</label><input type="text" id="emp-name" required placeholder="Full name"/></div>
 
-  <label>Password <small style="font-weight:normal;">(leave blank to keep current)</small></label>
-  <input type="password" id="emp-password" placeholder="••••••••" />
-
-  <label>Role</label>
-  <input type="text" id="emp-role" required />
-
-  <label>Section</label>
-  <input type="text" id="emp-section" />
-
-  <label>Shift</label>
-  <input type="text" id="emp-shift" />
-
-  <label>Join Date</label>
-  <input type="date" id="emp-join" />
-
-  <button type="submit" class="btn btn-primary full-width">Save</button>
-</form>
-
-    </div>
-  </div>
-  <!-- ADD/EDIT MODAL -->
-  <!-- Employee Modal -->
-<div class="modal" id="emp-modal">
-  <div class="modal-box">
-    <div class="modal-header">
-      <h2 id="emp-modal-title">Add Employee</h2>
-      <button type="button" class="modal-close" id="close-emp-modal">×</button>
-    </div>
-
-    <form id="emp-form" class="modal-form">
-      <div class="form-grid">
-        <div class="form-group">
-          <label>UID</label>
-          <input type="text" id="emp-id" required placeholder="e.g. 10001" />
-        </div>
-
-        <div class="form-group">
-          <label>Name</label>
-          <input type="text" id="emp-name" required placeholder="Full name" />
-        </div>
-
-        <div class="form-group full">
-          <label>Password <span class="hint">(leave blank to keep current)</span></label>
-          <div class="password-wrapper">
-            <input type="password" id="emp-password" placeholder="Enter or leave blank" />
-            <button type="button" id="generate-pw" class="btn-generate">Generate</button>
+          <div class="form-group full">
+            <label>Password <span class="hint">(leave blank to keep current)</span></label>
+            <div class="password-wrapper">
+              <input type="password" id="emp-password" placeholder="Enter or leave blank"/>
+              <button type="button" id="generate-pw" class="btn-generate">Generate</button>
+            </div>
           </div>
-        </div>
 
-        <div class="form-group">
-          <label>Role</label>
-          <input type="text" id="emp-role" required placeholder="e.g. Admin" />
+          <div class="form-group"><label>Role</label><input type="text" id="emp-role" required placeholder="Admin / Manager / Supervisor / Staff"/></div>
+          <div class="form-group"><label>Section</label><input type="text" id="emp-section" placeholder="Packaging - Kcal Life"/></div>
+          <div class="form-group"><label>Shift</label><input type="text" id="emp-shift" placeholder="Day / Night"/></div>
+          <div class="form-group"><label>Join Date</label><input type="date" id="emp-join"/></div>
         </div>
-
-        <div class="form-group">
-          <label>Section</label>
-          <input type="text" id="emp-section" placeholder="e.g. Central Admin" />
-        </div>
-
-        <div class="form-group">
-          <label>Shift</label>
-          <input type="text" id="emp-shift" placeholder="Day / Night" />
-        </div>
-
-        <div class="form-group">
-          <label>Join Date</label>
-          <input type="date" id="emp-join" />
-        </div>
-      </div>
-
-      <button type="submit" class="btn-save">Save Employee</button>
-    </form>
+        <button type="submit" class="btn-save">Save Employee</button>
+      </form>
+    </div>
   </div>
-</div>
-
-
-  <footer class="footer-note">
-    Kcal Packaging System (KPS) — Developed by Haroon
-  </footer>
-
 </body>
 </html>
