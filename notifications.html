@@ -1,1 +1,91 @@
-<!DOCTYPE html><html><head><meta charset='utf-8'><title>Notifications</title></head><body><h1>Notifications Page (Sample Data)</h1></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Notifications • KPS — Developed by Haroon</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="app.js" defer></script>
+</head>
+<body data-page="notifications">
+
+  <!-- NAV -->
+  <header class="top-nav">
+    <div class="top-nav-inner">
+      <div class="nav-left">
+        <div class="nav-logo-badge"><img src="./assets/logo.png" alt="Logo" /></div>
+        <div class="nav-brand-text">
+          <div class="nav-brand-title">KPS Notifications</div>
+          <div class="nav-brand-sub">Kcal Packaging System (KPS)</div>
+        </div>
+      </div>
+
+      <nav class="nav-links">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="attendance.html">Attendance</a>
+        <a href="overtime.html">Overtime</a>
+        <a href="deduction.html">Deduction</a>
+        <a href="request.html">Request</a>
+        <a class="active" href="notifications.html">Notifications</a>
+        <button data-logout>Logout</button>
+      </nav>
+
+      <div class="nav-right">
+        <div class="notif-pill">Notifications: <strong id="notif-count">0</strong></div>
+        <div class="user-chip">
+          <div class="user-avatar" id="user-avatar-initials">U</div>
+          <div class="user-meta">
+            <div class="name" id="user-name">User Name</div>
+            <div class="role" id="user-role">Role</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- PAGE -->
+  <div class="page-wrapper">
+
+    <section class="page-header-block">
+      <div class="page-eyebrow">Notifications Center</div>
+      <div class="page-title">Messages &amp; Alerts</div>
+      <div class="page-desc">
+        Overtime, Request updates, Deductions, and System messages. New requests and overtime will automatically create notifications here with time.
+      </div>
+    </section>
+
+    <section class="section-card">
+      <div class="section-head-row">
+        <div class="section-head-left">
+          <div class="section-eyebrow">Inbox</div>
+          <div class="section-title">Latest Activity</div>
+          <div class="section-desc">
+            Filter by category to view only System, Request, Overtime, etc.
+          </div>
+        </div>
+
+        <div class="inline-group">
+          <div class="inline-field">
+            <label class="inline-label">Filter</label>
+            <select id="notif-filter" class="inline-select">
+              <option value="All">All</option>
+              <option value="System">System</option>
+              <option value="Request">Request</option>
+              <option value="Overtime">Overtime</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div id="notifications-list" class="note-list">
+        <!-- JS inject -->
+      </div>
+    </section>
+  </div>
+
+  <footer class="footer-note">
+    Kcal Packaging System (KPS) — Developed by Haroon • All data confidential
+  </footer>
+</body>
+</html>
