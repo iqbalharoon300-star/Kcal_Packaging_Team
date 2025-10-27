@@ -3,20 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>KPS Login • Kcal Packaging System</title>
+  <title>KPS Login • Kcal Packaging System (KPS) — Developed by Haroon</title>
   <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="app.js" defer></script>
 </head>
 <body data-page="login" class="auth-layout">
 
-  <!-- BRAND / INFO SIDE -->
+  <!-- LEFT INFO CARD -->
   <aside class="brand-card">
     <div class="brand-head">
       <div class="brand-logo-badge">
         <img src="./assets/logo.png" alt="Kcal Logo" />
       </div>
       <div class="brand-identity">
-        <div class="brand-name">Kcal Packaging System</div>
+        <div class="brand-name">Kcal Packaging System (KPS)</div>
         <div class="brand-slogan">
           "Healthy Eat, Healthy Life"<br/>
           Packaging Department
@@ -24,29 +25,24 @@
       </div>
     </div>
     <div class="brand-desc">
-      KPS (Kcal Packaging System) — Manage Attendance, Overtime,
-      Deductions, Requests, and Notifications for Day & Night Shifts
-      across Kcal Meal Plan, Kcal Life, FuelUp, Spring, Kcal Lunch.
+      KPS — Attendance, Overtime, Deductions, Requests, and Notifications for
+      Day &amp; Night shifts across Kcal Meal Plan, Kcal Life, FuelUp, Spring, Kcal Lunch.
     </div>
   </aside>
 
-  <!-- LOGIN FORM -->
+  <!-- LOGIN CARD -->
   <main class="login-col">
     <form id="login-form" class="login-card">
       <header class="login-header">
         <div class="login-title">Sign in to KPS</div>
-        <div class="login-sub">
-          Enter your UID / Username and Password.
-        </div>
+        <div class="login-sub">Enter your UID / Username and Password.</div>
       </header>
 
-      <div id="login-error" class="error-box">
-        Invalid ID or Password.
-      </div>
+      <div id="login-error" class="error-box">Invalid ID or Password.</div>
 
       <div class="form-field">
         <label class="form-label" for="login-uid">UID / Username</label>
-        <input id="login-uid" type="text" class="form-input" placeholder="e.g. 10032" required />
+        <input id="login-uid" type="text" class="form-input" placeholder="10032" required />
       </div>
 
       <div class="form-field">
@@ -55,7 +51,7 @@
       </div>
 
       <div class="form-hint-row">
-        <div>Password: Capital + small + symbol + number</div>
+        <div>Password format: Aa@123</div>
         <a href="#">Forgot password?</a>
       </div>
 
@@ -67,11 +63,9 @@
       </div>
 
       <div class="footer-note" style="margin-top:2rem;">
-        KPS © Kcal Packaging System
+        Kcal Packaging System (KPS) — Developed by Haroon
       </div>
     </form>
   </main>
-
-  <script src="app.js"></script>
 </body>
 </html>
