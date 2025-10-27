@@ -9,7 +9,6 @@
   <script src="app.js" defer></script>
 </head>
 <body data-page="request">
-
   <!-- NAV -->
   <header class="top-nav">
     <div class="top-nav-inner">
@@ -20,7 +19,6 @@
           <div class="nav-brand-sub">Kcal Packaging System (KPS)</div>
         </div>
       </div>
-
       <nav class="nav-links">
         <a href="dashboard.html">Dashboard</a>
         <a href="attendance.html">Attendance</a>
@@ -30,7 +28,6 @@
         <a href="notifications.html">Notifications</a>
         <button data-logout>Logout</button>
       </nav>
-
       <div class="nav-right">
         <div class="notif-pill">Notifications: <strong id="notif-count">0</strong></div>
         <div class="user-chip">
@@ -46,7 +43,6 @@
 
   <!-- PAGE -->
   <div class="page-wrapper">
-
     <section class="page-header-block">
       <div class="page-eyebrow">Internal Requests</div>
       <div class="page-title">Submit a Request</div>
@@ -70,19 +66,16 @@
           </div>
         </div>
       </div>
-
       <form id="request-form">
         <div class="form-grid-2col">
           <div>
             <label class="block-label" for="req-uid">UID</label>
             <input id="req-uid" type="text" class="block-input" placeholder="10366" required />
           </div>
-
             <div>
               <label class="block-label" for="req-name">Name</label>
               <input id="req-name" type="text" class="block-input" placeholder="Sanjay Nayek" required />
             </div>
-
             <div>
               <label class="block-label" for="req-type">Request Type</label>
               <select id="req-type" class="block-input" required>
@@ -94,18 +87,15 @@
                 <option value="Resumption Form">Resumption Form</option>
               </select>
             </div>
-
             <div>
               <label class="block-label" for="req-desc">Description / Reason</label>
               <textarea id="req-desc" class="block-textarea" placeholder="Explain your request..."></textarea>
             </div>
         </div>
-
         <div style="margin-top:1rem;display:flex;gap:.75rem;flex-wrap:wrap;">
           <button class="btn btn-primary" type="submit">Submit Request</button>
           <button class="btn btn-outline" type="reset">Clear</button>
         </div>
-
         <div style="font-size:.7rem;color:#0f172a;opacity:.7;margin-top:1rem;">
           After review Supervisor / Manager can Approve or Reject.
           You will see updates in Notifications.
@@ -123,14 +113,12 @@
             These are your submitted requests. Supervisor / Manager can change status.
           </div>
         </div>
-
         <div class="inline-group">
           <button class="btn btn-outline" style="height:fit-content;margin-top:1.4rem;">
             Export PDF / Excel
           </button>
         </div>
       </div>
-
       <div class="table-wrapper">
         <table>
           <thead>
