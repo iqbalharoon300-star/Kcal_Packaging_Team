@@ -149,10 +149,37 @@ function handleCheckIn(){
   addNotification({category:"Attendance",message:`${s.name} checked IN at ${now.timeStr}`,ts:Date.now()});
   renderAttendanceTable(); fillTodaySummaryBox(); updateCheckButtonsState();
 }
-function handleCheckOut(){
-  const s=requireSessionOrRedirect(); if(!s) return;
-  const now=getNow(); const list=getAttendance(); let row=list.find(r=>r.uid===s.uid && r.date===now.dateStr);
-  if(!row || row.in==="—"){ alert("Please Check IN first."); return; }
-  if(row.out!=="—"){ alert("Already checked OUT."); return; }
-  row.out=now.timeStr; const duty=computeanalysis
-contentReference[oaicite:0]{index=0}
+function handleCheckOut() {
+  const s = requireSessionOrRedirect();
+  if (!s) return;
+
+  const now = getNow();
+  const list = getAttendance();
+  let row = list.find(r => r.uid === s.uid && r.date === now.dateStr);
+
+  if (!row || row.in === "—") {
+    alert("Please Check IN first.");
+    return;
+  }
+  if (row.out !== "—") {
+    alert("Already checked OUT.");
+    return;
+  }
+
+  row.out = now.timeStr;
+  const duty = computeDuty(row.in, row.out);
+  row.netHours = duty.netHours;
+  row.overtime = duty.overtime;
+  row.status = rowStatus(row.in, row.out);
+
+  setAttendance(list);
+  addNotification({
+    category: "Attendance",
+    message: `${s.name} checked OUT at ${now.timeStr}`,
+    ts: Date.now(),
+  });
+
+  renderAttendanceTable();
+  fillTodaySummaryBox();
+  updateCheckButtonsState();
+}
