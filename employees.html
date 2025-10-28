@@ -9,23 +9,36 @@
 
 <body data-page="employees">
   <!-- HEADER -->
-  <header class="topbar">
-    <div class="logo">Kcal Packaging System</div>
+  <header class="top-nav">
+  <div class="top-nav-left">
+    <h1>Employee Directory</h1>
+    <p>Kcal Packaging System (KPS) — Developed by Haroon</p>
+  </div>
+
+  <div class="top-nav-right">
+    <!-- Bell -->
+    <div class="notif-bell" onclick="window.location.href='notifications.html'">
+      <span class="bell-icon">🔔</span>
+      <span class="notif-badge" id="notifBadge">0</span>
+    </div>
+
+    <!-- User info dropdown -->
     <div class="user-info">
-      <div class="user-avatar" id="profileTopAvatar"></div>
-      <div class="user-meta">
-        <span id="profileTopName"></span>
-        <small id="profileTopRole"></small>
+      <div class="user-avatar" id="profileTopAvatar">SA</div>
+      <div class="user-details">
+        <span class="user-name" id="profileTopName">System Admin</span>
+        <span class="user-role" id="profileTopRole">Admin</span>
       </div>
       <div class="dropdown">
-        <button class="dropdown-toggle">☰</button>
+        <button class="dropdown-btn">▼</button>
         <div class="dropdown-menu">
           <a href="profile.html">Profile</a>
           <a href="#" data-logout>Logout</a>
         </div>
       </div>
     </div>
-  </header>
+  </div>
+</header>
 
   <!-- SIDEBAR -->
   <aside class="sidebar">
