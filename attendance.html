@@ -33,11 +33,30 @@
     <header class="top-nav">
       <div class="top-nav-left">
       </div>
-      <div class="top-nav-right">
-        <div class="user-info">
-          <div class="user-avatar">SA</div>
-          <div class="user-details">
-            <span class="user-name">System Admin</span>
+    <div class="top-nav-right">
+  <!-- Bell / Notification Icon -->
+  <div class="notif-bell" onclick="window.location.href='notifications.html'">
+    <span class="bell-icon">🔔</span>
+    <span class="notif-badge" id="notifBadge">0</span>
+  </div>
+
+  <!-- User info / dropdown -->
+  <div class="user-info">
+    <div class="user-avatar" id="headerAvatar">SA</div>
+    <div class="user-details">
+      <span class="user-name" id="headerName">System Admin</span>
+      <span class="user-role" id="headerRole">Admin</span>
+    </div>
+    <div class="dropdown">
+      <button class="dropdown-btn">▼</button>
+      <div class="dropdown-menu">
+        <a href="profile.html">Profile</a>
+        <a href="#">Change Password</a>
+        <a href="#" data-logout>Sign Out</a>
+      </div>
+    </div>
+  </div>
+</div>
     <!-- Attendance Controls -->
     <section class="attendance-actions">
       <h2>Mark Attendance</h2>
