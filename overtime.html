@@ -8,39 +8,119 @@
   <script src="app.js" defer></script>
 </head>
 <body data-page="overtime">
-<header class="top-nav">
-  <div class="nav-left">
-    <img src="./assets/logo.png" class="nav-logo" alt="logo"/>
-    <div class="brand"><div class="brand-title">Overtime</div><div class="brand-sub">Auto-calculated from attendance</div></div>
-  </div>
-  <nav class="nav-links">
-    <a href="dashboard.html">Dashboard</a>
-    <a href="attendance.html">Attendance</a>
-    <a id="nav-employees-link" href="employees.html">Employees</a>
-    <a class="active" href="overtime.html">Overtime</a>
-    <a href="notifications.html">Notifications</a>
-    <a href="profile.html" onclick="localStorage.removeItem('kps_profile_view_uid')">Profile</a>
-    <a href="#" data-logout>Logout</a>
-  </nav>
-  <div class="nav-user">
-    <div id="user-avatar-initials" class="avatar">HI</div>
-    <div class="user-meta">
-      <div id="user-name" class="user-name">—</div>
-      <div id="user-role" class="user-role">—</div>
-    </div>
-  </div>
-</header>
 
-<main class="page">
-  <section class="panel">
-    <div class="panel-title">Overtime by Employee</div>
-    <div class="table-container">
-      <table class="data-table">
-        <thead><tr><th>UID</th><th>Name</th><th>Total OT (hr)</th></tr></thead>
-        <tbody id="ot-tbody"></tbody>
-      </table>
+  <header class="topbar">
+    <div class="topbar-left">
+      <img src="./assets/logo.png" class="brand-logo" alt="KCAL Logo">
+      <div class="brand-text">
+        <div class="brand-main">KCAL</div>
+        <div class="brand-sub">Healthy Food, Healthy Life</div>
+      </div>
     </div>
-  </section>
-</main>
+
+    <nav class="main-nav">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="attendance.html">Attendance</a>
+      <a href="employees.html" id="nav-employees-link">Employees</a>
+      <a class="active" href="overtime.html">Overtime</a>
+      <a href="notifications.html">Notifications</a>
+    </nav>
+
+    <div class="user-nav">
+      <div class="user-chip" id="user-chip">
+        <div class="chip-avatar" id="chip-avatar">SA</div>
+        <div class="chip-info">
+          <div id="chip-name" class="chip-name">System Admin</div>
+          <div id="chip-role" class="chip-role">Admin</div>
+        </div>
+        <div class="chip-caret">▼</div>
+      </div>
+      <div class="user-dropdown" id="user-dropdown">
+        <button class="dropdown-item" data-goto-profile>Profile</button>
+        <button class="dropdown-item danger" data-logout>Sign Out</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-inner">
+        <section class="profile-card">
+          <div class="profile-photo-shell">
+            <img id="dash-user-photo" src="./assets/default-avatar.png" class="profile-photo-img" alt="User Photo">
+          </div>
+          <div class="profile-meta">
+            <div id="dash-user-name" class="profile-name">User Name</div>
+            <div id="dash-user-role" class="profile-role">Role</div>
+          </div>
+        </section>
+      </div>
+    </aside>
+
+    <main class="content-area">
+      <section class="panel-block">
+        <div class="panel-head">
+          <div class="panel-title">Overtime Records</div>
+          <div class="panel-actions">
+            <button id="add-ot-btn" class="btn btn-primary">+ Add Overtime</button>
+          </div>
+        </div>
+
+        <div class="table-shell">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>UID</th>
+                <th>Name</th>
+                <th>Date</th>
+                <th>IN</th>
+                <th>OUT</th>
+                <th>Total Hours</th>
+                <th>OT</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="ot-tbody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast-area" class="toast-area"></div>
+
+  <!-- Overtime modal -->
+  <div class="modal" id="ot-modal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2>Add Overtime</h2>
+        <button type="button" class="modal-close" id="close-ot-modal">×</button>
+      </div>
+
+      <form id="ot-form">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>UID</label>
+            <input type="text" id="ot-uid" required>
+          </div>
+          <div class="form-group">
+            <label>Date</label>
+            <input type="date" id="ot-date" required>
+          </div>
+          <div class="form-group">
+            <label>IN Time</label>
+            <input type="time" id="ot-in" required>
+          </div>
+          <div class="form-group">
+            <label>OUT Time</label>
+            <input type="time" id="ot-out" required>
+          </div>
+        </div>
+        <button type="submit" class="btn-save">Save Overtime</button>
+      </form>
+    </div>
+  </div>
+
 </body>
 </html>
