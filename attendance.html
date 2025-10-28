@@ -2,18 +2,21 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>KPS • Attendance </title>
+  <title>KPS • Attendance</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <link rel="stylesheet" href="style.css" />
   <script src="app.js" defer></script>
 </head>
+
 <body data-page="attendance">
-  <!-- HEADER BAR -->
+
+  <!-- HEADER -->
   <header class="kps-header">
     <div class="header-left">
       <div class="brand-mini">
-        <img src="assets/logo.png" alt="Kcal" class="brand-logo" />
+        <div class="brand-logo">kcal</div>
         <div class="brand-texts">
-          <div class="brand-name">KCAL</div>
+          <div class="brand-name">Kcal Packaging System</div>
           <div class="brand-slogan">Healthy Food, Healthy Life</div>
         </div>
       </div>
@@ -21,13 +24,13 @@
 
     <div class="header-right">
 
-      <!-- Bell -->
+      <!-- Bell / unread -->
       <div class="notif-bell" onclick="window.location.href='notifications.html'">
         <span class="bell-icon">🔔</span>
         <span class="notif-badge" id="notifBadge">0</span>
       </div>
 
-      <!-- User dropdown -->
+      <!-- User info / dropdown -->
       <div class="user-block">
         <div class="user-avatar" id="headerAvatar">SA</div>
         <div class="user-info-text">
@@ -44,48 +47,145 @@
         </div>
       </div>
 
-      <!-- mobile sidebar toggle -->
+      <!-- Mobile sidebar toggle -->
       <button class="sidebar-toggle" id="sidebarToggle">☰</button>
+
     </div>
   </header>
 
-  <!-- LAYOUT WRAPPER -->
   <div class="kps-layout">
-
     <!-- SIDEBAR -->
     <aside class="kps-sidebar" id="appSidebar">
       <nav>
         <a href="dashboard.html" class="side-link"><span>🏠</span> Dashboard</a>
-        <a href="attendance.html" class="side-link"><span>🕒</span> Attendance</a>
+        <a href="attendance.html" class="side-link active"><span>🕒</span> Attendance</a>
         <a href="employees.html" class="side-link"><span>👥</span> Employees</a>
         <a href="overtime.html" class="side-link"><span>⏫</span> Overtime</a>
         <a href="deduction.html" class="side-link"><span>💸</span> Deductions</a>
         <a href="notifications.html" class="side-link"><span>🔔</span> Notifications</a>
         <a href="request.html" class="side-link"><span>📄</span> Requests</a>
+        <a href="reports.html" class="side-link"><span>📊</span> Reports</a>
         <a href="profile.html" class="side-link"><span>🙍‍♂️</span> Profile</a>
         <a href="#" data-logout class="side-link logout"><span>⏻</span> Logout</a>
       </nav>
     </aside>
 
-    <!-- MAIN CONTENT AREA -->
+    <!-- MAIN CONTENT -->
     <main class="main-content">
 
-      <!-- PAGE TITLE / CONTROLS -->
+      <!-- PAGE HEADER -->
       <div class="page-header">
         <div>
-          <h1 class="page-title">KPS • Attendance </h1>
-          <p class="page-sub">Kcal Packaging System (KPS) — Developed by Haroon</p>
+          <h1 class="page-title">Attendance</h1>
+          <p class="page-sub">
+            Track IN / OUT, leave status, auto overtime after 10 hours, duty summary by employee.
+          </p>
         </div>
-        <div class="page-header-actions">
-          <!-- page buttons go here (Add Employee, etc.) -->
+
+        <div class="page-header-actions" id="attendanceActionBar">
+          <!-- Buttons shown based on role (Admin/Manager/Supervisor or Staff) -->
+          <!-- For Staff we will only show Check In / Check Out -->
+          <!-- For Admin etc. we also show Off Day / Sick / Annual Leave / Absent / Reset -->
         </div>
       </div>
 
-      <!-- PAGE BODY CARDS GO HERE -->
+      <!-- FILTER PANEL -->
       <section class="card">
-        <h2 class="card-title">Card Title</h2>
+        <h2 class="card-title">Filters & Actions</h2>
         <div class="card-body">
-          <!-- table / forms / info -->
+          <div class="form-grid">
+            <div class="form-field">
+              <label>Department / Section</label>
+              <select id="attendanceSectionFilter">
+                <option value="All">All</option>
+                <option value="KMP Day">KMP Day</option>
+                <option value="KMP Night">KMP Night</option>
+                <option value="FuelUP">FuelUP</option>
+                <option value="Spring">Spring</option>
+                <option value="Kcal Life">Kcal Life</option>
+                <option value="Kcal Lunch">Kcal Lunch</option>
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label>Date</label>
+              <input type="date" id="attendanceDateFilter" />
+            </div>
+
+            <div class="form-field">
+              <label>View</label>
+              <select id="attendanceViewMode">
+                <option value="today">Today</option>
+                <option value="month">This Month</option>
+                <option value="range">Custom Range</option>
+              </select>
+            </div>
+
+            <div class="form-field" id="attendanceRangeBlock" style="display:none;">
+              <label>Custom Range (From → To)</label>
+              <div style="display:flex;gap:6px;">
+                <input type="date" id="attendanceRangeFrom" style="flex:1;">
+                <input type="date" id="attendanceRangeTo" style="flex:1;">
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:16px; display:flex; flex-wrap:wrap; gap:8px;">
+            <button class="btn-primary" id="btnAttendanceApplyFilter">Apply Filter</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ATTENDANCE TABLE (DETAIL VIEW) -->
+      <section class="card">
+        <h2 class="card-title">Attendance Records</h2>
+        <div class="card-body">
+          <table class="kps-table">
+            <thead>
+              <tr>
+                <th>UID</th>
+                <th>Name</th>
+                <th>Date</th>
+                <th>In</th>
+                <th>Out</th>
+                <th>Duty (hrs)</th>
+                <th>OT (hrs)</th>
+                <th>Status</th>
+                <th class="actions-cell">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="attendanceTableBody">
+              <!-- Filled by JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- MONTHLY SUMMARY (BOTTOM) -->
+      <section class="card">
+        <h2 class="card-title">Monthly Summary</h2>
+        <div class="card-body">
+          <table class="kps-table">
+            <thead>
+              <tr>
+                <th>UID</th>
+                <th>Name</th>
+                <th>Total Present</th>
+                <th>Off Days</th>
+                <th>Sick</th>
+                <th>Annual Leave</th>
+                <th>Suspended</th>
+                <th>Absent</th>
+                <th>Total OT (hrs)</th>
+              </tr>
+            </thead>
+            <tbody id="attendanceSummaryBody">
+              <!-- Filled by JS -->
+            </tbody>
+          </table>
+          <p style="font-size:12px;color:var(--text-light);margin-top:10px;">
+            Note: Overtime = (Duty - 10 hrs after 1-hr break) + Approved Extra OT.
+          </p>
         </div>
       </section>
 
@@ -94,6 +194,46 @@
 
   <!-- TOAST -->
   <div id="toastContainer"></div>
+
+  <!-- MODAL: EDIT ATTENDANCE (Admin/Manager/Supervisor only) -->
+  <div class="modal-overlay" id="attendanceEditModal">
+    <div class="modal">
+      <h2>Edit Attendance</h2>
+      <div class="form-field">
+        <label>Employee UID</label>
+        <input type="text" id="attEditUID" disabled />
+      </div>
+      <div class="form-field">
+        <label>Date</label>
+        <input type="date" id="attEditDate" disabled />
+      </div>
+      <div class="form-field">
+        <label>Check In (12h)</label>
+        <input type="text" id="attEditIn" placeholder="07:00 AM" />
+      </div>
+      <div class="form-field">
+        <label>Check Out (12h)</label>
+        <input type="text" id="attEditOut" placeholder="05:00 PM" />
+      </div>
+      <div class="form-field">
+        <label>Status</label>
+        <select id="attEditStatus">
+          <option value="Present">Present</option>
+          <option value="Off Day">Off Day</option>
+          <option value="Public Holiday">Public Holiday</option>
+          <option value="Sick Leave">Sick Leave</option>
+          <option value="Suspended">Suspended</option>
+          <option value="Annual Leave">Annual Leave</option>
+          <option value="Absent">Absent</option>
+        </select>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-primary" id="saveAttendanceEditBtn">Save</button>
+        <button class="btn-secondary" id="cancelAttendanceEditBtn">Cancel</button>
+      </div>
+    </div>
+  </div>
 
 </body>
 </html>
