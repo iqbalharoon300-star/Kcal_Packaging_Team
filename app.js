@@ -863,23 +863,34 @@ window.addEventListener("storage", e => {
   switch (e.key) {
     case KPS_KEYS.attendance:
       loadAttendanceTable();
+      loadOvertimeTable(); // OT depends on attendance too
+      fillDashboardCards();
       break;
+
     case KPS_KEYS.overtime:
-    case KPS_KEYS.attendance: // OT depends on attendance too
       loadOvertimeTable();
+      fillDashboardCards();
       break;
+
     case KPS_KEYS.deductions:
       loadDeductionTable();
+      fillDashboardCards();
       break;
+
     case KPS_KEYS.requests:
       loadRequestTable();
       break;
+
     case KPS_KEYS.notifications:
       loadNotificationList();
+      updateNotifBadge();
+      fillDashboardCards();
       break;
+
     case KPS_KEYS.session:
-      // session changed (logout somewhere else, etc)
-      // we could optionally force reload
+      // session changed
+      fillUserHeader();
+      updateNotifBadge();
       break;
   }
 });
