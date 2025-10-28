@@ -1,126 +1,174 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>KPS • Overtime</title>
-  <link rel="stylesheet" href="style.css"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KPS Overtime • Developed by Haroon</title>
+  <link rel="stylesheet" href="style.css">
   <script src="app.js" defer></script>
 </head>
+
 <body data-page="overtime">
-
-  <header class="topbar">
-    <div class="topbar-left">
-      <img src="./assets/logo.png" class="brand-logo" alt="KCAL Logo">
-      <div class="brand-text">
-        <div class="brand-main">KCAL</div>
-        <div class="brand-sub">Healthy Food, Healthy Life</div>
-      </div>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="logo-section">
+      <img src="./assets/logo.png" alt="Kcal Logo" class="sidebar-logo">
+      <h2>KPS</h2>
+      <p>Packaging System</p>
     </div>
-
-    <nav class="main-nav">
+    <nav class="sidebar-nav">
       <a href="dashboard.html">Dashboard</a>
       <a href="attendance.html">Attendance</a>
-      <a href="employees.html" id="nav-employees-link">Employees</a>
-      <a class="active" href="overtime.html">Overtime</a>
+      <a href="overtime.html" class="active">Overtime</a>
+      <a href="deduction.html">Deduction</a>
+      <a href="employees.html">Employees</a>
       <a href="notifications.html">Notifications</a>
+      <a href="request.html">Request</a>
+      <a href="profile.html">Profile</a>
+      <a href="#" data-logout>Logout</a>
     </nav>
-
-    <div class="user-nav">
-      <div class="user-chip" id="user-chip">
-        <div class="chip-avatar" id="chip-avatar">SA</div>
-        <div class="chip-info">
-          <div id="chip-name" class="chip-name">System Admin</div>
-          <div id="chip-role" class="chip-role">Admin</div>
-        </div>
-        <div class="chip-caret">▼</div>
-      </div>
-      <div class="user-dropdown" id="user-dropdown">
-        <button class="dropdown-item" data-goto-profile>Profile</button>
-        <button class="dropdown-item danger" data-logout>Sign Out</button>
-      </div>
-    </div>
-  </header>
-
-  <div class="layout">
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-inner">
-        <section class="profile-card">
-          <div class="profile-photo-shell">
-            <img id="dash-user-photo" src="./assets/default-avatar.png" class="profile-photo-img" alt="User Photo">
-          </div>
-          <div class="profile-meta">
-            <div id="dash-user-name" class="profile-name">User Name</div>
-            <div id="dash-user-role" class="profile-role">Role</div>
-          </div>
-        </section>
-      </div>
-    </aside>
-
-    <main class="content-area">
-      <section class="panel-block">
-        <div class="panel-head">
-          <div class="panel-title">Overtime Records</div>
-          <div class="panel-actions">
-            <button id="add-ot-btn" class="btn btn-primary">+ Add Overtime</button>
-          </div>
-        </div>
-
-        <div class="table-shell">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>UID</th>
-                <th>Name</th>
-                <th>Date</th>
-                <th>IN</th>
-                <th>OUT</th>
-                <th>Total Hours</th>
-                <th>OT</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="ot-tbody"></tbody>
-          </table>
-        </div>
-      </section>
-    </main>
   </div>
 
-  <!-- Toast -->
-  <div id="toast-area" class="toast-area"></div>
-
-  <!-- Overtime modal -->
-  <div class="modal" id="ot-modal">
-    <div class="modal-box">
-      <div class="modal-header">
-        <h2>Add Overtime</h2>
-        <button type="button" class="modal-close" id="close-ot-modal">×</button>
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Top Nav -->
+    <header class="top-nav">
+      <div class="top-nav-left">
+        <h1>Overtime Management</h1>
+        <p>Kcal Packaging System (KPS) — Developed by Haroon</p>
       </div>
-
-      <form id="ot-form">
-        <div class="form-grid">
-          <div class="form-group">
-            <label>UID</label>
-            <input type="text" id="ot-uid" required>
+      <div class="top-nav-right">
+        <div class="user-info">
+          <div class="user-avatar">SA</div>
+          <div class="user-details">
+            <span class="user-name">System Admin</span>
+            <span class="user-role">Admin</span>
           </div>
-          <div class="form-group">
-            <label>Date</label>
-            <input type="date" id="ot-date" required>
-          </div>
-          <div class="form-group">
-            <label>IN Time</label>
-            <input type="time" id="ot-in" required>
-          </div>
-          <div class="form-group">
-            <label>OUT Time</label>
-            <input type="time" id="ot-out" required>
+          <div class="dropdown">
+            <button class="dropdown-btn">▼</button>
+            <div class="dropdown-menu">
+              <a href="profile.html">Profile</a>
+              <a href="#">Change Password</a>
+              <a href="#" data-logout>Sign Out</a>
+            </div>
           </div>
         </div>
-        <button type="submit" class="btn-save">Save Overtime</button>
+      </div>
+    </header>
+
+    <!-- Add Overtime Section -->
+    <section class="overtime-actions">
+      <h2>Add Approved Overtime</h2>
+      <form id="overtimeForm" class="overtime-form">
+        <div class="form-row">
+          <label for="uid">Employee UID</label>
+          <input type="text" id="uid" placeholder="e.g. 10015" required>
+        </div>
+        <div class="form-row">
+          <label for="name">Employee Name</label>
+          <input type="text" id="name" placeholder="e.g. Akif Abdul Wahid" required>
+        </div>
+        <div class="form-row">
+          <label for="date">Date</label>
+          <input type="date" id="date" required>
+        </div>
+        <div class="form-row">
+          <label for="hours">Approved OT (hrs)</label>
+          <input type="number" id="hours" min="0" step="0.25" required>
+        </div>
+        <div class="form-row">
+          <label for="approvedBy">Approved By</label>
+          <input type="text" id="approvedBy" placeholder="Manager / Supervisor Name" required>
+        </div>
+        <button type="submit" class="btn-primary">Save Overtime</button>
       </form>
-    </div>
+    </section>
+
+    <!-- Overtime Table -->
+    <section class="overtime-table-section">
+      <h2>Overtime Records</h2>
+      <table class="attendance-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>UID</th>
+            <th>Name</th>
+            <th>Attendance OT</th>
+            <th>Added OT</th>
+            <th>Total OT</th>
+            <th>Approved By</th>
+          </tr>
+        </thead>
+        <tbody id="overtimeTable">
+          <!-- Dynamic rows -->
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <p>Kcal Packaging System (KPS) — Developed by Haroon • All data confidential</p>
+    </footer>
   </div>
 
+  <!-- Inline JS for Overtime -->
+  <script>
+    function getTodayDate() {
+      const now = new Date();
+      return now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    }
+
+    function loadOvertime() {
+      const otData = JSON.parse(localStorage.getItem('overtime') || '[]');
+      const attendanceData = JSON.parse(localStorage.getItem('attendance') || '[]');
+      const tbody = document.getElementById('overtimeTable');
+      tbody.innerHTML = '';
+
+      // Combine attendance OT with manual OT
+      otData.forEach(ot => {
+        const attendanceMatch = attendanceData.find(a => a.date === ot.date && a.uid === ot.uid);
+        const attendanceOT = attendanceMatch ? parseFloat(attendanceMatch.ot || 0) : 0;
+        const totalOT = (attendanceOT + parseFloat(ot.hours)).toFixed(2);
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${ot.date}</td>
+          <td>${ot.uid}</td>
+          <td>${ot.name}</td>
+          <td>${attendanceOT}</td>
+          <td>${ot.hours}</td>
+          <td><strong>${totalOT}</strong></td>
+          <td>${ot.approvedBy}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Save New Overtime
+    document.getElementById('overtimeForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const uid = document.getElementById('uid').value.trim();
+      const name = document.getElementById('name').value.trim();
+      const date = new Date(document.getElementById('date').value).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+      const hours = parseFloat(document.getElementById('hours').value.trim());
+      const approvedBy = document.getElementById('approvedBy').value.trim();
+
+      if (!uid || !name || !date || isNaN(hours) || !approvedBy) {
+        alert('Please fill in all fields!');
+        return;
+      }
+
+      const otData = JSON.parse(localStorage.getItem('overtime') || '[]');
+      otData.push({ uid, name, date, hours, approvedBy });
+      localStorage.setItem('overtime', JSON.stringify(otData));
+      loadOvertime();
+
+      document.getElementById('overtimeForm').reset();
+      alert('Overtime Added Successfully ✅');
+    });
+
+    window.onload = loadOvertime;
+  </script>
 </body>
 </html>
