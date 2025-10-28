@@ -1047,9 +1047,10 @@ function initPage() {
   if (page !== "login") {
     fillUserHeader();
     bindLogoutLinks();
+    updateNotifBadge(); // <<--- NEW
   }
 
-  // page specific binds
+  // page specific binds...
   switch (page) {
     case "login":
       initLoginPage();
@@ -1059,7 +1060,6 @@ function initPage() {
       break;
     case "attendance":
       loadAttendanceTable();
-      // expose functions for buttons
       window.checkIn = checkIn;
       window.checkOut = checkOut;
       window.markOffDay = markOffDay;
@@ -1084,7 +1084,7 @@ function initPage() {
       bindProfileForms();
       break;
     case "employees":
-      // We'll add employee directory UI logic in future expansions
+      // employees.html manages itself inline for now
       break;
   }
 }
