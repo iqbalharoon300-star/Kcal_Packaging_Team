@@ -1,6 +1,6 @@
 /* =========================================================
    KPS — KCAL PACKAGING SYSTEM
-   Browser-only HR Portal
+   Browser HR Portal
    Author: Haroon
    ========================================================= */
 
@@ -15,6 +15,8 @@ function lsGet(key, fallback) {
 }
 function lsSet(key, val) {
   localStorage.setItem(key, JSON.stringify(val));
+  // fire a synthetic "update" so other pages (open tabs) could react if needed
+  window.dispatchEvent(new Event("kps-data-updated"));
 }
 
 /* ------------------ Default Admin Account ------------------ */
@@ -50,6 +52,23 @@ function signOut() {
   window.location.href = "index.html";
 }
 
+/* ------------------ Permissions ------------------ */
+function canManageEmployees(user) {
+  return (
+    user.role === "Admin" ||
+    user.role === "Manager" ||
+    user.role === "Supervisor"
+  );
+}
+function canManageOvertime(user) {
+  // overtime can be added only by Admin / Manager / Supervisor
+  return canManageEmployees(user);
+}
+function canEditAttendance(user) {
+  // admin / manager / supervisor can edit/reset attendance rows
+  return canManageEmployees(user);
+}
+
 /* ------------------ Notifications store ------------------ */
 function getNotifications() {
   return lsGet("kps_notifications", []);
@@ -63,7 +82,6 @@ function addNotification(category, message) {
   });
   lsSet("kps_notifications", list);
   showToast(message, "ok");
-  // refresh sidebar if present
   renderSidebarNotifications();
 }
 
@@ -83,6 +101,14 @@ function setAttendance(list) {
   lsSet("kps_attendance", list);
 }
 
+/* ------------------ Overtime store ------------------ */
+function getOvertime() {
+  return lsGet("kps_overtime", []);
+}
+function setOvertime(list) {
+  lsSet("kps_overtime", list);
+}
+
 /* ------------------ Time helpers ------------------ */
 function getNow() {
   const d = new Date();
@@ -99,9 +125,11 @@ function diffHours(a, b) {
   return (bh + bm / 60) - (ah + am / 60);
 }
 function computeDuty(inT, outT) {
-  let net = diffHours(inT, outT) - 1; // -1h break (your rule)
+  // Work hours minus 1 hour break
+  let net = diffHours(inT, outT) - 1;
   if (net < 0) net = 0;
-  let ot = net - 10; // OT after 10h duty incl break
+  // OT above 10 hours
+  let ot = net - 10;
   if (ot < 0) ot = 0;
   return {
     netHours: +net.toFixed(2),
@@ -124,7 +152,7 @@ function ensureTodayRowForUser(user) {
       out: "—",
       netHours: 0,
       overtime: 0,
-      status: "AB",
+      status: "AB", // Absent by default unless check-in
     };
     list.unshift(row);
     setAttendance(list);
@@ -132,6 +160,7 @@ function ensureTodayRowForUser(user) {
   return row;
 }
 
+/* CHECK IN */
 function handleCheckIn() {
   const s = requireSessionOrRedirect();
   if (!s) return;
@@ -139,6 +168,11 @@ function handleCheckIn() {
   const list = getAttendance();
 
   let row = list.find((r) => r.uid === s.uid && r.date === now.dateStr);
+
+  if (row && row.status === "Off Day") {
+    showToast("This day is marked Off Day", "error");
+    return;
+  }
 
   if (row && row.in !== "—") {
     showToast("Already checked IN today", "error");
@@ -168,6 +202,7 @@ function handleCheckIn() {
   refreshAttendanceUI();
 }
 
+/* CHECK OUT */
 function handleCheckOut() {
   const s = requireSessionOrRedirect();
   if (!s) return;
@@ -177,6 +212,10 @@ function handleCheckOut() {
 
   if (!row || row.in === "—") {
     showToast("Please Check IN first", "error");
+    return;
+  }
+  if (row.status === "Off Day") {
+    showToast("This day is marked Off Day", "error");
     return;
   }
   if (row.out !== "—") {
@@ -193,6 +232,155 @@ function handleCheckOut() {
   setAttendance(list);
   addNotification("Attendance", `${s.name} checked OUT at ${now.timeStr}`);
   refreshAttendanceUI();
+}
+
+/* ATTENDANCE: Mark Off Day (Admin/Manager/Supervisor only) */
+function markOffDay(uid, dateStr) {
+  const list = getAttendance();
+  const row = list.find((r) => r.uid === uid && r.date === dateStr);
+  if (!row) {
+    // create row if not exists, mark as Off Day
+    const emp = findUserByUID(uid);
+    if (!emp) return;
+    list.unshift({
+      uid: emp.uid,
+      name: emp.name,
+      role: emp.role,
+      date: dateStr,
+      in: "—",
+      out: "—",
+      netHours: 0,
+      overtime: 0,
+      status: "Off Day",
+    });
+  } else {
+    row.in = "—";
+    row.out = "—";
+    row.netHours = 0;
+    row.overtime = 0;
+    row.status = "Off Day";
+  }
+  setAttendance(list);
+  addNotification("Attendance", `Marked Off Day for ${uid} (${dateStr})`);
+  refreshAttendanceUI();
+}
+
+/* ATTENDANCE: Reset day (keep date, clear IN/OUT) */
+function resetAttendance(uid, dateStr) {
+  const list = getAttendance();
+  const row = list.find((r) => r.uid === uid && r.date === dateStr);
+  if (!row) return;
+  row.in = "—";
+  row.out = "—";
+  row.netHours = 0;
+  row.overtime = 0;
+  row.status = "AB";
+  setAttendance(list);
+  addNotification("Attendance", `Reset attendance for ${uid} (${dateStr})`);
+  refreshAttendanceUI();
+}
+
+/* ATTENDANCE: Edit IN/OUT times manually */
+function saveEditedAttendance(uid, dateStr, newIn, newOut) {
+  const list = getAttendance();
+  const row = list.find((r) => r.uid === uid && r.date === dateStr);
+  if (!row) return;
+
+  row.in = newIn || "—";
+  row.out = newOut || "—";
+
+  if (row.in !== "—" && row.out !== "—") {
+    const duty = computeDuty(row.in, row.out);
+    row.netHours = duty.netHours;
+    row.overtime = duty.overtime;
+    row.status = "Present";
+  } else if (row.status === "Off Day") {
+    // keep Off Day if admin already set it
+    row.netHours = 0;
+    row.overtime = 0;
+  } else {
+    // partial or no info
+    if (row.in === "—" && row.out === "—") {
+      row.status = "AB";
+      row.netHours = 0;
+      row.overtime = 0;
+    } else {
+      row.status = "Present";
+    }
+  }
+
+  setAttendance(list);
+  addNotification(
+    "Attendance",
+    `Edited attendance for ${uid} (${dateStr})`
+  );
+  refreshAttendanceUI();
+}
+
+/* ------------------ Overtime Logic ------------------ */
+/*
+   Overtime entries are separate manual records that a Supervisor/Manager/Admin can add.
+   We still apply same duty calculation rule:
+   totalHours = OUT-IN minus 1h break
+   overtimeHours = totalHours - 10, >=0
+*/
+function calcOvertimeHours(inTime, outTime) {
+  const duty = computeDuty(inTime, outTime); // same function
+  return {
+    dutyHours: duty.netHours,
+    overtimeHours: duty.overtime,
+  };
+}
+
+function addOrUpdateOvertime(rowData) {
+  // rowData = { uid, date, inTime, outTime }
+  let list = getOvertime();
+
+  // If already exists same (uid+date+inTime+outTime) or we want editable by index?
+  // We'll just push new each time for now.
+  const { dutyHours, overtimeHours } = calcOvertimeHours(
+    rowData.inTime,
+    rowData.outTime
+  );
+
+  list.unshift({
+    uid: rowData.uid,
+    name: (findUserByUID(rowData.uid)?.name) || rowData.uid,
+    date: rowData.date,
+    in: rowData.inTime,
+    out: rowData.outTime,
+    dutyHours: dutyHours,
+    overtime: overtimeHours,
+    ts: Date.now(),
+  });
+
+  setOvertime(list);
+  addNotification(
+    "Overtime",
+    `Overtime logged for ${rowData.uid} (${overtimeHours.toFixed(2)} hr OT)`
+  );
+  renderOvertimeTable();
+}
+
+/* Delete OT row by index */
+function deleteOvertime(index) {
+  let list = getOvertime();
+  if (!list[index]) return;
+  const rec = list[index];
+  list.splice(index, 1);
+  setOvertime(list);
+  addNotification("Overtime", `Removed OT for ${rec.uid} on ${rec.date}`);
+  renderOvertimeTable();
+}
+
+/* ------------------ "Find user by UID" helper ------------------ */
+function findUserByUID(uid) {
+  // Check admin first
+  const adminMatch = KPS_USERS.find((u) => u.uid === uid);
+  if (adminMatch) return adminMatch;
+  // Then employees
+  const emps = getEmployees();
+  return emps.find((e) => e.uid === uid);
 }
 
 /* ------------------ Toast popup ------------------ */
@@ -214,24 +402,20 @@ function showToast(message, type) {
   }, 4000);
 }
 
-/* ------------------ Dashboard render ------------------ */
+/* ------------------ Sidebar Profile / Notifications ------------------ */
 function renderSidebarProfile() {
   const s = getSession();
   if (!s) return;
-  // left sidebar profile boxes
-  const n1 = document.getElementById("dash-user-name");
-  const r1 = document.getElementById("dash-user-role");
-  const sec = document.getElementById("dash-user-section");
-  if (n1) n1.textContent = s.name;
-  if (r1) r1.textContent = s.role;
-  if (sec) sec.textContent = s.section || "—";
 
-  // welcome area + chip in topbar
-  const welcomeName = document.getElementById("welcome-name");
-  const welcomeRole = document.getElementById("welcome-role");
-  if (welcomeName) welcomeName.textContent = s.name;
-  if (welcomeRole) welcomeRole.textContent = s.role;
+  // Sidebar identity
+  const nameEl = document.getElementById("dash-user-name");
+  const roleEl = document.getElementById("dash-user-role");
+  const secEl = document.getElementById("dash-user-section");
+  if (nameEl) nameEl.textContent = s.name;
+  if (roleEl) roleEl.textContent = s.role;
+  if (secEl) secEl.textContent = s.section || "—";
 
+  // Header chip
   const chipName = document.getElementById("chip-name");
   const chipRole = document.getElementById("chip-role");
   const chipAvatar = document.getElementById("chip-avatar");
@@ -240,11 +424,17 @@ function renderSidebarProfile() {
   if (chipAvatar) {
     chipAvatar.textContent = s.name
       .split(" ")
-      .map((part) => part[0])
+      .map((n) => n[0])
       .join("")
       .slice(0, 2)
       .toUpperCase();
   }
+
+  // Welcome line on dashboard
+  const welcomeName = document.getElementById("welcome-name");
+  const welcomeRole = document.getElementById("welcome-role");
+  if (welcomeName) welcomeName.textContent = s.name;
+  if (welcomeRole) welcomeRole.textContent = s.role;
 }
 
 function renderSidebarNotifications() {
@@ -267,6 +457,7 @@ function renderSidebarNotifications() {
     .join("");
 }
 
+/* ------------------ Dashboard KPI + latest table ------------------ */
 function renderKpis() {
   const attVal = document.getElementById("kpi-attendance");
   const otVal = document.getElementById("kpi-overtime");
@@ -274,14 +465,26 @@ function renderKpis() {
   const notifVal = document.getElementById("kpi-notif-count");
 
   const attList = getAttendance();
+  const otList = getOvertime();
   const notifList = getNotifications();
-  const todayStr = getNow().dateStr;
 
+  const todayStr = getNow().dateStr;
   const todaysRows = attList.filter((r) => r.date === todayStr);
-  const totalOT = attList.reduce((sum, r) => sum + (r.overtime || 0), 0);
+
+  // total OT from attendance
+  const totalAttendanceOT = attList.reduce(
+    (sum, r) => sum + (r.overtime || 0),
+    0
+  );
+  // total OT from manual overtime list
+  const totalManualOT = otList.reduce(
+    (sum, r) => sum + (r.overtime || 0),
+    0
+  );
 
   if (attVal) attVal.textContent = todaysRows.length + " records";
-  if (otVal) otVal.textContent = totalOT.toFixed(2) + " hr";
+  if (otVal)
+    otVal.textContent = (totalAttendanceOT + totalManualOT).toFixed(2) + " hr";
   if (dedVal) dedVal.textContent = "—";
   if (notifVal) notifVal.textContent = notifList.length.toString();
 }
@@ -293,21 +496,22 @@ function renderLatestAttendanceTable() {
   tbody.innerHTML = list
     .map(
       (r) => `
-    <tr>
-      <td>${r.uid}</td>
-      <td>${r.name}</td>
-      <td>${r.date}</td>
-      <td>${r.in}</td>
-      <td>${r.out}</td>
-      <td>${r.netHours}</td>
-      <td>${r.overtime}</td>
-      <td>${r.status}</td>
-    </tr>`
+      <tr>
+        <td>${r.uid}</td>
+        <td>${r.name}</td>
+        <td>${r.date}</td>
+        <td>${r.in}</td>
+        <td>${r.out}</td>
+        <td>${r.netHours}</td>
+        <td>${r.overtime}</td>
+        <td>${r.status}</td>
+      </tr>`
     )
     .join("");
 }
 
-/* today's line for Attendance page */
+/* ------------------ Attendance Page Rendering ------------------ */
+
 function renderTodaySummary() {
   const s = getSession();
   const now = getNow();
@@ -321,7 +525,7 @@ function renderTodaySummary() {
   const otEl = document.getElementById("att-today-ot");
   const stEl = document.getElementById("att-today-status");
 
-  if (!dateEl) return; // not on attendance page
+  if (!dateEl) return;
 
   if (!row) {
     dateEl.textContent = now.dateStr;
@@ -344,41 +548,159 @@ function renderTodaySummary() {
 function renderAttendanceTable() {
   const tbody = document.getElementById("attendance-tbody");
   if (!tbody) return;
+  const s = getSession();
   const list = getAttendance();
-  tbody.innerHTML = list
-    .map(
-      (r) => `
-    <tr>
-      <td>${r.uid}</td>
-      <td>${r.name}</td>
-      <td>${r.date}</td>
-      <td>${r.in}</td>
-      <td>${r.out}</td>
-      <td>${r.netHours}</td>
-      <td>${r.overtime}</td>
-      <td>${r.status}</td>
-    </tr>`
-    )
+
+  const rowsHtml = list
+    .map((r) => {
+      // show edit controls only if user can edit
+      let actionCol = "";
+      if (canEditAttendance(s)) {
+        actionCol = `
+          <button class="btn-edit" data-edit-att="${r.uid}" data-edit-date="${r.date}">✏️</button>
+          <button class="btn-reset" data-reset-att="${r.uid}" data-reset-date="${r.date}">↺</button>
+          <button class="btn-reset" data-offday-att="${r.uid}" data-offday-date="${r.date}">Off Day</button>
+        `;
+      }
+      return `
+      <tr>
+        <td>${r.uid}</td>
+        <td>${r.name}</td>
+        <td>${r.date}</td>
+        <td>${r.in}</td>
+        <td>${r.out}</td>
+        <td>${r.netHours}</td>
+        <td>${r.overtime}</td>
+        <td>${r.status}</td>
+        <td>${actionCol}</td>
+      </tr>`;
+    })
     .join("");
+
+  tbody.innerHTML = rowsHtml;
+
+  // wire edit / reset / offday buttons
+  if (canEditAttendance(s)) {
+    tbody.querySelectorAll("[data-edit-att]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const uid = btn.getAttribute("data-edit-att");
+        const dateStr = btn.getAttribute("data-edit-date");
+        openAttendanceEditModal(uid, dateStr);
+      });
+    });
+    tbody.querySelectorAll("[data-reset-att]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const uid = btn.getAttribute("data-reset-att");
+        const dateStr = btn.getAttribute("data-reset-date");
+        resetAttendance(uid, dateStr);
+      });
+    });
+    tbody.querySelectorAll("[data-offday-att]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const uid = btn.getAttribute("data-offday-att");
+        const dateStr = btn.getAttribute("data-offday-date");
+        markOffDay(uid, dateStr);
+      });
+    });
+  }
 }
 
-/* helper: refresh attendance-related UIs */
+/* Attendance Edit Modal Logic */
+function openAttendanceEditModal(uid, dateStr) {
+  const list = getAttendance();
+  const row = list.find((r) => r.uid === uid && r.date === dateStr);
+  if (!row) return;
+
+  const modal = ensureAttendanceModal(); // build if not exists
+  modal.style.display = "flex";
+
+  // fill fields
+  document.getElementById("att-edit-uid").value = row.uid;
+  document.getElementById("att-edit-date").value = row.date;
+  document.getElementById("att-edit-in").value =
+    row.in && row.in !== "—" ? row.in : "";
+  document.getElementById("att-edit-out").value =
+    row.out && row.out !== "—" ? row.out : "";
+}
+
+function ensureAttendanceModal() {
+  let modal = document.getElementById("att-edit-modal");
+  if (modal) return modal;
+
+  // create modal HTML once if not present
+  modal = document.createElement("div");
+  modal.className = "modal";
+  modal.id = "att-edit-modal";
+  modal.innerHTML = `
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2>Edit Attendance</h2>
+        <button type="button" class="modal-close" id="att-edit-close">×</button>
+      </div>
+      <form id="att-edit-form" class="modal-form">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>UID</label>
+            <input id="att-edit-uid" type="text" readonly />
+          </div>
+          <div class="form-group">
+            <label>Date</label>
+            <input id="att-edit-date" type="text" readonly />
+          </div>
+          <div class="form-group">
+            <label>Check-IN</label>
+            <input id="att-edit-in" type="time" />
+          </div>
+          <div class="form-group">
+            <label>Check-OUT</label>
+            <input id="att-edit-out" type="time" />
+          </div>
+        </div>
+        <button class="btn-save" type="submit">Save Changes</button>
+      </form>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  // close button
+  document
+    .getElementById("att-edit-close")
+    .addEventListener("click", () => (modal.style.display = "none"));
+
+  // submit
+  document
+    .getElementById("att-edit-form")
+    .addEventListener("submit", (e) => {
+      e.preventDefault();
+      const uid = document.getElementById("att-edit-uid").value;
+      const dateStr = document.getElementById("att-edit-date").value;
+      const newIn = document.getElementById("att-edit-in").value;
+      const newOut = document.getElementById("att-edit-out").value;
+      saveEditedAttendance(uid, dateStr, newIn, newOut);
+      modal.style.display = "none";
+    });
+
+  return modal;
+}
+
+/* helper to refresh attendance UIs everywhere */
 function refreshAttendanceUI() {
-  // dashboard
   if (document.body.dataset.page === "dashboard") {
     renderKpis();
     renderLatestAttendanceTable();
     renderSidebarNotifications();
   }
-  // attendance page
   if (document.body.dataset.page === "attendance") {
     renderAttendanceTable();
     renderTodaySummary();
     renderSidebarNotifications();
   }
+  if (document.body.dataset.page === "overtime") {
+    renderOvertimeTable();
+  }
 }
 
-/* ------------------ Employee Directory logic ------------------ */
+/* ------------------ Employees Page Rendering ------------------ */
 
 function openEmpModalForNew() {
   const modal = document.getElementById("emp-modal");
@@ -418,7 +740,8 @@ function openEmpModalForEdit(uid) {
 }
 
 function closeEmpModal() {
-  document.getElementById("emp-modal").style.display = "none";
+  const modal = document.getElementById("emp-modal");
+  if (modal) modal.style.display = "none";
 }
 
 function handleGeneratePassword() {
@@ -447,7 +770,6 @@ function handleSaveEmployee(e) {
   const idx = list.findIndex((x) => x.uid === uid);
 
   if (idx >= 0) {
-    // edit
     list[idx] = {
       ...list[idx],
       name,
@@ -460,7 +782,6 @@ function handleSaveEmployee(e) {
     showToast("Employee updated", "ok");
     addNotification("Employee", `Updated ${name} (${uid})`);
   } else {
-    // new
     list.unshift({
       uid,
       name,
@@ -510,28 +831,158 @@ function renderEmployeesTable() {
   tbody.innerHTML = filtered
     .map(
       (emp) => `
-    <tr>
-      <td>${emp.uid}</td>
-      <td>${emp.name}</td>
-      <td>${emp.role}</td>
-      <td>${emp.section || "-"}</td>
-      <td>${emp.shift || "-"}</td>
-      <td>${emp.joinDate || "-"}</td>
-      <td>${emp.password || "—"}</td>
-      <td>
-        <button class="btn-edit" data-edit="${emp.uid}">Edit</button>
-        <button class="btn-reset" data-del="${emp.uid}">Delete</button>
-      </td>
-    </tr>`
+      <tr>
+        <td>${emp.uid}</td>
+        <td>${emp.name}</td>
+        <td>${emp.role}</td>
+        <td>${emp.section || "-"}</td>
+        <td>${emp.shift || "-"}</td>
+        <td>${emp.joinDate || "-"}</td>
+        <td>${emp.password || "—"}</td>
+        <td>
+          <button class="btn-edit" data-edit="${emp.uid}">Edit</button>
+          <button class="btn-reset" data-del="${emp.uid}">Delete</button>
+        </td>
+      </tr>`
     )
     .join("");
 
-  // attach edit/delete
+  // Link edit/delete actions
   tbody.querySelectorAll("[data-edit]").forEach((btn) => {
     btn.addEventListener("click", () => openEmpModalForEdit(btn.dataset.edit));
   });
   tbody.querySelectorAll("[data-del]").forEach((btn) => {
     btn.addEventListener("click", () => handleDeleteEmployee(btn.dataset.del));
+  });
+}
+
+/* ------------------ Overtime Page Rendering ------------------ */
+function openOTModal() {
+  const modal = ensureOTModal();
+  // clear fields
+  document.getElementById("ot-uid").value = "";
+  document.getElementById("ot-date").value = "";
+  document.getElementById("ot-in").value = "";
+  document.getElementById("ot-out").value = "";
+  modal.style.display = "flex";
+}
+function closeOTModal() {
+  const modal = document.getElementById("ot-modal") || document.getElementById("ot-modal-dynamic");
+  if (modal) modal.style.display = "none";
+}
+
+// if the static overtime.html already included #ot-modal, we'll just use that
+function ensureOTModal() {
+  let modal = document.getElementById("ot-modal");
+  if (modal) return modal;
+
+  modal = document.getElementById("ot-modal-dynamic");
+  if (modal) return modal;
+
+  // build fallback if not defined
+  modal = document.createElement("div");
+  modal.id = "ot-modal-dynamic";
+  modal.className = "modal";
+  modal.innerHTML = `
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2>Add Overtime</h2>
+        <button type="button" class="modal-close" id="close-ot-modal-dyn">×</button>
+      </div>
+      <form id="ot-form-dyn">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>UID</label>
+            <input type="text" id="ot-uid" required>
+          </div>
+          <div class="form-group">
+            <label>Date</label>
+            <input type="date" id="ot-date" required>
+          </div>
+          <div class="form-group">
+            <label>IN Time</label>
+            <input type="time" id="ot-in" required>
+          </div>
+          <div class="form-group">
+            <label>OUT Time</label>
+            <input type="time" id="ot-out" required>
+          </div>
+        </div>
+        <button class="btn-save" type="submit">Save Overtime</button>
+      </form>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  document
+    .getElementById("close-ot-modal-dyn")
+    .addEventListener("click", closeOTModal);
+
+  document
+    .getElementById("ot-form-dyn")
+    .addEventListener("submit", handleSaveOvertime);
+
+  return modal;
+}
+
+function handleSaveOvertime(e) {
+  e.preventDefault();
+  const s = getSession();
+  if (!canManageOvertime(s)) {
+    showToast("Not allowed", "error");
+    return;
+  }
+
+  const uid = document.getElementById("ot-uid").value.trim();
+  const date = document.getElementById("ot-date").value.trim();
+  const inTime = document.getElementById("ot-in").value.trim();
+  const outTime = document.getElementById("ot-out").value.trim();
+
+  if (!uid || !date || !inTime || !outTime) {
+    showToast("Fill all overtime fields", "error");
+    return;
+  }
+
+  addOrUpdateOvertime({
+    uid,
+    date,
+    inTime,
+    outTime,
+  });
+
+  closeOTModal();
+  renderOvertimeTable();
+}
+
+function renderOvertimeTable() {
+  const tbody = document.getElementById("ot-tbody");
+  if (!tbody) return;
+
+  const list = getOvertime();
+  tbody.innerHTML = list
+    .map((rec, idx) => {
+      return `
+        <tr>
+          <td>${rec.uid}</td>
+          <td>${rec.name}</td>
+          <td>${rec.date}</td>
+          <td>${rec.in}</td>
+          <td>${rec.out}</td>
+          <td>${rec.dutyHours.toFixed(2)}</td>
+          <td>${rec.overtime.toFixed(2)}</td>
+          <td>
+            <button class="btn-reset" data-del-ot="${idx}">Delete</button>
+          </td>
+        </tr>
+      `;
+    })
+    .join("");
+
+  tbody.querySelectorAll("[data-del-ot]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const idx = btn.getAttribute("data-del-ot");
+      deleteOvertime(idx);
+    });
   });
 }
 
@@ -545,7 +996,6 @@ function initUserDropdown() {
     menu.classList.toggle("show");
   });
 
-  // Profile
   const profBtn = menu.querySelector("[data-goto-profile]");
   if (profBtn) {
     profBtn.addEventListener("click", () => {
@@ -553,16 +1003,6 @@ function initUserDropdown() {
     });
   }
 
-  // Change Password (future)
-  const pwBtn = menu.querySelector("[data-goto-changepw]");
-  if (pwBtn) {
-    pwBtn.addEventListener("click", () => {
-      showToast("Password change coming soon", "ok");
-      menu.classList.remove("show");
-    });
-  }
-
-  // Sign Out
   const outBtn = menu.querySelector("[data-logout]");
   if (outBtn) {
     outBtn.addEventListener("click", () => {
@@ -582,12 +1022,12 @@ function handleLoginSubmit(e) {
     return;
   }
 
-  // 1. Check Admin first
+  // Admin first
   let found = KPS_USERS.find(
     (u) => u.uid.toString() === idVal.toString() && u.password === pwVal
   );
 
-  // 2. Check Employee list
+  // Employees next
   if (!found) {
     const employees = getEmployees();
     found = employees.find(
@@ -615,29 +1055,29 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  // all other pages require login
+  // For every other page, require a session
   const s = requireSessionOrRedirect();
   if (!s) return;
 
-  // fill side profile + chip + role/section
   renderSidebarProfile();
   initUserDropdown();
 
-  // permission: hide Employees tab on nav if not Admin/Manager/Supervisor
-  if (s.role !== "Admin" && s.role !== "Manager" && s.role !== "Supervisor") {
+  // Hide Employees tab from Staff
+  if (!canManageEmployees(s)) {
     const empNav = document.getElementById("nav-employees-link");
     if (empNav) empNav.style.display = "none";
   }
 
-  // DASHBOARD
+  // DASHBOARD PAGE
   if (page === "dashboard") {
     renderSidebarNotifications();
     renderKpis();
     renderLatestAttendanceTable();
   }
 
-  // ATTENDANCE
+  // ATTENDANCE PAGE
   if (page === "attendance") {
+    // wire buttons
     const inBtn = document.getElementById("checkin-btn");
     const outBtn = document.getElementById("checkout-btn");
     if (inBtn) inBtn.addEventListener("click", handleCheckIn);
@@ -648,38 +1088,28 @@ document.addEventListener("DOMContentLoaded", () => {
     renderAttendanceTable();
   }
 
-  // EMPLOYEES
+  // EMPLOYEES PAGE
   if (page === "employees") {
-    // Only admins/managers/supervisors can add
-    if (
-      s.role === "Admin" ||
-      s.role === "Manager" ||
-      s.role === "Supervisor"
-    ) {
-      const addBtn = document.getElementById("open-emp-modal");
-      if (addBtn) {
+    // open modal only if you have permission
+    const addBtn = document.getElementById("open-emp-modal");
+    if (addBtn) {
+      if (canManageEmployees(s)) {
         addBtn.style.display = "inline-block";
         addBtn.addEventListener("click", openEmpModalForNew);
+      } else {
+        addBtn.style.display = "none";
       }
-    } else {
-      // hide if regular staff
-      const addBtn = document.getElementById("open-emp-modal");
-      if (addBtn) addBtn.style.display = "none";
     }
 
-    // Close modal
     const closeBtn = document.getElementById("close-emp-modal");
     if (closeBtn) closeBtn.addEventListener("click", closeEmpModal);
 
-    // Save employee
     const form = document.getElementById("emp-form");
     if (form) form.addEventListener("submit", handleSaveEmployee);
 
-    // Generate password
     const genBtn = document.getElementById("generate-pw");
     if (genBtn) genBtn.addEventListener("click", handleGeneratePassword);
 
-    // Filter search
     const searchBox = document.getElementById("emp-search");
     if (searchBox) {
       searchBox.addEventListener("input", renderEmployeesTable);
@@ -687,5 +1117,54 @@ document.addEventListener("DOMContentLoaded", () => {
 
     renderSidebarNotifications();
     renderEmployeesTable();
+  }
+
+  // OVERTIME PAGE
+  if (page === "overtime") {
+    // Only supervisors/managers/admin can add overtime
+    const otBtn = document.getElementById("add-ot-btn");
+    if (otBtn) {
+      if (canManageOvertime(s)) {
+        otBtn.style.display = "inline-block";
+        otBtn.addEventListener("click", openOTModal);
+      } else {
+        otBtn.style.display = "none";
+      }
+    }
+
+    // If static overtime.html defined #ot-modal with <form id="ot-form">,
+    // wire its close + submit here:
+    const otCloseStatic = document.getElementById("close-ot-modal");
+    if (otCloseStatic) {
+      otCloseStatic.addEventListener("click", () => {
+        const modal = document.getElementById("ot-modal");
+        if (modal) modal.style.display = "none";
+      });
+    }
+
+    const otFormStatic = document.getElementById("ot-form");
+    if (otFormStatic) {
+      otFormStatic.addEventListener("submit", (e) => {
+        e.preventDefault();
+        if (!canManageOvertime(s)) {
+          showToast("Not allowed", "error");
+          return;
+        }
+        const uid = document.getElementById("ot-uid").value.trim();
+        const date = document.getElementById("ot-date").value.trim();
+        const inTime = document.getElementById("ot-in").value.trim();
+        const outTime = document.getElementById("ot-out").value.trim();
+        if (!uid || !date || !inTime || !outTime) {
+          showToast("Fill all overtime fields", "error");
+          return;
+        }
+        addOrUpdateOvertime({ uid, date, inTime, outTime });
+        const modal = document.getElementById("ot-modal");
+        if (modal) modal.style.display = "none";
+        renderOvertimeTable();
+      });
+    }
+
+    renderOvertimeTable();
   }
 });
