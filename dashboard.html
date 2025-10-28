@@ -2,26 +2,27 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>KPS • Dashboard </title>
+  <title>KPS • Dashboard</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <link rel="stylesheet" href="style.css" />
   <script src="app.js" defer></script>
 </head>
+
 <body data-page="dashboard">
 
-  <!-- HEADER BAR -->
+  <!-- HEADER -->
   <header class="kps-header">
     <div class="header-left">
       <div class="brand-mini">
-        <img src="assets/logo.png" alt="Kcal" class="brand-logo" />
+        <div class="brand-logo">kcal</div>
         <div class="brand-texts">
-          <div class="brand-name">KCAL</div>
+          <div class="brand-name">Kcal Packaging System</div>
           <div class="brand-slogan">Healthy Food, Healthy Life</div>
         </div>
       </div>
     </div>
 
     <div class="header-right">
-
       <!-- Bell -->
       <div class="notif-bell" onclick="window.location.href='notifications.html'">
         <span class="bell-icon">🔔</span>
@@ -45,14 +46,12 @@
         </div>
       </div>
 
-      <!-- mobile sidebar toggle -->
+      <!-- Mobile menu toggle -->
       <button class="sidebar-toggle" id="sidebarToggle">☰</button>
     </div>
   </header>
 
-  <!-- LAYOUT WRAPPER -->
   <div class="kps-layout">
-
     <!-- SIDEBAR -->
     <aside class="kps-sidebar" id="appSidebar">
       <nav>
@@ -63,37 +62,112 @@
         <a href="deduction.html" class="side-link"><span>💸</span> Deductions</a>
         <a href="notifications.html" class="side-link"><span>🔔</span> Notifications</a>
         <a href="request.html" class="side-link"><span>📄</span> Requests</a>
+        <a href="reports.html" class="side-link"><span>📊</span> Reports</a>
         <a href="profile.html" class="side-link"><span>🙍‍♂️</span> Profile</a>
         <a href="#" data-logout class="side-link logout"><span>⏻</span> Logout</a>
       </nav>
     </aside>
 
-    <!-- MAIN CONTENT AREA -->
+    <!-- MAIN CONTENT -->
     <main class="main-content">
 
-      <!-- PAGE TITLE / CONTROLS -->
+      <!-- HEADER ROW -->
       <div class="page-header">
         <div>
-          <h1 class="page-title"> Dashboard </h1>
+          <h1 class="page-title">Dashboard</h1>
           <p class="page-sub">Kcal Packaging System (KPS) — Developed by Haroon</p>
         </div>
         <div class="page-header-actions">
-          <!-- page buttons go here (Add Employee, etc.) -->
+          <button class="btn-secondary" onclick="window.location.href='attendance.html'">View Attendance</button>
+          <button class="btn-secondary" onclick="window.location.href='reports.html'">Open Reports</button>
         </div>
       </div>
 
-      <!-- PAGE BODY CARDS GO HERE -->
+      <!-- STATS CARDS -->
+      <section class="stats-grid">
+        <div class="stat-box">
+          <div class="stat-head">
+            <span>Total Employees</span>
+            <span>👥</span>
+          </div>
+          <div class="stat-value" id="dashTotalEmployees">0</div>
+          <div class="stat-sub">All Sections</div>
+        </div>
+
+        <div class="stat-box">
+          <div class="stat-head">
+            <span>Present Today</span>
+            <span>🟢</span>
+          </div>
+          <div class="stat-value" id="dashPresentToday">0</div>
+          <div class="stat-sub">On Duty</div>
+        </div>
+
+        <div class="stat-box">
+          <div class="stat-head">
+            <span>On Leave / Off</span>
+            <span>🌙</span>
+          </div>
+          <div class="stat-value" id="dashLeaveToday">0</div>
+          <div class="stat-sub">Off / Sick / Annual</div>
+        </div>
+
+        <div class="stat-box">
+          <div class="stat-head">
+            <span>OT Hours Today</span>
+            <span>⏫</span>
+          </div>
+          <div class="stat-value" id="dashOTToday">0h</div>
+          <div class="stat-sub">Auto + Approved</div>
+        </div>
+
+        <div class="stat-box">
+          <div class="stat-head">
+            <span>Pending Requests</span>
+            <span>📄</span>
+          </div>
+          <div class="stat-value" id="dashPendingReq">0</div>
+          <div class="stat-sub">Waiting Approval</div>
+        </div>
+
+        <div class="stat-box">
+          <div class="stat-head">
+            <span>Unread Notifications</span>
+            <span>🔔</span>
+          </div>
+          <div class="stat-value" id="dashUnreadNotif">0</div>
+          <div class="stat-sub">Last 24h activity</div>
+        </div>
+      </section>
+
+      <!-- LATEST ATTENDANCE -->
       <section class="card">
-        <h2 class="card-title">Card Title</h2>
+        <h2 class="card-title">Latest Attendance</h2>
         <div class="card-body">
-          <!-- table / forms / info -->
+          <table class="kps-table">
+            <thead>
+              <tr>
+                <th>UID</th>
+                <th>Name</th>
+                <th>Date</th>
+                <th>In</th>
+                <th>Out</th>
+                <th>Duty (hrs)</th>
+                <th>OT (hrs)</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="dashAttendanceTable">
+              <!-- filled by app.js -->
+            </tbody>
+          </table>
         </div>
       </section>
 
     </main>
   </div>
 
-  <!-- TOAST -->
+  <!-- Toast container -->
   <div id="toastContainer"></div>
 
 </body>
