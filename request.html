@@ -1,21 +1,190 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>KPS • Requests</title>
-  <link rel="stylesheet" href="style.css"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KPS Requests • Developed by Haroon</title>
+  <link rel="stylesheet" href="style.css">
   <script src="app.js" defer></script>
 </head>
+
 <body data-page="request">
-  <header class="top-nav">
-    <div class="nav-left"><img src="./assets/logo.png" class="nav-logo"/><div class="brand"><div class="brand-title">Requests</div><div class="brand-sub">Placeholder</div></div></div>
-    <nav class="nav-links">
-      <a href="dashboard.html">Dashboard</a><a href="attendance.html">Attendance</a>
-      <a href="employees.html">Employees</a><a href="overtime.html">Overtime</a>
-      <a href="notifications.html">Notifications</a><a href="profile.html" onclick="localStorage.removeItem('kps_profile_view_uid')">Profile</a><a href="#" data-logout>Logout</a>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="logo-section">
+      <img src="./assets/logo.png" alt="Kcal Logo" class="sidebar-logo">
+      <h2>KPS</h2>
+      <p>Packaging System</p>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="attendance.html">Attendance</a>
+      <a href="overtime.html">Overtime</a>
+      <a href="deduction.html">Deduction</a>
+      <a href="employees.html">Employees</a>
+      <a href="notifications.html">Notifications</a>
+      <a href="request.html" class="active">Request</a>
+      <a href="profile.html">Profile</a>
+      <a href="#" data-logout>Logout</a>
     </nav>
-  </header>
-  <main class="page"><section class="panel"><div class="panel-title">Coming soon</div></section></main>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Top Nav -->
+    <header class="top-nav">
+      <div class="top-nav-left">
+        <h1>Employee Requests</h1>
+        <p>Kcal Packaging System (KPS) — Developed by Haroon</p>
+      </div>
+      <div class="top-nav-right">
+        <div class="user-info">
+          <div class="user-avatar">SA</div>
+          <div class="user-details">
+            <span class="user-name">System Admin</span>
+            <span class="user-role">Admin</span>
+          </div>
+          <div class="dropdown">
+            <button class="dropdown-btn">▼</button>
+            <div class="dropdown-menu">
+              <a href="profile.html">Profile</a>
+              <a href="#">Change Password</a>
+              <a href="#" data-logout>Sign Out</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Add Request -->
+    <section class="request-actions">
+      <h2>Submit a New Request</h2>
+      <form id="requestForm" class="request-form">
+        <div class="form-row">
+          <label for="uid">Employee UID</label>
+          <input type="text" id="uid" placeholder="e.g. 10021" required>
+        </div>
+        <div class="form-row">
+          <label for="name">Employee Name</label>
+          <input type="text" id="name" placeholder="e.g. Ahmed Khan" required>
+        </div>
+        <div class="form-row">
+          <label for="type">Request Type</label>
+          <select id="type" required>
+            <option value="">Select Type</option>
+            <option value="Leave">Leave</option>
+            <option value="Overtime">Overtime</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label for="details">Details</label>
+          <textarea id="details" rows="3" placeholder="Explain your request..." required></textarea>
+        </div>
+        <div class="form-row">
+          <label for="date">Request Date</label>
+          <input type="date" id="date" required>
+        </div>
+        <button type="submit" class="btn-primary">Submit Request</button>
+      </form>
+    </section>
+
+    <!-- Requests Table -->
+    <section class="request-table-section">
+      <h2>Submitted Requests</h2>
+      <table class="attendance-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>UID</th>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Details</th>
+            <th>Status</th>
+            <th>Approved By</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="requestTable">
+          <!-- Dynamic rows -->
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <p>Kcal Packaging System (KPS) — Developed by Haroon • All data confidential</p>
+    </footer>
+  </div>
+
+  <!-- Inline JS for Requests -->
+  <script>
+    function loadRequests() {
+      const requests = JSON.parse(localStorage.getItem('requests') || '[]');
+      const tbody = document.getElementById('requestTable');
+      tbody.innerHTML = '';
+
+      requests.forEach((r, index) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${r.date}</td>
+          <td>${r.uid}</td>
+          <td>${r.name}</td>
+          <td>${r.type}</td>
+          <td>${r.details}</td>
+          <td>${r.status}</td>
+          <td>${r.approvedBy || '-'}</td>
+          <td>
+            ${r.status === 'Pending' ? `
+              <button onclick="approveRequest(${index})" class="btn-small btn-success">Approve</button>
+              <button onclick="rejectRequest(${index})" class="btn-small btn-danger">Reject</button>
+            ` : '<span class="badge-done">Processed</span>'}
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    document.getElementById('requestForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const uid = document.getElementById('uid').value.trim();
+      const name = document.getElementById('name').value.trim();
+      const type = document.getElementById('type').value.trim();
+      const details = document.getElementById('details').value.trim();
+      const date = new Date(document.getElementById('date').value).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+
+      if (!uid || !name || !type || !details || !date) {
+        alert('Please fill all fields!');
+        return;
+      }
+
+      const requests = JSON.parse(localStorage.getItem('requests') || '[]');
+      requests.push({ uid, name, type, details, date, status: 'Pending', approvedBy: '' });
+      localStorage.setItem('requests', JSON.stringify(requests));
+      document.getElementById('requestForm').reset();
+      loadRequests();
+      alert('Request Submitted Successfully ✅');
+    });
+
+    function approveRequest(index) {
+      const requests = JSON.parse(localStorage.getItem('requests') || '[]');
+      requests[index].status = 'Approved';
+      requests[index].approvedBy = 'Manager/Admin';
+      localStorage.setItem('requests', JSON.stringify(requests));
+      loadRequests();
+      alert('Request Approved ✅');
+    }
+
+    function rejectRequest(index) {
+      const requests = JSON.parse(localStorage.getItem('requests') || '[]');
+      requests[index].status = 'Rejected';
+      requests[index].approvedBy = 'Manager/Admin';
+      localStorage.setItem('requests', JSON.stringify(requests));
+      loadRequests();
+      alert('Request Rejected ❌');
+    }
+
+    window.onload = loadRequests;
+  </script>
 </body>
 </html>
