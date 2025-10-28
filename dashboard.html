@@ -1,166 +1,123 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>KPS • Dashboard</title>
-  <link rel="stylesheet" href="style.css"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KPS Dashboard • Developed by Haroon</title>
+  <link rel="stylesheet" href="style.css">
   <script src="app.js" defer></script>
-  <body data-page="dashboard">
-  <div class="sidebar">…</div>
-
-  <div class="main-content">
-    <!-- all your dashboard content here -->
-  </div>
-
-  <script src="app.js" defer></script>
-</body>
 </head>
+
 <body data-page="dashboard">
-
-  <!-- Top Navigation Bar -->
-  <header class="topbar">
-    <div class="topbar-left">
-      <img src="./assets/logo.png" class="brand-logo" alt="KCAL Logo">
-      <div class="brand-text">
-        <div class="brand-main">KCAL</div>
-        <div class="brand-sub">Healthy Food, Healthy Life</div>
-      </div>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="logo-section">
+      <img src="./assets/logo.png" alt="Kcal Logo" class="sidebar-logo">
+      <h2>KPS</h2>
+      <p>Packaging System</p>
     </div>
-
-    <nav class="main-nav">
-      <a class="active" href="dashboard.html">Dashboard</a>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" class="active">Dashboard</a>
       <a href="attendance.html">Attendance</a>
-      <a href="employees.html" id="nav-employees-link">Employees</a>
       <a href="overtime.html">Overtime</a>
+      <a href="deduction.html">Deduction</a>
+      <a href="employees.html">Employees</a>
       <a href="notifications.html">Notifications</a>
+      <a href="request.html">Request</a>
+      <a href="profile.html">Profile</a>
+      <a href="#" data-logout>Logout</a>
     </nav>
-
-    <div class="user-nav">
-      <div class="user-chip" id="user-chip">
-        <div class="chip-avatar" id="chip-avatar">SA</div>
-        <div class="chip-info">
-          <div id="chip-name" class="chip-name">System Admin</div>
-          <div id="chip-role" class="chip-role">Admin</div>
-        </div>
-        <div class="chip-caret">▼</div>
-      </div>
-
-      <div class="user-dropdown" id="user-dropdown">
-        <button class="dropdown-item" data-goto-profile>Profile</button>
-        <button class="dropdown-item" data-goto-changepw>Change Password</button>
-        <button class="dropdown-item danger" data-logout>Sign Out</button>
-      </div>
-    </div>
-  </header>
-
-  <!-- Responsive wrapper: sidebar + content -->
-  <div class="layout">
-
-    <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-inner">
-        <!-- Profile Card -->
-        <section class="profile-card">
-          <div class="profile-photo-shell">
-            <img id="dash-profile-photo" src="./assets/default-avatar.png" alt="User Photo" class="profile-photo-img">
-          </div>
-          <div class="profile-meta">
-            <div id="dash-user-name" class="profile-name">User Name</div>
-            <div id="dash-user-role" class="profile-role">Role</div>
-            <div id="dash-user-section" class="profile-section">Section</div>
-          </div>
-        </section>
-
-        <!-- Notifications box -->
-        <section class="side-panel">
-          <div class="side-panel-head">
-            <div class="side-panel-title">Notifications</div>
-            <a href="notifications.html" class="view-all-link">View All ›</a>
-          </div>
-          <ul id="sidebar-notif-list" class="notif-mini-list">
-            <!-- latest 5 notifications injected here -->
-          </ul>
-        </section>
-      </div>
-    </aside>
-
-    <!-- Main content area -->
-    <main class="content-area">
-      <!-- Welcome row -->
-      <section class="welcome-row">
-        <div class="welcome-head">
-          <div>
-            <div class="welcome-title">
-              Welcome <span id="welcome-name">User</span> -
-              <span id="welcome-role">Role</span>
-            </div>
-            <div class="welcome-motivate" id="welcome-message">
-              Stay safe. Take care of your team 👷
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- KPI Cards row -->
-      <section class="kpi-row">
-        <div class="kpi-card">
-          <div class="kpi-label">Attendance</div>
-          <div class="kpi-value" id="kpi-attendance">--</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Overtime</div>
-          <div class="kpi-value" id="kpi-overtime">--</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Deductions</div>
-          <div class="kpi-value" id="kpi-deduction">--</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Notifications</div>
-          <div class="kpi-value" id="kpi-notif-count">--</div>
-        </div>
-      </section>
-
-      <!-- Latest Attendance Table -->
-      <section class="panel-block">
-        <div class="panel-head">
-          <div class="panel-title">Latest Attendance</div>
-        </div>
-
-        <div class="table-shell">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>UID</th>
-                <th>Name</th>
-                <th>Date</th>
-                <th>IN</th>
-                <th>OUT</th>
-                <th>Duty</th>
-                <th>OT</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody id="latest-attendance-tbody">
-              <!-- filled by app.js -->
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <footer class="dash-footer">
-        Kcal Packaging System (KPS) — Developed by Haroon • All data confidential
-      </footer>
-    </main>
   </div>
 
-  <!-- Toast notification container (bottom-right corner) -->
-  <div id="toast-area" class="toast-area"></div>
-<script>
-  window.addEventListener('load', () => {
-    document.body.classList.add('page-loaded');
-  });
-</script>
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Top Nav -->
+    <header class="top-nav">
+      <div class="top-nav-left">
+        <h1>Kcal Packaging System (KPS)</h1>
+        <p>Developed by Haroon</p>
+      </div>
+      <div class="top-nav-right">
+        <div class="user-info">
+          <div class="user-avatar">SA</div>
+          <div class="user-details">
+            <span class="user-name">System Admin</span>
+            <span class="user-role">Admin</span>
+          </div>
+          <div class="dropdown">
+            <button class="dropdown-btn">▼</button>
+            <div class="dropdown-menu">
+              <a href="profile.html">Profile</a>
+              <a href="#">Change Password</a>
+              <a href="#" data-logout>Sign Out</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Dashboard Overview -->
+    <section class="dashboard-overview">
+      <div class="dashboard-card">
+        <h3>Attendance</h3>
+        <p>92% Present</p>
+      </div>
+      <div class="dashboard-card">
+        <h3>Overtime</h3>
+        <p>6.00 hrs</p>
+      </div>
+      <div class="dashboard-card">
+        <h3>Deductions</h3>
+        <p>236.25 AED</p>
+      </div>
+      <div class="dashboard-card">
+        <h3>Notifications</h3>
+        <p>7 New</p>
+      </div>
+    </section>
+
+    <!-- Recent Attendance -->
+    <section class="recent-attendance">
+      <h2>Latest Attendance</h2>
+      <table class="attendance-table">
+        <thead>
+          <tr>
+            <th>UID</th>
+            <th>Name</th>
+            <th>Date</th>
+            <th>IN</th>
+            <th>OUT</th>
+            <th>Duty</th>
+            <th>OT</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="attendance-list">
+          <tr>
+            <td>10001</td>
+            <td>Haroon</td>
+            <td>28 Oct 2025</td>
+            <td>08:00</td>
+            <td>18:00</td>
+            <td>10 hrs</td>
+            <td>1.0 hr</td>
+            <td>Present</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <p>Kcal Packaging System (KPS) — Developed by Haroon • All data confidential</p>
+    </footer>
+  </div>
+
+  <!-- Optional Smooth Page Load -->
+  <script>
+    window.addEventListener('load', () => {
+      document.body.classList.add('page-loaded');
+    });
+  </script>
 </body>
 </html>
