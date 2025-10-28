@@ -1,121 +1,100 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KPS Dashboard • Developed by Haroon</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <title>KPS • Dashboard </title>
+  <link rel="stylesheet" href="style.css" />
   <script src="app.js" defer></script>
 </head>
-
 <body data-page="dashboard">
-  <!-- Sidebar -->
-  <div class="sidebar">
-    <div class="logo-section">
-      <img src="./assets/logo.png" alt="Kcal Logo" class="sidebar-logo">
-    </div>
-    <nav class="sidebar-nav">
-      <a href="dashboard.html" class="active">Dashboard</a>
-      <a href="attendance.html">Attendance</a>
-      <a href="overtime.html">Overtime</a>
-      <a href="deduction.html">Deduction</a>
-      <a href="employees.html">Employees</a>
-      <a href="notifications.html">Notifications</a>
-      <a href="request.html">Request</a>
-      <a href="profile.html">Profile</a>
-      <a href="#" data-logout>Logout</a>
-    </nav>
-  </div>
 
-  <!-- Main Content -->
-<div class="top-nav-right">
-  <!-- Bell / Notification Icon -->
-  <div class="notif-bell" onclick="window.location.href='notifications.html'">
-    <span class="bell-icon">🔔</span>
-    <span class="notif-badge" id="notifBadge">0</span>
-  </div>
-
-  <!-- User info / dropdown -->
-  <div class="user-info">
-    <div class="user-avatar" id="headerAvatar">SA</div>
-    <div class="user-details">
-      <span class="user-name" id="headerName">System Admin</span>
-      <span class="user-role" id="headerRole">Admin</span>
-    </div>
-    <div class="dropdown">
-      <button class="dropdown-btn">▼</button>
-      <div class="dropdown-menu">
-        <a href="profile.html">Profile</a>
-        <a href="#">Change Password</a>
-        <a href="#" data-logout>Sign Out</a>
+  <!-- HEADER BAR -->
+  <header class="kps-header">
+    <div class="header-left">
+      <div class="brand-mini">
+        <img src="assets/logo.png" alt="Kcal" class="brand-logo" />
+        <div class="brand-texts">
+          <div class="brand-name">KCAL</div>
+          <div class="brand-slogan">Healthy Food, Healthy Life</div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
-    </header>
 
-    <!-- Dashboard Overview -->
-    <section class="dashboard-overview">
-  <div class="dashboard-card">
-    <h3>Attendance</h3>
-    <p data-dash-attendance>--</p>
-  </div>
-  <div class="dashboard-card">
-    <h3>Overtime</h3>
-    <p data-dash-ot>--</p>
-  </div>
-  <div class="dashboard-card">
-    <h3>Deductions</h3>
-    <p data-dash-ded>--</p>
-  </div>
-  <div class="dashboard-card">
-    <h3>Notifications</h3>
-    <p data-dash-notif>--</p>
-  </div>
-</section>
+    <div class="header-right">
 
-    <!-- Recent Attendance -->
-    <section class="recent-attendance">
-      <h2>Latest Attendance</h2>
-      <table class="attendance-table">
-        <thead>
-          <tr>
-            <th>UID</th>
-            <th>Name</th>
-            <th>Date</th>
-            <th>IN</th>
-            <th>OUT</th>
-            <th>Duty</th>
-            <th>OT</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody id="attendance-list">
-          <tr>
-            <td>10001</td>
-            <td>Haroon</td>
-            <td>28 Oct 2025</td>
-            <td>08:00</td>
-            <td>18:00</td>
-            <td>10 hrs</td>
-            <td>1.0 hr</td>
-            <td>Present</td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
+      <!-- Bell -->
+      <div class="notif-bell" onclick="window.location.href='notifications.html'">
+        <span class="bell-icon">🔔</span>
+        <span class="notif-badge" id="notifBadge">0</span>
+      </div>
 
-    <!-- Footer -->
-    <footer>
-      <p>Kcal Packaging System (KPS) — Developed by Haroon • All data confidential</p>
-    </footer>
+      <!-- User dropdown -->
+      <div class="user-block">
+        <div class="user-avatar" id="headerAvatar">SA</div>
+        <div class="user-info-text">
+          <div class="user-info-name" id="headerName">System Admin</div>
+          <div class="user-info-role" id="headerRole">Admin</div>
+        </div>
+
+        <div class="user-menu-wrapper">
+          <button class="user-menu-toggle">▼</button>
+          <div class="user-menu">
+            <a href="profile.html">Profile</a>
+            <a href="#" data-logout>Logout</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- mobile sidebar toggle -->
+      <button class="sidebar-toggle" id="sidebarToggle">☰</button>
+    </div>
+  </header>
+
+  <!-- LAYOUT WRAPPER -->
+  <div class="kps-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="kps-sidebar" id="appSidebar">
+      <nav>
+        <a href="dashboard.html" class="side-link"><span>🏠</span> Dashboard</a>
+        <a href="attendance.html" class="side-link"><span>🕒</span> Attendance</a>
+        <a href="employees.html" class="side-link"><span>👥</span> Employees</a>
+        <a href="overtime.html" class="side-link"><span>⏫</span> Overtime</a>
+        <a href="deduction.html" class="side-link"><span>💸</span> Deductions</a>
+        <a href="notifications.html" class="side-link"><span>🔔</span> Notifications</a>
+        <a href="request.html" class="side-link"><span>📄</span> Requests</a>
+        <a href="profile.html" class="side-link"><span>🙍‍♂️</span> Profile</a>
+        <a href="#" data-logout class="side-link logout"><span>⏻</span> Logout</a>
+      </nav>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="main-content">
+
+      <!-- PAGE TITLE / CONTROLS -->
+      <div class="page-header">
+        <div>
+          <h1 class="page-title"> Dashboard </h1>
+          <p class="page-sub">Kcal Packaging System (KPS) — Developed by Haroon</p>
+        </div>
+        <div class="page-header-actions">
+          <!-- page buttons go here (Add Employee, etc.) -->
+        </div>
+      </div>
+
+      <!-- PAGE BODY CARDS GO HERE -->
+      <section class="card">
+        <h2 class="card-title">Card Title</h2>
+        <div class="card-body">
+          <!-- table / forms / info -->
+        </div>
+      </section>
+
+    </main>
   </div>
 
-  <!-- Optional Smooth Page Load -->
-  <script>
-    window.addEventListener('load', () => {
-      document.body.classList.add('page-loaded');
-    });
-  </script>
+  <!-- TOAST -->
+  <div id="toastContainer"></div>
+
 </body>
 </html>
