@@ -1,278 +1,298 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>KPS – Employees</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <title>KPS • Employees</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <link rel="stylesheet" href="style.css" />
   <script src="app.js" defer></script>
 </head>
 
 <body data-page="employees">
+
   <!-- HEADER -->
-  <header class="top-nav">
-  <div class="top-nav-left">
-    <h1>Employee Directory</h1>
-    <p>Kcal Packaging System (KPS) — Developed by Haroon</p>
-  </div>
-
-  <div class="top-nav-right">
-    <!-- Bell -->
-    <div class="notif-bell" onclick="window.location.href='notifications.html'">
-      <span class="bell-icon">🔔</span>
-      <span class="notif-badge" id="notifBadge">0</span>
-    </div>
-
-    <!-- User info dropdown -->
-    <div class="user-info">
-      <div class="user-avatar" id="profileTopAvatar">SA</div>
-      <div class="user-details">
-        <span class="user-name" id="profileTopName">System Admin</span>
-        <span class="user-role" id="profileTopRole">Admin</span>
-      </div>
-      <div class="dropdown">
-        <button class="dropdown-btn">▼</button>
-        <div class="dropdown-menu">
-          <a href="profile.html">Profile</a>
-          <a href="#" data-logout>Logout</a>
+  <header class="kps-header">
+    <div class="header-left">
+      <div class="brand-mini">
+        <div class="brand-logo">kcal</div>
+        <div class="brand-texts">
+          <div class="brand-name">Kcal Packaging System</div>
+          <div class="brand-slogan">Healthy Food, Healthy Life</div>
         </div>
       </div>
     </div>
-  </div>
-</header>
 
-  <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <h2>Menu</h2>
-    <a href="dashboard.html">Dashboard</a>
-    <a href="attendance.html">Attendance</a>
-    <a href="employees.html" class="active">Employees</a>
-    <a href="overtime.html">Overtime</a>
-    <a href="notifications.html">Notifications</a>
-    <a href="request.html">Requests</a>
-  </aside>
+    <div class="header-right">
 
-  <!-- MAIN CONTENT -->
-  <main class="main-content">
-    <div class="page-header">
-      <h1>Employee Directory</h1>
-      <button class="btn-primary" id="btnAddEmployee" style="display:none;">+ Add Employee</button>
-      <button class="btn-secondary" id="btnSendNotice" style="display:none;">📢 Send Notice</button>
+      <!-- Bell -->
+      <div class="notif-bell" onclick="window.location.href='notifications.html'">
+        <span class="bell-icon">🔔</span>
+        <span class="notif-badge" id="notifBadge">0</span>
+      </div>
+
+      <!-- User info -->
+      <div class="user-block">
+        <div class="user-avatar" id="headerAvatar">SA</div>
+        <div class="user-info-text">
+          <div class="user-info-name" id="headerName">System Admin</div>
+          <div class="user-info-role" id="headerRole">Admin</div>
+        </div>
+        <div class="user-menu-wrapper">
+          <button class="user-menu-toggle">▼</button>
+          <div class="user-menu">
+            <a href="profile.html">Profile</a>
+            <a href="#" data-logout>Logout</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile sidebar toggle -->
+      <button class="sidebar-toggle" id="sidebarToggle">☰</button>
     </div>
+  </header>
 
-    <table class="kps-table">
-      <thead>
-        <tr>
-          <th>UID</th>
-          <th>Name</th>
-          <th>Role</th>
-          <th>Section</th>
-          <th>Shift</th>
-          <th>Join Date</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody id="employeeTableBody"></tbody>
-    </table>
-  </main>
+  <div class="kps-layout">
+    <!-- SIDEBAR -->
+    <aside class="kps-sidebar" id="appSidebar">
+      <nav>
+        <a href="dashboard.html" class="side-link"><span>🏠</span> Dashboard</a>
+        <a href="attendance.html" class="side-link"><span>🕒</span> Attendance</a>
+        <a href="employees.html" class="side-link active"><span>👥</span> Employees</a>
+        <a href="overtime.html" class="side-link"><span>⏫</span> Overtime</a>
+        <a href="deduction.html" class="side-link"><span>💸</span> Deductions</a>
+        <a href="notifications.html" class="side-link"><span>🔔</span> Notifications</a>
+        <a href="request.html" class="side-link"><span>📄</span> Requests</a>
+        <a href="reports.html" class="side-link"><span>📊</span> Reports</a>
+        <a href="profile.html" class="side-link"><span>🙍‍♂️</span> Profile</a>
+        <a href="#" data-logout class="side-link logout"><span>⏻</span> Logout</a>
+      </nav>
+    </aside>
 
-  <!-- ADD / EDIT EMPLOYEE MODAL -->
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+      <!-- PAGE HEADER -->
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Employees</h1>
+          <p class="page-sub">
+            Manage Packaging Department staff, access records, send notices to all employees.
+          </p>
+        </div>
+
+        <div class="page-header-actions" id="employeeHeaderButtons">
+          <!-- These buttons are shown ONLY for Admin / Manager / Supervisor by JS -->
+          <!-- + Add Employee -->
+          <!-- 📢 Send Notice -->
+        </div>
+      </div>
+
+      <!-- FILTER CARD -->
+      <section class="card">
+        <h2 class="card-title">Directory Filters</h2>
+        <div class="card-body">
+          <div class="form-grid">
+
+            <div class="form-field">
+              <label>Department / Section</label>
+              <select id="empFilterSection">
+                <option value="All">All</option>
+                <option value="KMP Day">KMP Day</option>
+                <option value="KMP Night">KMP Night</option>
+                <option value="FuelUP">FuelUP</option>
+                <option value="Spring">Spring</option>
+                <option value="Kcal Life">Kcal Life</option>
+                <option value="Kcal Lunch">Kcal Lunch</option>
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label>Role</label>
+              <select id="empFilterRole">
+                <option value="All">All</option>
+                <option value="Admin">Admin</option>
+                <option value="Manager">Manager</option>
+                <option value="Supervisor">Supervisor</option>
+                <option value="Staff">Staff</option>
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label>Search by Name / UID</label>
+              <input type="text" id="empSearchText" placeholder="Type to filter..." />
+            </div>
+
+          </div>
+
+          <div style="margin-top:16px; display:flex; flex-wrap:wrap; gap:8px;">
+            <button class="btn-primary" id="btnEmpApplyFilter">Apply Filter</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- EMPLOYEE TABLE -->
+      <section class="card">
+        <h2 class="card-title">Employee Directory</h2>
+        <div class="card-body">
+          <table class="kps-table">
+            <thead>
+              <tr>
+                <th>UID</th>
+                <th>Name</th>
+                <th>Role</th>
+                <th>Section</th>
+                <th>Shift</th>
+                <th>Join Date</th>
+                <th class="actions-cell">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="employeeTableBody">
+              <!-- Filled by JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- FUTURE: EMPLOYEE RECORDS (Attendance / OT / Deductions / Requests / Issue Letters) -->
+      <section class="card">
+        <h2 class="card-title">Employee Record Viewer</h2>
+        <div class="card-body">
+          <div class="form-grid">
+            <div class="form-field">
+              <label>Select Employee (UID)</label>
+              <input type="text" id="recordUID" placeholder="e.g. 10001" />
+            </div>
+            <div class="form-field">
+              <label>Record Type</label>
+              <select id="recordType">
+                <option value="Attendances">Attendances</option>
+                <option value="Employees Data">Employees Data</option>
+                <option value="Overtimes">Overtimes</option>
+                <option value="Requests">Requests</option>
+                <option value="Deductions">Deductions</option>
+                <option value="Issue Letters">Issue Letters</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="margin-top:16px; display:flex; flex-wrap:wrap; gap:8px;">
+            <button class="btn-secondary" id="btnLoadEmployeeRecord">View Record</button>
+          </div>
+
+          <div style="margin-top:16px;">
+            <table class="kps-table">
+              <thead>
+                <tr id="recordTableHead">
+                  <!-- Filled by JS -->
+                </tr>
+              </thead>
+              <tbody id="recordTableBody">
+                <!-- Filled by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- TOAST -->
+  <div id="toastContainer"></div>
+
+  <!-- MODAL: ADD / EDIT EMPLOYEE -->
   <div class="modal-overlay" id="employeeModal">
     <div class="modal">
       <h2 id="modalTitle">Add Employee</h2>
-      <form id="employeeForm">
-        <label>UID</label>
-        <input type="text" id="empUID" required>
 
+      <div class="form-field">
+        <label>UID (Login ID)</label>
+        <input type="text" id="empUID" placeholder="e.g. 10045" />
+      </div>
+
+      <div class="form-field">
         <label>Name</label>
-        <input type="text" id="empName" required>
+        <input type="text" id="empName" placeholder="Full Name" />
+      </div>
 
+      <div class="form-field">
         <label>Password</label>
-        <input type="text" id="empPassword" placeholder="Default: User@123">
+        <input type="text" id="empPassword" placeholder="Default: User@123" />
+      </div>
 
+      <div class="form-field">
         <label>Role</label>
-        <select id="empRole" required>
+        <select id="empRole">
           <option value="Staff">Staff</option>
           <option value="Supervisor">Supervisor</option>
           <option value="Manager">Manager</option>
           <option value="Admin">Admin</option>
         </select>
+      </div>
 
-        <label>Section</label>
-        <input type="text" id="empSection" placeholder="e.g. Packaging">
+      <div class="form-field">
+        <label>Section / Department</label>
+        <select id="empSection">
+          <option value="KMP Day">KMP Day</option>
+          <option value="KMP Night">KMP Night</option>
+          <option value="FuelUP">FuelUP</option>
+          <option value="Spring">Spring</option>
+          <option value="Kcal Life">Kcal Life</option>
+          <option value="Kcal Lunch">Kcal Lunch</option>
+        </select>
+      </div>
 
+      <div class="form-field">
         <label>Shift</label>
         <select id="empShift">
           <option value="Day">Day</option>
           <option value="Night">Night</option>
         </select>
+      </div>
 
+      <div class="form-field">
         <label>Join Date</label>
-        <input type="date" id="empJoinDate">
+        <input type="date" id="empJoinDate" />
+      </div>
 
+      <div class="form-field">
         <label>Email</label>
-        <input type="email" id="empEmail" placeholder="name@kcallife.com">
+        <input type="email" id="empEmail" placeholder="name@kcallife.com" />
+      </div>
 
+      <div class="form-field">
         <label>Phone</label>
-        <input type="tel" id="empPhone" placeholder="+971 50 000 0000">
-
-        <div class="modal-actions">
-          <button type="submit" class="btn-primary">Save</button>
-          <button type="button" class="btn-cancel" id="closeModal">Cancel</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</body>
-<!-- SEND NOTICE MODAL -->
-<div class="modal-overlay" id="noticeModal">
-  <div class="modal">
-    <h2>Send Notice to All Employees</h2>
-    <form id="noticeForm">
-      <label>Title</label>
-      <input type="text" id="noticeTitle" required placeholder="e.g. Overtime Update">
-
-      <label>Message</label>
-      <textarea id="noticeMessage" rows="4" required placeholder="Write your message here..."></textarea>
+        <input type="tel" id="empPhone" placeholder="+971 50 000 0000" />
+      </div>
 
       <div class="modal-actions">
-        <button type="submit" class="btn-primary">Send Notice</button>
-        <button type="button" class="btn-cancel" id="closeNoticeModal">Cancel</button>
+        <button class="btn-primary" id="saveEmployeeBtn">Save</button>
+        <button class="btn-secondary" id="cancelEmployeeBtn">Cancel</button>
       </div>
-    </form>
+    </div>
   </div>
-</div>
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-  const session = getSessionUser();
-  if (!session) return;
 
-  const tableBody = document.getElementById("employeeTableBody");
-  const modal = document.getElementById("employeeModal");
-  const form = document.getElementById("employeeForm");
-  const btnAdd = document.getElementById("btnAddEmployee");
-  const closeModal = document.getElementById("closeModal");
-  let editMode = null;
+  <!-- MODAL: SEND NOTICE (ADMIN ONLY) -->
+  <div class="modal-overlay" id="noticeModal">
+    <div class="modal" id="noticeModalInner">
+      <h2>Send Notice to All Employees</h2>
 
-  // Show Add button only for Admin / Manager / Supervisor
-  const canManage = ["Admin", "Manager", "Supervisor"].includes(session.role);
-  if (canManage) btnAdd.style.display = "inline-block";
+      <div class="form-field">
+        <label>Title</label>
+        <input type="text" id="noticeTitle" placeholder="Overtime Update" />
+      </div>
 
-  function renderEmployees() {
-    const list = lsGet("kps_users", []);
-    tableBody.innerHTML = "";
-    list.forEach(u => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${u.uid}</td>
-        <td>${u.name}</td>
-        <td>${u.role}</td>
-        <td>${u.section || "-"}</td>
-        <td>${u.shift || "-"}</td>
-        <td>${u.joinDate || "-"}</td>
-        <td class="actions-cell">${
-          canManage
-            ? `
-            <button class="btn-small btn-edit" data-uid="${u.uid}">Edit</button>
-            <button class="btn-small btn-danger" data-del="${u.uid}">Delete</button>
-            `
-            : `<span class="readonly">View Only</span>`
-        }</td>
-      `;
-      tableBody.appendChild(tr);
-    });
-  }
+      <div class="form-field">
+        <label>Message</label>
+        <textarea id="noticeMessage" placeholder="Friday shift will include 2 hours extra for Packaging Department."></textarea>
+      </div>
 
-  function openModal(editUID = null) {
-    if (!canManage) return;
-    modal.style.display = "flex";
-    form.reset();
-    editMode = null;
-    if (editUID) {
-      const users = lsGet("kps_users", []);
-      const emp = users.find(x => x.uid === editUID);
-      if (emp) {
-        document.getElementById("modalTitle").textContent = "Edit Employee";
-        document.getElementById("empUID").value = emp.uid;
-        document.getElementById("empUID").disabled = true;
-        document.getElementById("empName").value = emp.name;
-        document.getElementById("empPassword").value = emp.password;
-        document.getElementById("empRole").value = emp.role;
-        document.getElementById("empSection").value = emp.section || "";
-        document.getElementById("empShift").value = emp.shift || "Day";
-        document.getElementById("empJoinDate").value = emp.joinDate || "";
-        document.getElementById("empEmail").value = emp.email || "";
-        document.getElementById("empPhone").value = emp.phone || "";
-        editMode = emp.uid;
-      }
-    } else {
-      document.getElementById("modalTitle").textContent = "Add Employee";
-      document.getElementById("empUID").disabled = false;
-    }
-  }
+      <div class="modal-actions">
+        <button class="btn-primary" id="sendNoticeBtn">Send Notice</button>
+        <button class="btn-secondary" id="cancelNoticeBtn">Cancel</button>
+      </div>
+    </div>
+  </div>
 
-  function closeModalWindow() {
-    modal.style.display = "none";
-  }
-
-  if (canManage) {
-    btnAdd.addEventListener("click", () => openModal());
-    closeModal.addEventListener("click", closeModalWindow);
-  }
-
-  form.addEventListener("submit", e => {
-    e.preventDefault();
-    if (!canManage) return;
-
-    const uid = document.getElementById("empUID").value.trim();
-    const name = document.getElementById("empName").value.trim();
-    const password = document.getElementById("empPassword").value.trim() || "User@123";
-    const role = document.getElementById("empRole").value;
-    const section = document.getElementById("empSection").value;
-    const shift = document.getElementById("empShift").value;
-    const joinDate = document.getElementById("empJoinDate").value;
-    const email = document.getElementById("empEmail").value.trim();
-    const phone = document.getElementById("empPhone").value.trim();
-
-    const users = lsGet("kps_users", []);
-    if (editMode) {
-      const emp = users.find(x => x.uid === editMode);
-      Object.assign(emp, { name, password, role, section, shift, joinDate, email, phone });
-      lsSet("kps_users", users);
-      pushNotification("Employee Updated", `${emp.name} (${emp.uid}) updated.`);
-      showToast("Employee updated ✅");
-    } else {
-      if (users.find(u => u.uid === uid)) {
-        showToast("UID already exists ❌", "error");
-        return;
-      }
-      users.push({ uid, name, password, role, section, shift, joinDate, email, phone });
-      lsSet("kps_users", users);
-      pushNotification("Employee Added", `${name} (${uid}) added.`);
-      showToast("Employee added ✅");
-    }
-
-    closeModalWindow();
-    renderEmployees();
-  });
-
-  tableBody.addEventListener("click", e => {
-    if (!canManage) return;
-    if (e.target.dataset.uid) {
-      openModal(e.target.dataset.uid);
-    } else if (e.target.dataset.del) {
-      const uid = e.target.dataset.del;
-      if (confirm("Delete employee UID " + uid + "?")) {
-        let list = lsGet("kps_users", []);
-        list = list.filter(u => u.uid !== uid);
-        lsSet("kps_users", list);
-        pushNotification("Employee Deleted", `UID ${uid} removed.`);
-        showToast("Employee deleted ❌", "info");
-        renderEmployees();
-      }
-    }
-  });
-
-  renderEmployees();
-});
-</script>
+</body>
 </html>
