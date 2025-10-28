@@ -421,3 +421,103 @@ body {
     flex: 0 0 260px;
   }
 }
+/* === Modal styling (centered Add/Edit Employee window) === */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.modal-box {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  width: 90%;
+  max-width: 600px;
+  padding: 20px;
+  animation: modalFade 0.25s ease;
+}
+
+@keyframes modalFade {
+  from {opacity: 0; transform: scale(0.95);}
+  to {opacity: 1; transform: scale(1);}
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 10px;
+}
+.modal-header h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #007a5d;
+}
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  color: #555;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.form-group.full {
+  grid-column: 1 / -1;
+}
+.form-group label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #0f2e24;
+}
+.form-group input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #cfd8d6;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.password-wrapper {
+  display: flex;
+  gap: 8px;
+}
+.btn-generate {
+  background: #007a5d;
+  color: #fff;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+}
+.btn-generate:hover {
+  background: #009172;
+}
+
+.btn-save {
+  background: #007a5d;
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  margin-top: 10px;
+  font-size: 14px;
+  cursor: pointer;
+}
+.btn-save:hover {
+  background: #009172;
+}
