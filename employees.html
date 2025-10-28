@@ -1,170 +1,247 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>KPS • Employees</title>
-  <link rel="stylesheet" href="style.css"/>
+  <meta charset="UTF-8">
+  <title>KPS – Employees</title>
+  <link rel="stylesheet" href="style.css">
   <script src="app.js" defer></script>
 </head>
+
 <body data-page="employees">
-
-  <!-- Top Navigation -->
+  <!-- HEADER -->
   <header class="topbar">
-    <div class="topbar-left">
-      <img src="./assets/logo.png" class="brand-logo" alt="KCAL Logo">
-      <div class="brand-text">
-        <div class="brand-main">KCAL</div>
-        <div class="brand-sub">Healthy Food, Healthy Life</div>
+    <div class="logo">Kcal Packaging System</div>
+    <div class="user-info">
+      <div class="user-avatar" id="profileTopAvatar"></div>
+      <div class="user-meta">
+        <span id="profileTopName"></span>
+        <small id="profileTopRole"></small>
       </div>
-    </div>
-
-    <nav class="main-nav">
-      <a href="dashboard.html">Dashboard</a>
-      <a href="attendance.html">Attendance</a>
-      <a class="active" href="employees.html" id="nav-employees-link">Employees</a>
-      <a href="overtime.html">Overtime</a>
-      <a href="notifications.html">Notifications</a>
-    </nav>
-
-    <div class="user-nav">
-      <div class="user-chip" id="user-chip">
-        <div class="chip-avatar" id="chip-avatar">SA</div>
-        <div class="chip-info">
-          <div id="chip-name" class="chip-name">System Admin</div>
-          <div id="chip-role" class="chip-role">Admin</div>
+      <div class="dropdown">
+        <button class="dropdown-toggle">☰</button>
+        <div class="dropdown-menu">
+          <a href="profile.html">Profile</a>
+          <a href="#" data-logout>Logout</a>
         </div>
-        <div class="chip-caret">▼</div>
-      </div>
-      <div class="user-dropdown" id="user-dropdown">
-        <button class="dropdown-item" data-goto-profile>Profile</button>
-        <button class="dropdown-item" data-goto-changepw>Change Password</button>
-        <button class="dropdown-item danger" data-logout>Sign Out</button>
       </div>
     </div>
   </header>
 
-  <div class="layout">
-    <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-inner">
-        <section class="profile-card">
-          <div class="profile-photo-shell">
-            <img id="dash-user-photo" src="./assets/default-avatar.png" class="profile-photo-img" alt="User Photo">
-          </div>
-          <div class="profile-meta">
-            <div id="dash-user-name" class="profile-name">User Name</div>
-            <div id="dash-user-role" class="profile-role">Role</div>
-            <div id="dash-user-section" class="profile-section">Section</div>
-          </div>
-        </section>
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <h2>Menu</h2>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="attendance.html">Attendance</a>
+    <a href="employees.html" class="active">Employees</a>
+    <a href="overtime.html">Overtime</a>
+    <a href="notifications.html">Notifications</a>
+    <a href="request.html">Requests</a>
+  </aside>
 
-        <section class="side-panel">
-          <div class="side-panel-head">
-            <div class="side-panel-title">Notifications</div>
-            <a href="notifications.html" class="view-all-link">View All ›</a>
-          </div>
-          <ul id="sidebar-notif-list" class="notif-mini-list"></ul>
-        </section>
-      </div>
-    </aside>
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+    <div class="page-header">
+      <h1>Employee Directory</h1>
+      <button class="btn-primary" id="btnAddEmployee" style="display:none;">+ Add Employee</button>
+    </div>
 
-    <!-- Main content -->
-    <main class="content-area">
+    <table class="kps-table">
+      <thead>
+        <tr>
+          <th>UID</th>
+          <th>Name</th>
+          <th>Role</th>
+          <th>Section</th>
+          <th>Shift</th>
+          <th>Join Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="employeeTableBody"></tbody>
+    </table>
+  </main>
 
-      <!-- Header row -->
-      <section class="panel-block" style="margin-bottom:16px;">
-        <div class="panel-head">
-          <div class="panel-title">Employee Directory</div>
-          <div class="panel-actions">
-            <input id="emp-search" type="text" placeholder="Search by name or UID" style="padding:8px;border:1px solid #dbe7e2;border-radius:8px;font-size:13px;">
-            <button id="open-emp-modal" class="btn btn-primary">+ Add Employee</button>
-          </div>
+  <!-- ADD / EDIT EMPLOYEE MODAL -->
+  <div class="modal-overlay" id="employeeModal">
+    <div class="modal">
+      <h2 id="modalTitle">Add Employee</h2>
+      <form id="employeeForm">
+        <label>UID</label>
+        <input type="text" id="empUID" required>
+
+        <label>Name</label>
+        <input type="text" id="empName" required>
+
+        <label>Password</label>
+        <input type="text" id="empPassword" placeholder="Default: User@123">
+
+        <label>Role</label>
+        <select id="empRole" required>
+          <option value="Staff">Staff</option>
+          <option value="Supervisor">Supervisor</option>
+          <option value="Manager">Manager</option>
+          <option value="Admin">Admin</option>
+        </select>
+
+        <label>Section</label>
+        <input type="text" id="empSection" placeholder="e.g. Packaging">
+
+        <label>Shift</label>
+        <select id="empShift">
+          <option value="Day">Day</option>
+          <option value="Night">Night</option>
+        </select>
+
+        <label>Join Date</label>
+        <input type="date" id="empJoinDate">
+
+        <label>Email</label>
+        <input type="email" id="empEmail" placeholder="name@kcallife.com">
+
+        <label>Phone</label>
+        <input type="tel" id="empPhone" placeholder="+971 50 000 0000">
+
+        <div class="modal-actions">
+          <button type="submit" class="btn-primary">Save</button>
+          <button type="button" class="btn-cancel" id="closeModal">Cancel</button>
         </div>
-
-        <div class="table-shell">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>UID</th>
-                <th>Name</th>
-                <th>Role</th>
-                <th>Section</th>
-                <th>Shift</th>
-                <th>Join Date</th>
-                <th>Password</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="emp-tbody">
-              <!-- injected by JS -->
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <footer class="dash-footer">
-        Kcal Packaging System (KPS) — Developed by Haroon • All data confidential
-      </footer>
-    </main>
-  </div>
-
-  <!-- Toast area -->
-  <div id="toast-area" class="toast-area"></div>
-
-  <!-- Add/Edit Employee Modal -->
-  <div class="modal" id="emp-modal">
-    <div class="modal-box">
-      <div class="modal-header">
-        <h2 id="emp-modal-title">Add Employee</h2>
-        <button type="button" class="modal-close" id="close-emp-modal">×</button>
-      </div>
-
-      <form id="emp-form" class="modal-form">
-        <div class="form-grid">
-          <div class="form-group">
-            <label>UID</label>
-            <input type="text" id="emp-id" placeholder="e.g. 10489" required />
-          </div>
-
-          <div class="form-group">
-            <label>Name</label>
-            <input type="text" id="emp-name" placeholder="Full Name" required />
-          </div>
-
-          <div class="form-group full">
-            <label>Password <span class="hint">(leave blank to keep current)</span></label>
-            <div class="password-wrapper">
-              <input type="password" id="emp-password" placeholder="Set or leave blank"/>
-              <button type="button" id="generate-pw" class="btn-generate">Generate</button>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label>Role</label>
-            <input type="text" id="emp-role" placeholder="Admin / Manager / Supervisor / Staff" required />
-          </div>
-
-          <div class="form-group">
-            <label>Section</label>
-            <input type="text" id="emp-section" placeholder="Packaging / Night Shift / etc" />
-          </div>
-
-          <div class="form-group">
-            <label>Shift</label>
-            <input type="text" id="emp-shift" placeholder="Day / Night" />
-          </div>
-
-          <div class="form-group">
-            <label>Join Date</label>
-            <input type="date" id="emp-join" />
-          </div>
-        </div>
-
-        <button type="submit" class="btn-save">Save Employee</button>
       </form>
     </div>
   </div>
-
 </body>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const session = getSessionUser();
+  if (!session) return;
+
+  const tableBody = document.getElementById("employeeTableBody");
+  const modal = document.getElementById("employeeModal");
+  const form = document.getElementById("employeeForm");
+  const btnAdd = document.getElementById("btnAddEmployee");
+  const closeModal = document.getElementById("closeModal");
+  let editMode = null;
+
+  // Show Add button only for Admin / Manager / Supervisor
+  const canManage = ["Admin", "Manager", "Supervisor"].includes(session.role);
+  if (canManage) btnAdd.style.display = "inline-block";
+
+  function renderEmployees() {
+    const list = lsGet("kps_users", []);
+    tableBody.innerHTML = "";
+    list.forEach(u => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${u.uid}</td>
+        <td>${u.name}</td>
+        <td>${u.role}</td>
+        <td>${u.section || "-"}</td>
+        <td>${u.shift || "-"}</td>
+        <td>${u.joinDate || "-"}</td>
+        <td class="actions-cell">${
+          canManage
+            ? `
+            <button class="btn-small btn-edit" data-uid="${u.uid}">Edit</button>
+            <button class="btn-small btn-danger" data-del="${u.uid}">Delete</button>
+            `
+            : `<span class="readonly">View Only</span>`
+        }</td>
+      `;
+      tableBody.appendChild(tr);
+    });
+  }
+
+  function openModal(editUID = null) {
+    if (!canManage) return;
+    modal.style.display = "flex";
+    form.reset();
+    editMode = null;
+    if (editUID) {
+      const users = lsGet("kps_users", []);
+      const emp = users.find(x => x.uid === editUID);
+      if (emp) {
+        document.getElementById("modalTitle").textContent = "Edit Employee";
+        document.getElementById("empUID").value = emp.uid;
+        document.getElementById("empUID").disabled = true;
+        document.getElementById("empName").value = emp.name;
+        document.getElementById("empPassword").value = emp.password;
+        document.getElementById("empRole").value = emp.role;
+        document.getElementById("empSection").value = emp.section || "";
+        document.getElementById("empShift").value = emp.shift || "Day";
+        document.getElementById("empJoinDate").value = emp.joinDate || "";
+        document.getElementById("empEmail").value = emp.email || "";
+        document.getElementById("empPhone").value = emp.phone || "";
+        editMode = emp.uid;
+      }
+    } else {
+      document.getElementById("modalTitle").textContent = "Add Employee";
+      document.getElementById("empUID").disabled = false;
+    }
+  }
+
+  function closeModalWindow() {
+    modal.style.display = "none";
+  }
+
+  if (canManage) {
+    btnAdd.addEventListener("click", () => openModal());
+    closeModal.addEventListener("click", closeModalWindow);
+  }
+
+  form.addEventListener("submit", e => {
+    e.preventDefault();
+    if (!canManage) return;
+
+    const uid = document.getElementById("empUID").value.trim();
+    const name = document.getElementById("empName").value.trim();
+    const password = document.getElementById("empPassword").value.trim() || "User@123";
+    const role = document.getElementById("empRole").value;
+    const section = document.getElementById("empSection").value;
+    const shift = document.getElementById("empShift").value;
+    const joinDate = document.getElementById("empJoinDate").value;
+    const email = document.getElementById("empEmail").value.trim();
+    const phone = document.getElementById("empPhone").value.trim();
+
+    const users = lsGet("kps_users", []);
+    if (editMode) {
+      const emp = users.find(x => x.uid === editMode);
+      Object.assign(emp, { name, password, role, section, shift, joinDate, email, phone });
+      lsSet("kps_users", users);
+      pushNotification("Employee Updated", `${emp.name} (${emp.uid}) updated.`);
+      showToast("Employee updated ✅");
+    } else {
+      if (users.find(u => u.uid === uid)) {
+        showToast("UID already exists ❌", "error");
+        return;
+      }
+      users.push({ uid, name, password, role, section, shift, joinDate, email, phone });
+      lsSet("kps_users", users);
+      pushNotification("Employee Added", `${name} (${uid}) added.`);
+      showToast("Employee added ✅");
+    }
+
+    closeModalWindow();
+    renderEmployees();
+  });
+
+  tableBody.addEventListener("click", e => {
+    if (!canManage) return;
+    if (e.target.dataset.uid) {
+      openModal(e.target.dataset.uid);
+    } else if (e.target.dataset.del) {
+      const uid = e.target.dataset.del;
+      if (confirm("Delete employee UID " + uid + "?")) {
+        let list = lsGet("kps_users", []);
+        list = list.filter(u => u.uid !== uid);
+        lsSet("kps_users", list);
+        pushNotification("Employee Deleted", `UID ${uid} removed.`);
+        showToast("Employee deleted ❌", "info");
+        renderEmployees();
+      }
+    }
+  });
+
+  renderEmployees();
+});
+</script>
 </html>
