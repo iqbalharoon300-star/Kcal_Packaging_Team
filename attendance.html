@@ -1,138 +1,222 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>KPS • Attendance</title>
-  <link rel="stylesheet" href="style.css"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KPS Attendance • Developed by Haroon</title>
+  <link rel="stylesheet" href="style.css">
   <script src="app.js" defer></script>
 </head>
+
 <body data-page="attendance">
-
-  <!-- Top Navigation -->
-  <header class="topbar">
-    <div class="topbar-left">
-      <img src="./assets/logo.png" class="brand-logo" alt="KCAL Logo">
-      <div class="brand-text">
-        <div class="brand-main">KCAL</div>
-        <div class="brand-sub">Healthy Food, Healthy Life</div>
-      </div>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="logo-section">
+      <img src="./assets/logo.png" alt="Kcal Logo" class="sidebar-logo">
+      <h2>KPS</h2>
+      <p>Packaging System</p>
     </div>
-
-    <nav class="main-nav">
+    <nav class="sidebar-nav">
       <a href="dashboard.html">Dashboard</a>
-      <a class="active" href="attendance.html">Attendance</a>
-      <a href="employees.html" id="nav-employees-link">Employees</a>
+      <a href="attendance.html" class="active">Attendance</a>
       <a href="overtime.html">Overtime</a>
+      <a href="deduction.html">Deduction</a>
+      <a href="employees.html">Employees</a>
       <a href="notifications.html">Notifications</a>
+      <a href="request.html">Request</a>
+      <a href="profile.html">Profile</a>
+      <a href="#" data-logout>Logout</a>
     </nav>
-
-    <div class="user-nav">
-      <div class="user-chip" id="user-chip">
-        <div class="chip-avatar" id="chip-avatar">SA</div>
-        <div class="chip-info">
-          <div id="chip-name" class="chip-name">System Admin</div>
-          <div id="chip-role" class="chip-role">Admin</div>
-        </div>
-        <div class="chip-caret">▼</div>
-      </div>
-      <div class="user-dropdown" id="user-dropdown">
-        <button class="dropdown-item" data-goto-profile>Profile</button>
-        <button class="dropdown-item" data-goto-changepw>Change Password</button>
-        <button class="dropdown-item danger" data-logout>Sign Out</button>
-      </div>
-    </div>
-  </header>
-
-  <div class="layout">
-    <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-inner">
-        <!-- Profile card -->
-        <section class="profile-card">
-          <div class="profile-photo-shell">
-            <img id="dash-user-photo" src="./assets/default-avatar.png" class="profile-photo-img" alt="User Photo">
-          </div>
-          <div class="profile-meta">
-            <div id="dash-user-name" class="profile-name">User Name</div>
-            <div id="dash-user-role" class="profile-role">Role</div>
-            <div id="dash-user-section" class="profile-section">Section</div>
-          </div>
-        </section>
-
-        <!-- Notifications preview -->
-        <section class="side-panel">
-          <div class="side-panel-head">
-            <div class="side-panel-title">Notifications</div>
-            <a href="notifications.html" class="view-all-link">View All ›</a>
-          </div>
-          <ul id="sidebar-notif-list" class="notif-mini-list">
-            <!-- injected by JS -->
-          </ul>
-        </section>
-      </div>
-    </aside>
-
-    <!-- Main content -->
-    <main class="content-area">
-
-      <!-- Attendance controls -->
-      <section class="panel-block" style="margin-bottom:16px;">
-        <div class="panel-head">
-          <div class="panel-title">My Attendance Today</div>
-          <div class="panel-actions">
-            <button id="checkin-btn" class="btn btn-primary">🕒 Check In</button>
-            <button id="checkout-btn" class="btn btn-secondary">✅ Check Out</button>
-          </div>
-        </div>
-
-        <div class="today-strip" id="today-summary">
-          <!-- Filled with today's IN / OUT / Duty / OT -->
-          <!-- We'll inject text with JS -->
-          <div><b>Date:</b> <span id="att-today-date">--</span></div>
-          <div>IN: <span id="att-today-in">--</span></div>
-          <div>OUT: <span id="att-today-out">--</span></div>
-          <div>Duty: <span id="att-today-duty">0.00 hr</span></div>
-          <div>OT: <span id="att-today-ot">0.00 hr</span></div>
-          <div>Status: <span id="att-today-status">--</span></div>
-        </div>
-      </section>
-
-      <!-- Table of all attendance logs -->
-      <section class="panel-block">
-        <div class="panel-head">
-          <div class="panel-title">Attendance Records</div>
-        </div>
-
-        <div class="table-shell">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>UID</th>
-                <th>Name</th>
-                <th>Date</th>
-                <th>IN</th>
-                <th>OUT</th>
-                <th>Duty</th>
-                <th>OT</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody id="attendance-tbody">
-              <!-- Injected by JS -->
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <footer class="dash-footer">
-        Kcal Packaging System (KPS) — Developed by Haroon • All data confidential
-      </footer>
-    </main>
   </div>
 
-  <!-- Toast container -->
-  <div id="toast-area" class="toast-area"></div>
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Top Nav -->
+    <header class="top-nav">
+      <div class="top-nav-left">
+        <h1>Attendance Management</h1>
+        <p>Kcal Packaging System (KPS) — Developed by Haroon</p>
+      </div>
+      <div class="top-nav-right">
+        <div class="user-info">
+          <div class="user-avatar">SA</div>
+          <div class="user-details">
+            <span class="user-name">System Admin</span>
+            <span class="user-role">Admin</span>
+          </div>
+          <div class="dropdown">
+            <button class="dropdown-btn">▼</button>
+            <div class="dropdown-menu">
+              <a href="profile.html">Profile</a>
+              <a href="#">Change Password</a>
+              <a href="#" data-logout>Sign Out</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
 
+    <!-- Attendance Controls -->
+    <section class="attendance-actions">
+      <h2>Mark Attendance</h2>
+      <div class="action-buttons">
+        <button id="checkInBtn" class="btn-primary" onclick="checkIn()">Check In</button>
+        <button id="checkOutBtn" class="btn-secondary" onclick="checkOut()">Check Out</button>
+        <button id="offDayBtn" class="btn-neutral" onclick="markOffDay()">Mark as Off Day</button>
+        <button id="resetBtn" class="btn-danger" onclick="resetAttendance()">Reset Attendance</button>
+      </div>
+    </section>
+
+    <!-- Attendance Table -->
+    <section class="attendance-table-section">
+      <h2>Today’s Attendance</h2>
+      <table class="attendance-table">
+        <thead>
+          <tr>
+            <th>UID</th>
+            <th>Name</th>
+            <th>Date</th>
+            <th>Check In</th>
+            <th>Check Out</th>
+            <th>Total Duty</th>
+            <th>Overtime (hrs)</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="attendanceData">
+          <!-- Rows inserted dynamically -->
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <p>Kcal Packaging System (KPS) — Developed by Haroon • All data confidential</p>
+    </footer>
+  </div>
+
+  <!-- JS Logic -->
+  <script>
+    function getTodayDate() {
+      const now = new Date();
+      return now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    }
+
+    // Fetch Attendance Data
+    function loadAttendance() {
+      const attendanceData = JSON.parse(localStorage.getItem('attendance') || '[]');
+      const tbody = document.getElementById('attendanceData');
+      tbody.innerHTML = '';
+
+      attendanceData.forEach(row => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${row.uid}</td>
+          <td>${row.name}</td>
+          <td>${row.date}</td>
+          <td>${row.in || '-'}</td>
+          <td>${row.out || '-'}</td>
+          <td>${row.duty || '-'}</td>
+          <td>${row.ot || '-'}</td>
+          <td>${row.status}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Check In
+    function checkIn() {
+      const attendanceData = JSON.parse(localStorage.getItem('attendance') || '[]');
+      const today = getTodayDate();
+
+      if (attendanceData.some(a => a.date === today && a.in)) {
+        alert('Already checked in today!');
+        return;
+      }
+
+      const now = new Date();
+      const record = {
+        uid: '10001',
+        name: 'System Admin',
+        date: today,
+        in: now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
+        out: '',
+        duty: '',
+        ot: '',
+        status: 'Checked In'
+      };
+      attendanceData.push(record);
+      localStorage.setItem('attendance', JSON.stringify(attendanceData));
+      loadAttendance();
+      alert('Checked In Successfully ✅');
+    }
+
+    // Check Out
+    function checkOut() {
+      const attendanceData = JSON.parse(localStorage.getItem('attendance') || '[]');
+      const today = getTodayDate();
+      const record = attendanceData.find(a => a.date === today && a.in);
+
+      if (!record) {
+        alert('Please Check In first!');
+        return;
+      }
+
+      if (record.out) {
+        alert('Already Checked Out!');
+        return;
+      }
+
+      const now = new Date();
+      record.out = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+
+      // Calculate duty and OT (10 hrs standard + 1 hr break)
+      const inTime = new Date(`1970-01-01T${record.in}:00`);
+      const outTime = new Date(`1970-01-01T${record.out}:00`);
+      const diff = (outTime - inTime) / (1000 * 60 * 60);
+      const dutyHours = Math.max(diff - 1, 0); // minus 1hr break
+      const otHours = dutyHours > 10 ? (dutyHours - 10).toFixed(2) : 0;
+
+      record.duty = dutyHours.toFixed(2);
+      record.ot = otHours;
+      record.status = 'Present';
+      localStorage.setItem('attendance', JSON.stringify(attendanceData));
+      loadAttendance();
+      alert('Checked Out Successfully ✅');
+    }
+
+    // Mark as Off Day
+    function markOffDay() {
+      const attendanceData = JSON.parse(localStorage.getItem('attendance') || '[]');
+      const today = getTodayDate();
+
+      attendanceData.push({
+        uid: '10001',
+        name: 'System Admin',
+        date: today,
+        in: '',
+        out: '',
+        duty: '0',
+        ot: '0',
+        status: 'Off Day'
+      });
+      localStorage.setItem('attendance', JSON.stringify(attendanceData));
+      loadAttendance();
+      alert('Marked as Off Day ✅');
+    }
+
+    // Reset Attendance
+    function resetAttendance() {
+      const attendanceData = JSON.parse(localStorage.getItem('attendance') || '[]');
+      const today = getTodayDate();
+      const updated = attendanceData.filter(a => a.date !== today);
+      localStorage.setItem('attendance', JSON.stringify(updated));
+      loadAttendance();
+      alert('Attendance for today has been reset 🔄');
+    }
+
+    // Initialize
+    window.onload = loadAttendance;
+  </script>
 </body>
 </html>
