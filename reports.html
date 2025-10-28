@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>KPS • Reports</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <link rel="stylesheet" href="style.css" />
+  <script src="app.js" defer></script>
+</head>
+
+<body data-page="reports">
+
+  <!-- HEADER -->
+  <header class="kps-header">
+    <div class="header-left">
+      <div class="brand-mini">
+        <div class="brand-logo">kcal</div>
+        <div class="brand-texts">
+          <div class="brand-name">Kcal Packaging System</div>
+          <div class="brand-slogan">Healthy Food, Healthy Life</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <!-- Bell -->
+      <div class="notif-bell" onclick="window.location.href='notifications.html'">
+        <span class="bell-icon">🔔</span>
+        <span class="notif-badge" id="notifBadge">0</span>
+      </div>
+
+      <!-- User dropdown -->
+      <div class="user-block">
+        <div class="user-avatar" id="headerAvatar">SA</div>
+        <div class="user-info-text">
+          <div class="user-info-name" id="headerName">System Admin</div>
+          <div class="user-info-role" id="headerRole">Admin</div>
+        </div>
+
+        <div class="user-menu-wrapper">
+          <button class="user-menu-toggle">▼</button>
+          <div class="user-menu">
+            <a href="profile.html">Profile</a>
+            <a href="#" data-logout>Logout</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile sidebar toggle -->
+      <button class="sidebar-toggle" id="sidebarToggle">☰</button>
+    </div>
+  </header>
+
+  <div class="kps-layout">
+    <!-- SIDEBAR -->
+    <aside class="kps-sidebar" id="appSidebar">
+      <nav>
+        <a href="dashboard.html" class="side-link"><span>🏠</span> Dashboard</a>
+        <a href="attendance.html" class="side-link"><span>🕒</span> Attendance</a>
+        <a href="employees.html" class="side-link"><span>👥</span> Employees</a>
+        <a href="overtime.html" class="side-link"><span>⏫</span> Overtime</a>
+        <a href="deduction.html" class="side-link"><span>💸</span> Deductions</a>
+        <a href="notifications.html" class="side-link"><span>🔔</span> Notifications</a>
+        <a href="request.html" class="side-link"><span>📄</span> Requests</a>
+        <a href="reports.html" class="side-link"><span>📊</span> Reports</a>
+        <a href="profile.html" class="side-link"><span>🙍‍♂️</span> Profile</a>
+        <a href="#" data-logout class="side-link logout"><span>⏻</span> Logout</a>
+      </nav>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+      <!-- PAGE HEADER -->
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Reports & Export</h1>
+          <p class="page-sub">Filter data for Packaging Dept · Attendance · Overtime · Deductions · Requests</p>
+        </div>
+        <div class="page-header-actions">
+          <button class="btn-secondary" onclick="window.location.href='dashboard.html'">Back to Dashboard</button>
+        </div>
+      </div>
+
+      <!-- FILTER CARD -->
+      <section class="card">
+        <h2 class="card-title">Report Filters</h2>
+        <div class="card-body">
+          <div class="form-grid">
+
+            <div class="form-field">
+              <label>Department / Section</label>
+              <select id="reportSection">
+                <option value="All">All</option>
+                <option value="KMP Day">KMP Day</option>
+                <option value="KMP Night">KMP Night</option>
+                <option value="FuelUP">FuelUP</option>
+                <option value="Spring">Spring</option>
+                <option value="Kcal Life">Kcal Life</option>
+                <option value="Kcal Lunch">Kcal Lunch</option>
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label>Record Type</label>
+              <select id="reportType">
+                <option value="All">All</option>
+                <option value="Attendances">Attendances</option>
+                <option value="Employees Data">Employees Data</option>
+                <option value="Overtimes">Overtimes</option>
+                <option value="Requests">Requests</option>
+                <option value="Deductions">Deductions</option>
+                <option value="Issue Letters">Issue Letters</option>
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label>Date From</label>
+              <input type="date" id="reportFrom" />
+            </div>
+
+            <div class="form-field">
+              <label>Date To</label>
+              <input type="date" id="reportTo" />
+            </div>
+
+          </div>
+
+          <div style="margin-top:16px; display:flex; flex-wrap:wrap; gap:8px;">
+            <button class="btn-primary" id="btnGenerateReport">Generate Report</button>
+            <button class="btn-secondary" id="btnExportExcel">Download Excel</button>
+            <button class="btn-secondary" id="btnExportPDF">Download PDF</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- SUMMARY CARD -->
+      <section class="stats-grid" id="reportSummaryStats">
+        <!-- Filled by app.js:
+          - Total Employees in result
+          - Total Present
+          - Total Leave
+          - Total OT Hours
+          - Total Deductions Amount
+          - Pending Requests
+        -->
+      </section>
+
+      <!-- RESULTS TABLE -->
+      <section class="card">
+        <h2 class="card-title">Report Results</h2>
+        <div class="card-body">
+          <table class="kps-table">
+            <thead>
+              <tr id="reportTableHead">
+                <!-- dynamic columns -->
+              </tr>
+            </thead>
+            <tbody id="reportTableBody">
+              <!-- dynamic rows -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Toast container -->
+  <div id="toastContainer"></div>
+
+</body>
+</html>
