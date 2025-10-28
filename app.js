@@ -1,1175 +1,1036 @@
-/* =========================================================
-   KPS — KCAL PACKAGING SYSTEM
-   Browser HR Portal
-   Author: Haroon
-   ========================================================= */
+/*****************************************
+ * Kcal Packaging System (KPS)
+ * Unified Frontend Logic
+ * Developed by Haroon
+ ******************************************/
 
-/* ------------------ Local Storage Helpers ------------------ */
+/* ========== CONSTANT STORAGE KEYS ========== */
+const KPS_KEYS = {
+  users: "kps_users",
+  session: "kps_session",
+  attendance: "kps_attendance",
+  overtime: "kps_overtime",
+  deductions: "kps_deductions",
+  requests: "kps_requests",
+  notifications: "kps_notifications"
+};
+
+/* ========== UTIL: LOCAL STORAGE HELPERS ========== */
 function lsGet(key, fallback) {
   try {
-    const v = localStorage.getItem(key);
-    return v ? JSON.parse(v) : fallback;
+    return JSON.parse(localStorage.getItem(key)) ?? fallback;
   } catch {
     return fallback;
   }
 }
-function lsSet(key, val) {
-  localStorage.setItem(key, JSON.stringify(val));
-  // fire a synthetic "update" so other pages (open tabs) could react if needed
-  window.dispatchEvent(new Event("kps-data-updated"));
+function lsSet(key, value) {
+  localStorage.setItem(key, JSON.stringify(value));
+  // also dispatch storage-like event so other tabs/pages update live
+  window.dispatchEvent(new StorageEvent("storage", { key }));
 }
 
-/* ------------------ Default Admin Account ------------------ */
-const KPS_USERS = [
-  {
-    uid: "10001",
-    name: "System Admin",
-    role: "Admin",
-    password: "Admin@123",
-    section: "Central Admin",
-    shift: "Day",
-    joinDate: "2023-01-01",
-  },
-];
+/* ========== BOOTSTRAP DEFAULT DATA ON FIRST RUN ========== */
+function bootstrapDefaults() {
+  // Users list (employees). If it doesn't exist, create with Admin only.
+  // You will add more employees from Employees page later and they will be stored here.
+  if (!localStorage.getItem(KPS_KEYS.users)) {
+    const seedUsers = [
+      {
+        uid: "10001",
+        name: "System Admin",
+        role: "Admin",
+        section: "Central Admin",
+        shift: "Day",
+        joinDate: "2023-01-01",
+        phone: "+971 50 000 0000",
+        email: "admin@kcal.com",
+        password: "Admin@123"
+      }
+      // More users you add later will appear here
+    ];
+    lsSet(KPS_KEYS.users, seedUsers);
+  }
 
-/* ------------------ Session ------------------ */
-function setSession(user) {
-  localStorage.setItem("kps_session", JSON.stringify(user));
+  if (!localStorage.getItem(KPS_KEYS.attendance)) {
+    lsSet(KPS_KEYS.attendance, []);
+  }
+  if (!localStorage.getItem(KPS_KEYS.overtime)) {
+    lsSet(KPS_KEYS.overtime, []);
+  }
+  if (!localStorage.getItem(KPS_KEYS.deductions)) {
+    lsSet(KPS_KEYS.deductions, []);
+  }
+  if (!localStorage.getItem(KPS_KEYS.requests)) {
+    lsSet(KPS_KEYS.requests, []);
+  }
+  if (!localStorage.getItem(KPS_KEYS.notifications)) {
+    lsSet(KPS_KEYS.notifications, []);
+  }
 }
-function getSession() {
-  return JSON.parse(localStorage.getItem("kps_session") || "null");
+bootstrapDefaults();
+
+/* ========== TOAST NOTIFICATION (BOTTOM RIGHT) ========== */
+function showToast(msg, type = "success") {
+  // type: success | error | info
+  let toast = document.createElement("div");
+  toast.className = "kps-toast kps-toast-" + type;
+  toast.textContent = msg;
+
+  // basic styles injected if not already
+  if (!document.getElementById("kps-toast-style")) {
+    const style = document.createElement("style");
+    style.id = "kps-toast-style";
+    style.textContent = `
+      .kps-toast-container {
+        position: fixed;
+        right: 16px;
+        bottom: 16px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        max-width: 260px;
+        font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      }
+      .kps-toast {
+        background: #12714e;
+        color: #fff;
+        padding: 12px 14px;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        line-height: 1.3;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+        animation: kps-toast-in .2s ease;
+      }
+      .kps-toast-error { background: #c62828; }
+      .kps-toast-info  { background: #0f5132; }
+      @keyframes kps-toast-in {
+        from { opacity:0; transform: translateY(8px); }
+        to   { opacity:1; transform: translateY(0); }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  let wrap = document.querySelector(".kps-toast-container");
+  if (!wrap) {
+    wrap = document.createElement("div");
+    wrap.className = "kps-toast-container";
+    document.body.appendChild(wrap);
+  }
+
+  wrap.appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.opacity = "0";
+    toast.style.transform = "translateY(8px)";
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
 }
-function requireSessionOrRedirect() {
-  const s = getSession();
-  if (!s) {
+
+/* ========== SYSTEM NOTIFICATIONS LOGIC ========== */
+function pushNotification(title, message) {
+  const all = lsGet(KPS_KEYS.notifications, []);
+  const now = new Date().toLocaleString("en-GB", { hour12: true });
+  all.push({
+    title,
+    message,
+    time: now,
+    read: false
+  });
+  lsSet(KPS_KEYS.notifications, all);
+}
+
+/* ========== SESSION + AUTH ========== */
+function getSessionUser() {
+  return lsGet(KPS_KEYS.session, null);
+}
+
+function setSessionUser(userObj) {
+  lsSet(KPS_KEYS.session, userObj);
+}
+
+function requireLogin() {
+  // called on protected pages
+  const u = getSessionUser();
+  if (!u) {
+    // not logged in, back to login
     window.location.href = "index.html";
     return null;
   }
-  return s;
+  return u;
 }
-function signOut() {
-  localStorage.removeItem("kps_session");
+
+function attemptLogin(uid, pw) {
+  const users = lsGet(KPS_KEYS.users, []);
+  const found = users.find(u => u.uid === uid && u.password === pw);
+  if (!found) return null;
+  // store a trimmed session object
+  const sessionObj = {
+    uid: found.uid,
+    name: found.name,
+    role: found.role,
+    section: found.section,
+    shift: found.shift,
+    joinDate: found.joinDate,
+    phone: found.phone || "",
+    email: found.email || "",
+    password: found.password // for password check later
+  };
+  setSessionUser(sessionObj);
+  return sessionObj;
+}
+
+function logout() {
+  localStorage.removeItem(KPS_KEYS.session);
+  // broadcast
+  window.dispatchEvent(new StorageEvent("storage", { key: KPS_KEYS.session }));
   window.location.href = "index.html";
 }
 
-/* ------------------ Permissions ------------------ */
-function canManageEmployees(user) {
-  return (
-    user.role === "Admin" ||
-    user.role === "Manager" ||
-    user.role === "Supervisor"
-  );
-}
-function canManageOvertime(user) {
-  // overtime can be added only by Admin / Manager / Supervisor
-  return canManageEmployees(user);
-}
-function canEditAttendance(user) {
-  // admin / manager / supervisor can edit/reset attendance rows
-  return canManageEmployees(user);
-}
-
-/* ------------------ Notifications store ------------------ */
-function getNotifications() {
-  return lsGet("kps_notifications", []);
-}
-function addNotification(category, message) {
-  const list = getNotifications();
-  list.unshift({
-    category,
-    message,
-    ts: Date.now(),
-  });
-  lsSet("kps_notifications", list);
-  showToast(message, "ok");
-  renderSidebarNotifications();
-}
-function pushNotification(title, message) {
-  const notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
-  const now = new Date().toLocaleString('en-GB', { hour12: true });
-  notifications.push({ title, message, time: now, read: false });
-  localStorage.setItem('notifications', JSON.stringify(notifications));
-}
-/* ------------------ Employees store ------------------ */
-function getEmployees() {
-  return lsGet("kps_employees", []);
-}
-function setEmployees(list) {
-  lsSet("kps_employees", list);
-}
-
-/* ------------------ Attendance store ------------------ */
-function getAttendance() {
-  return lsGet("kps_attendance", []);
-}
-function setAttendance(list) {
-  lsSet("kps_attendance", list);
-}
-
-/* ------------------ Overtime store ------------------ */
-function getOvertime() {
-  return lsGet("kps_overtime", []);
-}
-function setOvertime(list) {
-  lsSet("kps_overtime", list);
-}
-
-/* ------------------ Time helpers ------------------ */
-function getNow() {
-  const d = new Date();
-  const pad = (n) => String(n).padStart(2, "0");
-  return {
-    dateStr: `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`,
-    timeStr: `${pad(d.getHours())}:${pad(d.getMinutes())}`,
-  };
-}
-function diffHours(a, b) {
-  if (!a || !b || a === "—" || b === "—") return 0;
-  const [ah, am] = a.split(":").map(Number);
-  const [bh, bm] = b.split(":").map(Number);
-  return (bh + bm / 60) - (ah + am / 60);
-}
-function computeDuty(inT, outT) {
-  // Work hours minus 1 hour break
-  let net = diffHours(inT, outT) - 1;
-  if (net < 0) net = 0;
-  // OT above 10 hours
-  let ot = net - 10;
-  if (ot < 0) ot = 0;
-  return {
-    netHours: +net.toFixed(2),
-    overtime: +ot.toFixed(2),
-  };
-}
-
-/* ------------------ Attendance helpers ------------------ */
-function ensureTodayRowForUser(user) {
-  const now = getNow();
-  const list = getAttendance();
-  let row = list.find((r) => r.uid === user.uid && r.date === now.dateStr);
-  if (!row) {
-    row = {
-      uid: user.uid,
-      name: user.name,
-      role: user.role,
-      date: now.dateStr,
-      in: "—",
-      out: "—",
-      netHours: 0,
-      overtime: 0,
-      status: "AB", // Absent by default unless check-in
-    };
-    list.unshift(row);
-    setAttendance(list);
-  }
-  return row;
-}
-
-/* CHECK IN */
-function handleCheckIn() {
-  const s = requireSessionOrRedirect();
-  if (!s) return;
-  const now = getNow();
-  const list = getAttendance();
-
-  let row = list.find((r) => r.uid === s.uid && r.date === now.dateStr);
-
-  if (row && row.status === "Off Day") {
-    showToast("This day is marked Off Day", "error");
-    return;
-  }
-
-  if (row && row.in !== "—") {
-    showToast("Already checked IN today", "error");
-    return;
-  }
-
-  if (!row) {
-    row = {
-      uid: s.uid,
-      name: s.name,
-      role: s.role,
-      date: now.dateStr,
-      in: now.timeStr,
-      out: "—",
-      netHours: 0,
-      overtime: 0,
-      status: "Present",
-    };
-    list.unshift(row);
-  } else {
-    row.in = now.timeStr;
-    row.status = "Present";
-  }
-
-  setAttendance(list);
-  addNotification("Attendance", `${s.name} checked IN at ${now.timeStr}`);
-  refreshAttendanceUI();
-}
-
-/* CHECK OUT */
-function handleCheckOut() {
-  const s = requireSessionOrRedirect();
-  if (!s) return;
-  const now = getNow();
-  const list = getAttendance();
-  let row = list.find((r) => r.uid === s.uid && r.date === now.dateStr);
-
-  if (!row || row.in === "—") {
-    showToast("Please Check IN first", "error");
-    return;
-  }
-  if (row.status === "Off Day") {
-    showToast("This day is marked Off Day", "error");
-    return;
-  }
-  if (row.out !== "—") {
-    showToast("Already checked OUT", "error");
-    return;
-  }
-
-  row.out = now.timeStr;
-  const duty = computeDuty(row.in, row.out);
-  row.netHours = duty.netHours;
-  row.overtime = duty.overtime;
-  row.status = "Present";
-
-  setAttendance(list);
-  addNotification("Attendance", `${s.name} checked OUT at ${now.timeStr}`);
-  refreshAttendanceUI();
-}
-
-/* ATTENDANCE: Mark Off Day (Admin/Manager/Supervisor only) */
-function markOffDay(uid, dateStr) {
-  const list = getAttendance();
-  const row = list.find((r) => r.uid === uid && r.date === dateStr);
-  if (!row) {
-    // create row if not exists, mark as Off Day
-    const emp = findUserByUID(uid);
-    if (!emp) return;
-    list.unshift({
-      uid: emp.uid,
-      name: emp.name,
-      role: emp.role,
-      date: dateStr,
-      in: "—",
-      out: "—",
-      netHours: 0,
-      overtime: 0,
-      status: "Off Day",
-    });
-  } else {
-    row.in = "—";
-    row.out = "—";
-    row.netHours = 0;
-    row.overtime = 0;
-    row.status = "Off Day";
-  }
-  setAttendance(list);
-  addNotification("Attendance", `Marked Off Day for ${uid} (${dateStr})`);
-  refreshAttendanceUI();
-}
-
-/* ATTENDANCE: Reset day (keep date, clear IN/OUT) */
-function resetAttendance(uid, dateStr) {
-  const list = getAttendance();
-  const row = list.find((r) => r.uid === uid && r.date === dateStr);
-  if (!row) return;
-  row.in = "—";
-  row.out = "—";
-  row.netHours = 0;
-  row.overtime = 0;
-  row.status = "AB";
-  setAttendance(list);
-  addNotification("Attendance", `Reset attendance for ${uid} (${dateStr})`);
-  refreshAttendanceUI();
-}
-
-/* ATTENDANCE: Edit IN/OUT times manually */
-function saveEditedAttendance(uid, dateStr, newIn, newOut) {
-  const list = getAttendance();
-  const row = list.find((r) => r.uid === uid && r.date === dateStr);
-  if (!row) return;
-
-  row.in = newIn || "—";
-  row.out = newOut || "—";
-
-  if (row.in !== "—" && row.out !== "—") {
-    const duty = computeDuty(row.in, row.out);
-    row.netHours = duty.netHours;
-    row.overtime = duty.overtime;
-    row.status = "Present";
-  } else if (row.status === "Off Day") {
-    // keep Off Day if admin already set it
-    row.netHours = 0;
-    row.overtime = 0;
-  } else {
-    // partial or no info
-    if (row.in === "—" && row.out === "—") {
-      row.status = "AB";
-      row.netHours = 0;
-      row.overtime = 0;
-    } else {
-      row.status = "Present";
+/* Hook up login form on index.html */
+function initLoginPage() {
+  if (document.body.dataset.page !== "login") return;
+  const form = document.getElementById("login-form");
+  if (!form) return;
+  form.addEventListener("submit", e => {
+    e.preventDefault();
+    const uid = document.getElementById("login-uid").value.trim();
+    const pw = document.getElementById("login-pw").value.trim();
+    const user = attemptLogin(uid, pw);
+    if (!user) {
+      showToast("Invalid UID or Password ❌", "error");
+      return;
     }
+    showToast("Welcome " + user.name + " ✅", "success");
+    pushNotification("Login", user.name + " logged in.");
+    // redirect to dashboard
+    window.location.href = "dashboard.html";
+  });
+}
+
+/* Attach logout handlers on pages that have [data-logout] */
+function bindLogoutLinks() {
+  const links = document.querySelectorAll("[data-logout]");
+  links.forEach(l => {
+    l.addEventListener("click", e => {
+      e.preventDefault();
+      logout();
+    });
+  });
+}
+
+/* ========== COMMON HEADER/SIDEBAR USER FILL ========== */
+function fillUserHeader() {
+  const u = getSessionUser();
+  if (!u) return;
+
+  // avatar initials
+  const initials = u.name
+    .split(" ")
+    .map(p => p[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+
+  // header / sidebar selectors we used in HTML
+  const avatarEls = document.querySelectorAll(".user-avatar, #profileTopAvatar, #bigAvatarCircle");
+  avatarEls.forEach(el => { el.textContent = initials; });
+
+  const nameEls = document.querySelectorAll(".user-name, #profileTopName, #profileName");
+  nameEls.forEach(el => { el.textContent = u.name || ""; });
+
+  const roleEls = document.querySelectorAll(".user-role, #profileTopRole, #profileRole");
+  roleEls.forEach(el => { el.textContent = u.role || ""; });
+
+  const sectionEl = document.getElementById("profileSection");
+  if (sectionEl) sectionEl.textContent = u.section || "—";
+
+  const shiftEl = document.getElementById("profileShift");
+  if (shiftEl) shiftEl.textContent = u.shift || "—";
+
+  const uidEl = document.getElementById("profileUID");
+  if (uidEl) uidEl.textContent = u.uid || "—";
+
+  const joinEl = document.getElementById("profileJoin");
+  if (joinEl) joinEl.textContent = u.joinDate || "—";
+
+  // phone/email fields on profile
+  const phoneInput = document.getElementById("profilePhone");
+  if (phoneInput) phoneInput.value = u.phone || "";
+  const emailInput = document.getElementById("profileEmail");
+  if (emailInput) emailInput.value = u.email || "";
+}
+
+/* ========== EMPLOYEE LIST MANAGEMENT (employees.html) ========== */
+/*
+NOTE:
+- We'll assume you will rebuild employees.html later to show/add/edit employees.
+- For now we just provide helpers for CRUD in this core file.
+*/
+
+function getAllUsers() {
+  return lsGet(KPS_KEYS.users, []);
+}
+function saveAllUsers(list) {
+  lsSet(KPS_KEYS.users, list);
+}
+
+/* add new employee programmatically */
+function addEmployee({ uid, name, role, section, shift, joinDate, phone, email, password }) {
+  const list = getAllUsers();
+  if (list.find(u => u.uid === uid)) {
+    showToast("UID already exists", "error");
+    return false;
+  }
+  list.push({
+    uid, name, role, section, shift, joinDate,
+    phone: phone || "",
+    email: email || "",
+    password: password || "User@123"
+  });
+  saveAllUsers(list);
+  pushNotification("New Employee", `${name} (${uid}) added.`);
+  showToast("Employee added ✅", "success");
+  return true;
+}
+
+/* update employee (by uid) */
+function updateEmployee(uid, dataPatch) {
+  const list = getAllUsers();
+  const emp = list.find(e => e.uid === uid);
+  if (!emp) return false;
+  Object.assign(emp, dataPatch);
+  saveAllUsers(list);
+
+  // If currently logged in user is the same person, also sync session
+  const session = getSessionUser();
+  if (session && session.uid === uid) {
+    Object.assign(session, dataPatch);
+    setSessionUser(session);
   }
 
-  setAttendance(list);
-  addNotification(
-    "Attendance",
-    `Edited attendance for ${uid} (${dateStr})`
-  );
-  refreshAttendanceUI();
+  pushNotification("Employee Updated", `Profile updated for UID ${uid}`);
+  showToast("Employee updated ✅", "success");
+  return true;
 }
 
-/* ------------------ Overtime Logic ------------------ */
-/*
-   Overtime entries are separate manual records that a Supervisor/Manager/Admin can add.
-   We still apply same duty calculation rule:
-   totalHours = OUT-IN minus 1h break
-   overtimeHours = totalHours - 10, >=0
-*/
-function calcOvertimeHours(inTime, outTime) {
-  const duty = computeDuty(inTime, outTime); // same function
-  return {
-    dutyHours: duty.netHours,
-    overtimeHours: duty.overtime,
-  };
+/* ========== ATTENDANCE (attendance.html) ========== */
+
+function getTodayDisplay() {
+  // e.g. "28 Oct 2025"
+  const now = new Date();
+  return now.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric"
+  });
 }
 
-function addOrUpdateOvertime(rowData) {
-  // rowData = { uid, date, inTime, outTime }
-  let list = getOvertime();
+function getNowHM() {
+  // "08:15"
+  const now = new Date();
+  return now.toLocaleTimeString("en-GB", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false
+  });
+}
 
-  // If already exists same (uid+date+inTime+outTime) or we want editable by index?
-  // We'll just push new each time for now.
-  const { dutyHours, overtimeHours } = calcOvertimeHours(
-    rowData.inTime,
-    rowData.outTime
-  );
+function getAllAttendance() {
+  return lsGet(KPS_KEYS.attendance, []);
+}
+function saveAllAttendance(list) {
+  lsSet(KPS_KEYS.attendance, list);
+}
 
-  list.unshift({
-    uid: rowData.uid,
-    name: (findUserByUID(rowData.uid)?.name) || rowData.uid,
-    date: rowData.date,
-    in: rowData.inTime,
-    out: rowData.outTime,
-    dutyHours: dutyHours,
-    overtime: overtimeHours,
-    ts: Date.now(),
+function loadAttendanceTable() {
+  if (document.body.dataset.page !== "attendance") return;
+  const tbody = document.getElementById("attendanceData");
+  if (!tbody) return;
+
+  const data = getAllAttendance();
+  tbody.innerHTML = "";
+  data.forEach(row => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${row.uid}</td>
+      <td>${row.name}</td>
+      <td>${row.date}</td>
+      <td>${row.in || "-"}</td>
+      <td>${row.out || "-"}</td>
+      <td>${row.duty || "-"}</td>
+      <td>${row.ot || "-"}</td>
+      <td>${row.status}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+/* Check In */
+function checkIn() {
+  const session = requireLogin();
+  if (!session) return;
+
+  const all = getAllAttendance();
+  const today = getTodayDisplay();
+
+  // already checked in?
+  if (all.some(a => a.uid === session.uid && a.date === today && a.in)) {
+    showToast("Already Checked In today", "error");
+    return;
+  }
+
+  all.push({
+    uid: session.uid,
+    name: session.name,
+    date: today,
+    in: getNowHM(),
+    out: "",
+    duty: "",
+    ot: "",
+    status: "Checked In"
   });
 
-  setOvertime(list);
-  addNotification(
-    "Overtime",
-    `Overtime logged for ${rowData.uid} (${overtimeHours.toFixed(2)} hr OT)`
-  );
-  renderOvertimeTable();
+  saveAllAttendance(all);
+  pushNotification("Attendance", `${session.name} checked in (${getNowHM()})`);
+  showToast("Checked In ✅", "success");
 }
 
-/* Delete OT row by index */
-function deleteOvertime(index) {
-  let list = getOvertime();
-  if (!list[index]) return;
-  const rec = list[index];
-  list.splice(index, 1);
-  setOvertime(list);
-  addNotification("Overtime", `Removed OT for ${rec.uid} on ${rec.date}`);
-  renderOvertimeTable();
-}
+/* Check Out */
+function checkOut() {
+  const session = requireLogin();
+  if (!session) return;
 
-/* ------------------ "Find user by UID" helper ------------------ */
-function findUserByUID(uid) {
-  // Check admin first
-  const adminMatch = KPS_USERS.find((u) => u.uid === uid);
-  if (adminMatch) return adminMatch;
-  // Then employees
-  const emps = getEmployees();
-  return emps.find((e) => e.uid === uid);
-}
+  const all = getAllAttendance();
+  const today = getTodayDisplay();
+  const rec = all.find(a => a.uid === session.uid && a.date === today && a.in);
 
-/* ------------------ Toast popup ------------------ */
-function showToast(message, type) {
-  const area = document.getElementById("toast-area");
-  if (!area) return;
-  const div = document.createElement("div");
-  div.className = "toast" + (type === "error" ? " error" : "");
-  div.innerHTML = `
-    <div class="toast-msg">${message}</div>
-    <div class="toast-time">${new Date().toLocaleTimeString()}</div>
-  `;
-  area.appendChild(div);
-
-  setTimeout(() => {
-    div.style.opacity = "0";
-    div.style.transform = "translateY(10px) scale(0.96)";
-    setTimeout(() => div.remove(), 200);
-  }, 4000);
-}
-
-/* ------------------ Sidebar Profile / Notifications ------------------ */
-function renderSidebarProfile() {
-  const s = getSession();
-  if (!s) return;
-
-  // Sidebar identity
-  const nameEl = document.getElementById("dash-user-name");
-  const roleEl = document.getElementById("dash-user-role");
-  const secEl = document.getElementById("dash-user-section");
-  if (nameEl) nameEl.textContent = s.name;
-  if (roleEl) roleEl.textContent = s.role;
-  if (secEl) secEl.textContent = s.section || "—";
-
-  // Header chip
-  const chipName = document.getElementById("chip-name");
-  const chipRole = document.getElementById("chip-role");
-  const chipAvatar = document.getElementById("chip-avatar");
-  if (chipName) chipName.textContent = s.name;
-  if (chipRole) chipRole.textContent = s.role;
-  if (chipAvatar) {
-    chipAvatar.textContent = s.name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .slice(0, 2)
-      .toUpperCase();
-  }
-
-  // Welcome line on dashboard
-  const welcomeName = document.getElementById("welcome-name");
-  const welcomeRole = document.getElementById("welcome-role");
-  if (welcomeName) welcomeName.textContent = s.name;
-  if (welcomeRole) welcomeRole.textContent = s.role;
-}
-
-function renderSidebarNotifications() {
-  const ul = document.getElementById("sidebar-notif-list");
-  if (!ul) return;
-  const list = getNotifications();
-  const latest5 = list.slice(0, 5);
-  if (latest5.length === 0) {
-    ul.innerHTML = `<li>No recent activity</li>`;
+  if (!rec) {
+    showToast("Please Check In first", "error");
     return;
   }
-  ul.innerHTML = latest5
-    .map((n) => {
-      const timeStr = new Date(n.ts).toLocaleString();
-      return `<li>
-        <div>${n.message}</div>
-        <span class="notif-time">${timeStr}</span>
-      </li>`;
-    })
-    .join("");
-}
-
-/* ------------------ Dashboard KPI + latest table ------------------ */
-function renderKpis() {
-  const attVal = document.getElementById("kpi-attendance");
-  const otVal = document.getElementById("kpi-overtime");
-  const dedVal = document.getElementById("kpi-deduction");
-  const notifVal = document.getElementById("kpi-notif-count");
-
-  const attList = getAttendance();
-  const otList = getOvertime();
-  const notifList = getNotifications();
-
-  const todayStr = getNow().dateStr;
-  const todaysRows = attList.filter((r) => r.date === todayStr);
-
-  // total OT from attendance
-  const totalAttendanceOT = attList.reduce(
-    (sum, r) => sum + (r.overtime || 0),
-    0
-  );
-  // total OT from manual overtime list
-  const totalManualOT = otList.reduce(
-    (sum, r) => sum + (r.overtime || 0),
-    0
-  );
-
-  if (attVal) attVal.textContent = todaysRows.length + " records";
-  if (otVal)
-    otVal.textContent = (totalAttendanceOT + totalManualOT).toFixed(2) + " hr";
-  if (dedVal) dedVal.textContent = "—";
-  if (notifVal) notifVal.textContent = notifList.length.toString();
-}
-
-function renderLatestAttendanceTable() {
-  const tbody = document.getElementById("latest-attendance-tbody");
-  if (!tbody) return;
-  const list = getAttendance().slice(0, 10); // last 10
-  tbody.innerHTML = list
-    .map(
-      (r) => `
-      <tr>
-        <td>${r.uid}</td>
-        <td>${r.name}</td>
-        <td>${r.date}</td>
-        <td>${r.in}</td>
-        <td>${r.out}</td>
-        <td>${r.netHours}</td>
-        <td>${r.overtime}</td>
-        <td>${r.status}</td>
-      </tr>`
-    )
-    .join("");
-}
-
-/* ------------------ Attendance Page Rendering ------------------ */
-
-function renderTodaySummary() {
-  const s = getSession();
-  const now = getNow();
-  const list = getAttendance();
-  const row = list.find((r) => r.uid === s.uid && r.date === now.dateStr);
-
-  const dateEl = document.getElementById("att-today-date");
-  const inEl = document.getElementById("att-today-in");
-  const outEl = document.getElementById("att-today-out");
-  const dutyEl = document.getElementById("att-today-duty");
-  const otEl = document.getElementById("att-today-ot");
-  const stEl = document.getElementById("att-today-status");
-
-  if (!dateEl) return;
-
-  if (!row) {
-    dateEl.textContent = now.dateStr;
-    inEl.textContent = "--";
-    outEl.textContent = "--";
-    dutyEl.textContent = "0.00 hr";
-    otEl.textContent = "0.00 hr";
-    stEl.textContent = "--";
+  if (rec.out) {
+    showToast("Already Checked Out", "error");
     return;
   }
 
-  dateEl.textContent = row.date;
-  inEl.textContent = row.in;
-  outEl.textContent = row.out;
-  dutyEl.textContent = (row.netHours || 0).toFixed(2) + " hr";
-  otEl.textContent = (row.overtime || 0).toFixed(2) + " hr";
-  stEl.textContent = row.status;
-}
+  rec.out = getNowHM();
 
-function renderAttendanceTable() {
-  const tbody = document.getElementById("attendance-tbody");
-  if (!tbody) return;
-  const s = getSession();
-  const list = getAttendance();
+  // duty calc
+  // convert "08:00" -> Date so we can diff
+  const inTime = new Date(`1970-01-01T${rec.in}:00`);
+  const outTime = new Date(`1970-01-01T${rec.out}:00`);
+  let diffHrs = (outTime - inTime) / (1000 * 60 * 60); // raw hours
+  // minus 1hr break
+  if (diffHrs < 0) diffHrs = 0;
+  const duty = Math.max(diffHrs - 1, 0); // can't be negative
+  const dutyRounded = duty.toFixed(2);
 
-  const rowsHtml = list
-    .map((r) => {
-      // show edit controls only if user can edit
-      let actionCol = "";
-      if (canEditAttendance(s)) {
-        actionCol = `
-          <button class="btn-edit" data-edit-att="${r.uid}" data-edit-date="${r.date}">✏️</button>
-          <button class="btn-reset" data-reset-att="${r.uid}" data-reset-date="${r.date}">↺</button>
-          <button class="btn-reset" data-offday-att="${r.uid}" data-offday-date="${r.date}">Off Day</button>
-        `;
-      }
-      return `
-      <tr>
-        <td>${r.uid}</td>
-        <td>${r.name}</td>
-        <td>${r.date}</td>
-        <td>${r.in}</td>
-        <td>${r.out}</td>
-        <td>${r.netHours}</td>
-        <td>${r.overtime}</td>
-        <td>${r.status}</td>
-        <td>${actionCol}</td>
-      </tr>`;
-    })
-    .join("");
-
-  tbody.innerHTML = rowsHtml;
-
-  // wire edit / reset / offday buttons
-  if (canEditAttendance(s)) {
-    tbody.querySelectorAll("[data-edit-att]").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const uid = btn.getAttribute("data-edit-att");
-        const dateStr = btn.getAttribute("data-edit-date");
-        openAttendanceEditModal(uid, dateStr);
-      });
-    });
-    tbody.querySelectorAll("[data-reset-att]").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const uid = btn.getAttribute("data-reset-att");
-        const dateStr = btn.getAttribute("data-reset-date");
-        resetAttendance(uid, dateStr);
-      });
-    });
-    tbody.querySelectorAll("[data-offday-att]").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const uid = btn.getAttribute("data-offday-att");
-        const dateStr = btn.getAttribute("data-offday-date");
-        markOffDay(uid, dateStr);
-      });
-    });
-  }
-}
-
-/* Attendance Edit Modal Logic */
-function openAttendanceEditModal(uid, dateStr) {
-  const list = getAttendance();
-  const row = list.find((r) => r.uid === uid && r.date === dateStr);
-  if (!row) return;
-
-  const modal = ensureAttendanceModal(); // build if not exists
-  modal.style.display = "flex";
-
-  // fill fields
-  document.getElementById("att-edit-uid").value = row.uid;
-  document.getElementById("att-edit-date").value = row.date;
-  document.getElementById("att-edit-in").value =
-    row.in && row.in !== "—" ? row.in : "";
-  document.getElementById("att-edit-out").value =
-    row.out && row.out !== "—" ? row.out : "";
-}
-
-function ensureAttendanceModal() {
-  let modal = document.getElementById("att-edit-modal");
-  if (modal) return modal;
-
-  // create modal HTML once if not present
-  modal = document.createElement("div");
-  modal.className = "modal";
-  modal.id = "att-edit-modal";
-  modal.innerHTML = `
-    <div class="modal-box">
-      <div class="modal-header">
-        <h2>Edit Attendance</h2>
-        <button type="button" class="modal-close" id="att-edit-close">×</button>
-      </div>
-      <form id="att-edit-form" class="modal-form">
-        <div class="form-grid">
-          <div class="form-group">
-            <label>UID</label>
-            <input id="att-edit-uid" type="text" readonly />
-          </div>
-          <div class="form-group">
-            <label>Date</label>
-            <input id="att-edit-date" type="text" readonly />
-          </div>
-          <div class="form-group">
-            <label>Check-IN</label>
-            <input id="att-edit-in" type="time" />
-          </div>
-          <div class="form-group">
-            <label>Check-OUT</label>
-            <input id="att-edit-out" type="time" />
-          </div>
-        </div>
-        <button class="btn-save" type="submit">Save Changes</button>
-      </form>
-    </div>
-  `;
-  document.body.appendChild(modal);
-
-  // close button
-  document
-    .getElementById("att-edit-close")
-    .addEventListener("click", () => (modal.style.display = "none"));
-
-  // submit
-  document
-    .getElementById("att-edit-form")
-    .addEventListener("submit", (e) => {
-      e.preventDefault();
-      const uid = document.getElementById("att-edit-uid").value;
-      const dateStr = document.getElementById("att-edit-date").value;
-      const newIn = document.getElementById("att-edit-in").value;
-      const newOut = document.getElementById("att-edit-out").value;
-      saveEditedAttendance(uid, dateStr, newIn, newOut);
-      modal.style.display = "none";
-    });
-
-  return modal;
-}
-
-/* helper to refresh attendance UIs everywhere */
-function refreshAttendanceUI() {
-  if (document.body.dataset.page === "dashboard") {
-    renderKpis();
-    renderLatestAttendanceTable();
-    renderSidebarNotifications();
-  }
-  if (document.body.dataset.page === "attendance") {
-    renderAttendanceTable();
-    renderTodaySummary();
-    renderSidebarNotifications();
-  }
-  if (document.body.dataset.page === "overtime") {
-    renderOvertimeTable();
-  }
-}
-
-/* ------------------ Employees Page Rendering ------------------ */
-
-function openEmpModalForNew() {
-  const modal = document.getElementById("emp-modal");
-  const title = document.getElementById("emp-modal-title");
-
-  // clear form
-  document.getElementById("emp-id").value = "";
-  document.getElementById("emp-name").value = "";
-  document.getElementById("emp-password").value = "";
-  document.getElementById("emp-role").value = "";
-  document.getElementById("emp-section").value = "";
-  document.getElementById("emp-shift").value = "";
-  document.getElementById("emp-join").value = "";
-
-  title.textContent = "Add Employee";
-  modal.style.display = "flex";
-}
-
-function openEmpModalForEdit(uid) {
-  const modal = document.getElementById("emp-modal");
-  const title = document.getElementById("emp-modal-title");
-
-  const emps = getEmployees();
-  const emp = emps.find((e) => e.uid === uid);
-  if (!emp) return;
-
-  document.getElementById("emp-id").value = emp.uid;
-  document.getElementById("emp-name").value = emp.name;
-  document.getElementById("emp-password").value = ""; // blank => keep same
-  document.getElementById("emp-role").value = emp.role;
-  document.getElementById("emp-section").value = emp.section || "";
-  document.getElementById("emp-shift").value = emp.shift || "";
-  document.getElementById("emp-join").value = emp.joinDate || "";
-
-  title.textContent = "Edit Employee";
-  modal.style.display = "flex";
-}
-
-function closeEmpModal() {
-  const modal = document.getElementById("emp-modal");
-  if (modal) modal.style.display = "none";
-}
-
-function handleGeneratePassword() {
-  const pwField = document.getElementById("emp-password");
-  const newPw = "KPS@" + Math.floor(1000 + Math.random() * 9000);
-  pwField.value = newPw;
-  showToast("Generated: " + newPw, "ok");
-}
-
-function handleSaveEmployee(e) {
-  e.preventDefault();
-  const uid = document.getElementById("emp-id").value.trim();
-  const name = document.getElementById("emp-name").value.trim();
-  const pw = document.getElementById("emp-password").value.trim();
-  const role = document.getElementById("emp-role").value.trim();
-  const section = document.getElementById("emp-section").value.trim();
-  const shift = document.getElementById("emp-shift").value.trim();
-  const joinDate = document.getElementById("emp-join").value.trim();
-
-  if (!uid || !name || !role) {
-    showToast("Please fill UID, Name, Role", "error");
-    return;
-  }
-
-  let list = getEmployees();
-  const idx = list.findIndex((x) => x.uid === uid);
-
-  if (idx >= 0) {
-    list[idx] = {
-      ...list[idx],
-      name,
-      role,
-      section,
-      shift,
-      joinDate,
-      ...(pw ? { password: pw } : {}),
-    };
-    showToast("Employee updated", "ok");
-    addNotification("Employee", `Updated ${name} (${uid})`);
+  // Overtime rule:
+  // Standard duty is 10h (already includes break rule),
+  // anything above 10 is OT.
+  let ot = 0;
+  if (duty > 10) {
+    ot = (duty - 10).toFixed(2);
   } else {
-    list.unshift({
+    ot = "0";
+  }
+
+  rec.duty = dutyRounded;
+  rec.ot = ot;
+  rec.status = "Present";
+
+  saveAllAttendance(all);
+  pushNotification("Attendance", `${session.name} checked out (${rec.out}), OT ${ot}h`);
+  showToast("Checked Out ✅", "success");
+}
+
+/* Mark Off Day */
+function markOffDay() {
+  const session = requireLogin();
+  if (!session) return;
+
+  const all = getAllAttendance();
+  const today = getTodayDisplay();
+
+  // If record for today already exists, don't duplicate. We only add Off Day if
+  // there's not already an attendance record for today.
+  if (all.some(a => a.uid === session.uid && a.date === today)) {
+    showToast("Attendance already exists today", "error");
+    return;
+  }
+
+  all.push({
+    uid: session.uid,
+    name: session.name,
+    date: today,
+    in: "",
+    out: "",
+    duty: "0",
+    ot: "0",
+    status: "Off Day"
+  });
+
+  saveAllAttendance(all);
+  pushNotification("Attendance", `${session.name} marked Off Day (${today})`);
+  showToast("Marked Off Day ✅", "info");
+}
+
+/* Reset today's attendance for THIS user */
+function resetAttendance() {
+  const session = requireLogin();
+  if (!session) return;
+
+  const all = getAllAttendance();
+  const today = getTodayDisplay();
+  const filtered = all.filter(a => !(a.uid === session.uid && a.date === today));
+  saveAllAttendance(filtered);
+
+  pushNotification("Attendance Reset", `Today cleared for ${session.name}`);
+  showToast("Attendance reset for today 🔄", "info");
+}
+
+/* ========== OVERTIME (overtime.html) ========== */
+
+function getAllOvertime() {
+  return lsGet(KPS_KEYS.overtime, []);
+}
+function saveAllOvertime(list) {
+  lsSet(KPS_KEYS.overtime, list);
+}
+
+function loadOvertimeTable() {
+  if (document.body.dataset.page !== "overtime") return;
+  const tbody = document.getElementById("overtimeTable");
+  if (!tbody) return;
+
+  const otData = getAllOvertime();
+  const attData = getAllAttendance();
+  tbody.innerHTML = "";
+
+  otData.forEach(ot => {
+    // find attendance OT for same person/date
+    const match = attData.find(a => a.uid === ot.uid && a.date === ot.date);
+    const attendanceOT = match ? parseFloat(match.ot || 0) : 0;
+    const totalOT = (attendanceOT + parseFloat(ot.hours || 0)).toFixed(2);
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${ot.date}</td>
+      <td>${ot.uid}</td>
+      <td>${ot.name}</td>
+      <td>${attendanceOT}</td>
+      <td>${ot.hours}</td>
+      <td><strong>${totalOT}</strong></td>
+      <td>${ot.approvedBy}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+/* Add extra approved overtime manually */
+function bindOvertimeForm() {
+  if (document.body.dataset.page !== "overtime") return;
+  const form = document.getElementById("overtimeForm");
+  if (!form) return;
+
+  form.addEventListener("submit", e => {
+    e.preventDefault();
+
+    const uid = document.getElementById("uid").value.trim();
+    const name = document.getElementById("name").value.trim();
+    const dateRaw = document.getElementById("date").value;
+    const hoursVal = document.getElementById("hours").value.trim();
+    const approvedBy = document.getElementById("approvedBy").value.trim();
+
+    if (!uid || !name || !dateRaw || !hoursVal || !approvedBy) {
+      showToast("Please fill all fields", "error");
+      return;
+    }
+
+    // format date to "28 Oct 2025"
+    const dateObj = new Date(dateRaw);
+    const date = dateObj.toLocaleDateString("en-GB", {
+      day: "2-digit", month: "short", year: "numeric"
+    });
+
+    const hours = parseFloat(hoursVal);
+    if (isNaN(hours)) {
+      showToast("Hours not valid", "error");
+      return;
+    }
+
+    const list = getAllOvertime();
+    list.push({ uid, name, date, hours, approvedBy });
+    saveAllOvertime(list);
+
+    pushNotification("Overtime Added", `OT added for ${name} (${hours}h)`);
+    showToast("Overtime Added ✅", "success");
+
+    form.reset();
+  });
+}
+
+/* ========== DEDUCTIONS (deduction.html) ========== */
+function getAllDeductions() {
+  return lsGet(KPS_KEYS.deductions, []);
+}
+function saveAllDeductions(list) {
+  lsSet(KPS_KEYS.deductions, list);
+}
+
+function loadDeductionTable() {
+  if (document.body.dataset.page !== "deduction") return;
+  const tbody = document.getElementById("deductionTable");
+  if (!tbody) return;
+
+  const data = getAllDeductions();
+  tbody.innerHTML = "";
+  data.forEach(d => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${d.date}</td>
+      <td>${d.uid}</td>
+      <td>${d.name}</td>
+      <td>${d.reason}</td>
+      <td>${parseFloat(d.amount).toFixed(2)}</td>
+      <td>${d.approvedBy}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function bindDeductionForm() {
+  if (document.body.dataset.page !== "deduction") return;
+  const form = document.getElementById("deductionForm");
+  if (!form) return;
+
+  form.addEventListener("submit", e => {
+    e.preventDefault();
+
+    const uid = document.getElementById("uid").value.trim();
+    const name = document.getElementById("name").value.trim();
+    const reason = document.getElementById("reason").value.trim();
+    const amountVal = document.getElementById("amount").value.trim();
+    const dateRaw = document.getElementById("date").value;
+    const approvedBy = document.getElementById("approvedBy").value.trim();
+
+    if (!uid || !name || !reason || !amountVal || !dateRaw || !approvedBy) {
+      showToast("Fill all fields", "error");
+      return;
+    }
+
+    const amt = parseFloat(amountVal);
+    if (isNaN(amt)) {
+      showToast("Amount not valid", "error");
+      return;
+    }
+
+    const dateObj = new Date(dateRaw);
+    const date = dateObj.toLocaleDateString("en-GB", {
+      day: "2-digit", month: "short", year: "numeric"
+    });
+
+    const list = getAllDeductions();
+    list.push({ uid, name, reason, amount: amt, date, approvedBy });
+    saveAllDeductions(list);
+
+    pushNotification("Deduction Added", `Deduction for ${name}: ${amt} AED`);
+    showToast("Deduction Added ✅", "success");
+
+    form.reset();
+  });
+}
+
+/* ========== REQUESTS (request.html) ========== */
+function getAllRequests() {
+  return lsGet(KPS_KEYS.requests, []);
+}
+function saveAllRequests(list) {
+  lsSet(KPS_KEYS.requests, list);
+}
+
+function loadRequestTable() {
+  if (document.body.dataset.page !== "request") return;
+  const tbody = document.getElementById("requestTable");
+  if (!tbody) return;
+
+  const reqs = getAllRequests();
+  tbody.innerHTML = "";
+
+  reqs.forEach((r, index) => {
+    const processed = r.status !== "Pending";
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${r.date}</td>
+      <td>${r.uid}</td>
+      <td>${r.name}</td>
+      <td>${r.type}</td>
+      <td>${r.details}</td>
+      <td>${r.status}</td>
+      <td>${r.approvedBy || "-"}</td>
+      <td>
+        ${processed ? `
+          <span class="badge-done">Processed</span>
+        ` : `
+          <button class="btn-small btn-success" data-approve="${index}">Approve</button>
+          <button class="btn-small btn-danger" data-reject="${index}">Reject</button>
+        `}
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // Bind approve / reject buttons
+  tbody.querySelectorAll("[data-approve]").forEach(btn => {
+    btn.addEventListener("click", e => {
+      const idx = parseInt(e.target.getAttribute("data-approve"));
+      approveRequest(idx);
+    });
+  });
+  tbody.querySelectorAll("[data-reject]").forEach(btn => {
+    btn.addEventListener("click", e => {
+      const idx = parseInt(e.target.getAttribute("data-reject"));
+      rejectRequest(idx);
+    });
+  });
+}
+
+function bindRequestForm() {
+  if (document.body.dataset.page !== "request") return;
+  const form = document.getElementById("requestForm");
+  if (!form) return;
+
+  form.addEventListener("submit", e => {
+    e.preventDefault();
+
+    const uid = document.getElementById("uid").value.trim();
+    const name = document.getElementById("name").value.trim();
+    const type = document.getElementById("type").value.trim();
+    const details = document.getElementById("details").value.trim();
+    const dateRaw = document.getElementById("date").value;
+
+    if (!uid || !name || !type || !details || !dateRaw) {
+      showToast("Please fill all request fields", "error");
+      return;
+    }
+
+    const dateObj = new Date(dateRaw);
+    const date = dateObj.toLocaleDateString("en-GB", {
+      day: "2-digit", month: "short", year: "numeric"
+    });
+
+    const reqs = getAllRequests();
+    reqs.push({
       uid,
       name,
-      password: pw || "KPS@1234",
-      role,
-      section,
-      shift,
-      joinDate,
-      createdAt: Date.now(),
+      type,
+      details,
+      date,
+      status: "Pending",
+      approvedBy: ""
     });
-    showToast("Employee added", "ok");
-    addNotification("Employee", `Added ${name} (${uid})`);
-  }
+    saveAllRequests(reqs);
 
-  setEmployees(list);
-  renderEmployeesTable();
-  closeEmpModal();
-}
+    pushNotification("Request Submitted", `${name} submitted ${type} request`);
+    showToast("Request Submitted ✅", "success");
 
-function handleDeleteEmployee(uid) {
-  if (!confirm("Delete employee " + uid + "?")) return;
-  let list = getEmployees();
-  const match = list.find((e) => e.uid === uid);
-  list = list.filter((e) => e.uid !== uid);
-  setEmployees(list);
-  renderEmployeesTable();
-  if (match) {
-    addNotification("Employee", `Removed ${match.name} (${uid})`);
-  }
-}
-
-function renderEmployeesTable() {
-  const tbody = document.getElementById("emp-tbody");
-  if (!tbody) return;
-
-  const filterText = (document.getElementById("emp-search")?.value || "")
-    .toLowerCase()
-    .trim();
-
-  const list = getEmployees();
-  const filtered = list.filter(
-    (emp) =>
-      emp.uid.toLowerCase().includes(filterText) ||
-      emp.name.toLowerCase().includes(filterText)
-  );
-
-  tbody.innerHTML = filtered
-    .map(
-      (emp) => `
-      <tr>
-        <td>${emp.uid}</td>
-        <td>${emp.name}</td>
-        <td>${emp.role}</td>
-        <td>${emp.section || "-"}</td>
-        <td>${emp.shift || "-"}</td>
-        <td>${emp.joinDate || "-"}</td>
-        <td>${emp.password || "—"}</td>
-        <td>
-          <button class="btn-edit" data-edit="${emp.uid}">Edit</button>
-          <button class="btn-reset" data-del="${emp.uid}">Delete</button>
-        </td>
-      </tr>`
-    )
-    .join("");
-
-  // Link edit/delete actions
-  tbody.querySelectorAll("[data-edit]").forEach((btn) => {
-    btn.addEventListener("click", () => openEmpModalForEdit(btn.dataset.edit));
-  });
-  tbody.querySelectorAll("[data-del]").forEach((btn) => {
-    btn.addEventListener("click", () => handleDeleteEmployee(btn.dataset.del));
+    form.reset();
   });
 }
 
-/* ------------------ Overtime Page Rendering ------------------ */
-function openOTModal() {
-  const modal = ensureOTModal();
-  // clear fields
-  document.getElementById("ot-uid").value = "";
-  document.getElementById("ot-date").value = "";
-  document.getElementById("ot-in").value = "";
-  document.getElementById("ot-out").value = "";
-  modal.style.display = "flex";
-}
-function closeOTModal() {
-  const modal = document.getElementById("ot-modal") || document.getElementById("ot-modal-dynamic");
-  if (modal) modal.style.display = "none";
+function approveRequest(index) {
+  const reqs = getAllRequests();
+  if (!reqs[index]) return;
+  reqs[index].status = "Approved";
+  reqs[index].approvedBy = "Manager/Admin";
+  saveAllRequests(reqs);
+
+  pushNotification("Request Approved", `${reqs[index].name}'s request approved`);
+  showToast("Approved ✅", "success");
 }
 
-// if the static overtime.html already included #ot-modal, we'll just use that
-function ensureOTModal() {
-  let modal = document.getElementById("ot-modal");
-  if (modal) return modal;
+function rejectRequest(index) {
+  const reqs = getAllRequests();
+  if (!reqs[index]) return;
+  reqs[index].status = "Rejected";
+  reqs[index].approvedBy = "Manager/Admin";
+  saveAllRequests(reqs);
 
-  modal = document.getElementById("ot-modal-dynamic");
-  if (modal) return modal;
+  pushNotification("Request Rejected", `${reqs[index].name}'s request rejected`);
+  showToast("Rejected ❌", "info");
+}
 
-  // build fallback if not defined
-  modal = document.createElement("div");
-  modal.id = "ot-modal-dynamic";
-  modal.className = "modal";
-  modal.innerHTML = `
-    <div class="modal-box">
-      <div class="modal-header">
-        <h2>Add Overtime</h2>
-        <button type="button" class="modal-close" id="close-ot-modal-dyn">×</button>
+/* ========== NOTIFICATIONS (notifications.html) ========== */
+function loadNotificationList() {
+  if (document.body.dataset.page !== "notifications") return;
+  const container = document.getElementById("notificationList");
+  if (!container) return;
+
+  const notes = lsGet(KPS_KEYS.notifications, []);
+  container.innerHTML = "";
+
+  if (notes.length === 0) {
+    container.innerHTML = '<p class="no-data">No notifications yet.</p>';
+    return;
+  }
+
+  // show newest first
+  notes.slice().reverse().forEach((n, idx) => {
+    const wrap = document.createElement("div");
+    wrap.className = "notification-item " + (n.read ? "read" : "unread");
+    wrap.innerHTML = `
+      <div class="notif-header">
+        <span class="notif-title">${n.title}</span>
+        <span class="notif-time">${n.time}</span>
       </div>
-      <form id="ot-form-dyn">
-        <div class="form-grid">
-          <div class="form-group">
-            <label>UID</label>
-            <input type="text" id="ot-uid" required>
-          </div>
-          <div class="form-group">
-            <label>Date</label>
-            <input type="date" id="ot-date" required>
-          </div>
-          <div class="form-group">
-            <label>IN Time</label>
-            <input type="time" id="ot-in" required>
-          </div>
-          <div class="form-group">
-            <label>OUT Time</label>
-            <input type="time" id="ot-out" required>
-          </div>
-        </div>
-        <button class="btn-save" type="submit">Save Overtime</button>
-      </form>
-    </div>
-  `;
-  document.body.appendChild(modal);
-
-  document
-    .getElementById("close-ot-modal-dyn")
-    .addEventListener("click", closeOTModal);
-
-  document
-    .getElementById("ot-form-dyn")
-    .addEventListener("submit", handleSaveOvertime);
-
-  return modal;
-}
-
-function handleSaveOvertime(e) {
-  e.preventDefault();
-  const s = getSession();
-  if (!canManageOvertime(s)) {
-    showToast("Not allowed", "error");
-    return;
-  }
-
-  const uid = document.getElementById("ot-uid").value.trim();
-  const date = document.getElementById("ot-date").value.trim();
-  const inTime = document.getElementById("ot-in").value.trim();
-  const outTime = document.getElementById("ot-out").value.trim();
-
-  if (!uid || !date || !inTime || !outTime) {
-    showToast("Fill all overtime fields", "error");
-    return;
-  }
-
-  addOrUpdateOvertime({
-    uid,
-    date,
-    inTime,
-    outTime,
-  });
-
-  closeOTModal();
-  renderOvertimeTable();
-}
-
-function renderOvertimeTable() {
-  const tbody = document.getElementById("ot-tbody");
-  if (!tbody) return;
-
-  const list = getOvertime();
-  tbody.innerHTML = list
-    .map((rec, idx) => {
-      return `
-        <tr>
-          <td>${rec.uid}</td>
-          <td>${rec.name}</td>
-          <td>${rec.date}</td>
-          <td>${rec.in}</td>
-          <td>${rec.out}</td>
-          <td>${rec.dutyHours.toFixed(2)}</td>
-          <td>${rec.overtime.toFixed(2)}</td>
-          <td>
-            <button class="btn-reset" data-del-ot="${idx}">Delete</button>
-          </td>
-        </tr>
-      `;
-    })
-    .join("");
-
-  tbody.querySelectorAll("[data-del-ot]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const idx = btn.getAttribute("data-del-ot");
-      deleteOvertime(idx);
+      <div class="notif-body">${n.message}</div>
+    `;
+    wrap.addEventListener("click", () => {
+      // mark read
+      const allNotes = lsGet(KPS_KEYS.notifications, []);
+      // index in reversed view = translate back
+      const realIndex = allNotes.length - 1 - idx;
+      allNotes[realIndex].read = true;
+      lsSet(KPS_KEYS.notifications, allNotes);
+      showToast("Marked as read", "info");
     });
+    container.appendChild(wrap);
   });
 }
 
-/* ------------------ Dropdown menu ------------------ */
-function initUserDropdown() {
-  const chip = document.getElementById("user-chip");
-  const menu = document.getElementById("user-dropdown");
-  if (!chip || !menu) return;
-
-  chip.addEventListener("click", () => {
-    menu.classList.toggle("show");
-  });
-
-  const profBtn = menu.querySelector("[data-goto-profile]");
-  if (profBtn) {
-    profBtn.addEventListener("click", () => {
-      window.location.href = "profile.html";
-    });
-  }
-
-  const outBtn = menu.querySelector("[data-logout]");
-  if (outBtn) {
-    outBtn.addEventListener("click", () => {
-      signOut();
-    });
-  }
-}
-
-/* ------------------ LOGIN HANDLER ------------------ */
-function handleLoginSubmit(e) {
-  e.preventDefault();
-  const idVal = document.getElementById("login-uid").value.trim();
-  const pwVal = document.getElementById("login-pw").value.trim();
-
-  if (!idVal || !pwVal) {
-    alert("Please enter UID and Password");
-    return;
-  }
-
-  // Admin first
-  let found = KPS_USERS.find(
-    (u) => u.uid.toString() === idVal.toString() && u.password === pwVal
-  );
-
-  // Employees next
-  if (!found) {
-    const employees = getEmployees();
-    found = employees.find(
-      (emp) =>
-        emp.uid.toString() === idVal.toString() && emp.password === pwVal
-    );
-  }
-
-  if (!found) {
-    alert("❌ Invalid UID or Password");
-    return;
-  }
-
-  setSession(found);
-  window.location.href = "dashboard.html";
-}
-
-/* ------------------ PAGE INIT ------------------ */
-document.addEventListener("DOMContentLoaded", () => {
-  const page = document.body.dataset.page;
-
-  if (page === "login") {
-    const form = document.getElementById("login-form");
-    if (form) form.addEventListener("submit", handleLoginSubmit);
-    return;
-  }
-
-  // For every other page, require a session
-  const s = requireSessionOrRedirect();
-  if (!s) return;
-
-  renderSidebarProfile();
-  initUserDropdown();
-
-  // Hide Employees tab from Staff
-  if (!canManageEmployees(s)) {
-    const empNav = document.getElementById("nav-employees-link");
-    if (empNav) empNav.style.display = "none";
-  }
-
-  // DASHBOARD PAGE
-  if (page === "dashboard") {
-    renderSidebarNotifications();
-    renderKpis();
-    renderLatestAttendanceTable();
-  }
-
-  // ATTENDANCE PAGE
-  if (page === "attendance") {
-    // wire buttons
-    const inBtn = document.getElementById("checkin-btn");
-    const outBtn = document.getElementById("checkout-btn");
-    if (inBtn) inBtn.addEventListener("click", handleCheckIn);
-    if (outBtn) outBtn.addEventListener("click", handleCheckOut);
-
-    renderSidebarNotifications();
-    renderTodaySummary();
-    renderAttendanceTable();
-  }
-
-  // EMPLOYEES PAGE
-  if (page === "employees") {
-    // open modal only if you have permission
-    const addBtn = document.getElementById("open-emp-modal");
-    if (addBtn) {
-      if (canManageEmployees(s)) {
-        addBtn.style.display = "inline-block";
-        addBtn.addEventListener("click", openEmpModalForNew);
-      } else {
-        addBtn.style.display = "none";
-      }
-    }
-
-    const closeBtn = document.getElementById("close-emp-modal");
-    if (closeBtn) closeBtn.addEventListener("click", closeEmpModal);
-
-    const form = document.getElementById("emp-form");
-    if (form) form.addEventListener("submit", handleSaveEmployee);
-
-    const genBtn = document.getElementById("generate-pw");
-    if (genBtn) genBtn.addEventListener("click", handleGeneratePassword);
-
-    const searchBox = document.getElementById("emp-search");
-    if (searchBox) {
-      searchBox.addEventListener("input", renderEmployeesTable);
-    }
-
-    renderSidebarNotifications();
-    renderEmployeesTable();
-  }
-
-  // OVERTIME PAGE
-  if (page === "overtime") {
-    // Only supervisors/managers/admin can add overtime
-    const otBtn = document.getElementById("add-ot-btn");
-    if (otBtn) {
-      if (canManageOvertime(s)) {
-        otBtn.style.display = "inline-block";
-        otBtn.addEventListener("click", openOTModal);
-      } else {
-        otBtn.style.display = "none";
-      }
-    }
-
-    // If static overtime.html defined #ot-modal with <form id="ot-form">,
-    // wire its close + submit here:
-    const otCloseStatic = document.getElementById("close-ot-modal");
-    if (otCloseStatic) {
-      otCloseStatic.addEventListener("click", () => {
-        const modal = document.getElementById("ot-modal");
-        if (modal) modal.style.display = "none";
-      });
-    }
-
-    const otFormStatic = document.getElementById("ot-form");
-    if (otFormStatic) {
-      otFormStatic.addEventListener("submit", (e) => {
-        e.preventDefault();
-        if (!canManageOvertime(s)) {
-          showToast("Not allowed", "error");
-          return;
-        }
-        const uid = document.getElementById("ot-uid").value.trim();
-        const date = document.getElementById("ot-date").value.trim();
-        const inTime = document.getElementById("ot-in").value.trim();
-        const outTime = document.getElementById("ot-out").value.trim();
-        if (!uid || !date || !inTime || !outTime) {
-          showToast("Fill all overtime fields", "error");
-          return;
-        }
-        addOrUpdateOvertime({ uid, date, inTime, outTime });
-        const modal = document.getElementById("ot-modal");
-        if (modal) modal.style.display = "none";
-        renderOvertimeTable();
-      });
-    }
-
-    renderOvertimeTable();
+/* live auto-refresh for pages when data changes */
+window.addEventListener("storage", e => {
+  if (!e.key) return;
+  switch (e.key) {
+    case KPS_KEYS.attendance:
+      loadAttendanceTable();
+      break;
+    case KPS_KEYS.overtime:
+    case KPS_KEYS.attendance: // OT depends on attendance too
+      loadOvertimeTable();
+      break;
+    case KPS_KEYS.deductions:
+      loadDeductionTable();
+      break;
+    case KPS_KEYS.requests:
+      loadRequestTable();
+      break;
+    case KPS_KEYS.notifications:
+      loadNotificationList();
+      break;
+    case KPS_KEYS.session:
+      // session changed (logout somewhere else, etc)
+      // we could optionally force reload
+      break;
   }
 });
+
+/* ========== PROFILE PAGE BINDINGS (profile.html) ========== */
+function bindProfileForms() {
+  if (document.body.dataset.page !== "profile") return;
+
+  const sessionUser = getSessionUser();
+  if (!sessionUser) return;
+
+  // Personal info save
+  const personalForm = document.getElementById("personalForm");
+  if (personalForm) {
+    personalForm.addEventListener("submit", e => {
+      e.preventDefault();
+      const phone = document.getElementById("profilePhone").value.trim();
+      const email = document.getElementById("profileEmail").value.trim();
+
+      // update in users list
+      const all = getAllUsers();
+      const me = all.find(u => u.uid === sessionUser.uid);
+      if (me) {
+        me.phone = phone;
+        me.email = email;
+        saveAllUsers(all);
+      }
+
+      // sync session
+      sessionUser.phone = phone;
+      sessionUser.email = email;
+      setSessionUser(sessionUser);
+
+      pushNotification("Profile Updated", sessionUser.name + " updated contact info");
+      showToast("Personal info updated ✅", "success");
+    });
+  }
+
+  // Password change
+  const pwForm = document.getElementById("passwordForm");
+  if (pwForm) {
+    pwForm.addEventListener("submit", e => {
+      e.preventDefault();
+      const currentPw = document.getElementById("currentPw").value.trim();
+      const newPw     = document.getElementById("newPw").value.trim();
+      const confirmPw = document.getElementById("confirmPw").value.trim();
+
+      if (!currentPw || !newPw || !confirmPw) {
+        showToast("Fill all password fields", "error");
+        return;
+      }
+      if (newPw !== confirmPw) {
+        showToast("New passwords don't match", "error");
+        return;
+      }
+
+      const all = getAllUsers();
+      const me = all.find(u => u.uid === sessionUser.uid);
+      if (!me) {
+        showToast("User record not found", "error");
+        return;
+      }
+
+      if (me.password !== currentPw) {
+        showToast("Current password incorrect", "error");
+        return;
+      }
+
+      me.password = newPw;
+      saveAllUsers(all);
+
+      // sync session
+      sessionUser.password = newPw;
+      setSessionUser(sessionUser);
+
+      pushNotification("Password Changed", sessionUser.name + " changed password");
+      showToast("Password updated ✅", "success");
+
+      // clear form
+      document.getElementById("currentPw").value = "";
+      document.getElementById("newPw").value = "";
+      document.getElementById("confirmPw").value = "";
+    });
+  }
+}
+
+/* ========== DASHBOARD PAGE FILL (dashboard.html) ========== */
+function fillDashboardCards() {
+  if (document.body.dataset.page !== "dashboard") return;
+
+  const session = requireLogin();
+  if (!session) return;
+
+  // we'll compute:
+  // - attendance % (rough mock: Present / total days recorded)
+  // - total OT sum
+  // - total deductions
+  // - unread notifications count
+
+  const attendanceAll = getAllAttendance().filter(a => a.uid === session.uid);
+  const totalDays = attendanceAll.length;
+  const presentDays = attendanceAll.filter(a => a.status === "Present").length;
+  const pct = totalDays === 0 ? "—" : Math.round((presentDays / totalDays) * 100) + "%";
+
+  // OT sum
+  let otSum = 0;
+  attendanceAll.forEach(a => {
+    otSum += parseFloat(a.ot || 0);
+  });
+
+  // Deductions
+  const dedAll = getAllDeductions().filter(d => d.uid === session.uid);
+  let dedTotal = 0;
+  dedAll.forEach(d => {
+    dedTotal += parseFloat(d.amount || 0);
+  });
+
+  // Notifications unread
+  const notifAll = lsGet(KPS_KEYS.notifications, []);
+  const unread = notifAll.filter(n => !n.read).length;
+
+  // fill cards if they exist
+  const attCardVal = document.querySelector("[data-dash-attendance]");
+  const otCardVal  = document.querySelector("[data-dash-ot]");
+  const dedCardVal = document.querySelector("[data-dash-ded]");
+  const notCardVal = document.querySelector("[data-dash-notif]");
+
+  if (attCardVal) attCardVal.textContent = pct + " Present";
+  if (otCardVal)  otCardVal.textContent  = otSum.toFixed(2) + " hrs";
+  if (dedCardVal) dedCardVal.textContent = dedTotal.toFixed(2) + " AED";
+  if (notCardVal) notCardVal.textContent = unread + " New";
+
+  // attendance latest table (just show last few for dashboard)
+  const dashBody = document.getElementById("attendance-list");
+  if (dashBody) {
+    dashBody.innerHTML = "";
+    attendanceAll.slice(-5).reverse().forEach(a => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${a.uid}</td>
+        <td>${a.name}</td>
+        <td>${a.date}</td>
+        <td>${a.in || "-"}</td>
+        <td>${a.out || "-"}</td>
+        <td>${a.duty || "-"}</td>
+        <td>${a.ot || "-"}</td>
+        <td>${a.status}</td>
+      `;
+      dashBody.appendChild(tr);
+    });
+  }
+}
+
+/* ========== PAGE INIT (runs on every load) ========== */
+function initPage() {
+  const page = document.body.dataset.page;
+
+  // If it's not login, require session:
+  if (page !== "login") {
+    const s = requireLogin();
+    if (!s) return;
+  }
+
+  // fill header user info / avatar everywhere except login
+  if (page !== "login") {
+    fillUserHeader();
+    bindLogoutLinks();
+  }
+
+  // page specific binds
+  switch (page) {
+    case "login":
+      initLoginPage();
+      break;
+    case "dashboard":
+      fillDashboardCards();
+      break;
+    case "attendance":
+      loadAttendanceTable();
+      // expose functions for buttons
+      window.checkIn = checkIn;
+      window.checkOut = checkOut;
+      window.markOffDay = markOffDay;
+      window.resetAttendance = resetAttendance;
+      break;
+    case "overtime":
+      loadOvertimeTable();
+      bindOvertimeForm();
+      break;
+    case "deduction":
+      loadDeductionTable();
+      bindDeductionForm();
+      break;
+    case "request":
+      loadRequestTable();
+      bindRequestForm();
+      break;
+    case "notifications":
+      loadNotificationList();
+      break;
+    case "profile":
+      bindProfileForms();
+      break;
+    case "employees":
+      // We'll add employee directory UI logic in future expansions
+      break;
+  }
+}
+
+// run init when DOM is ready
+document.addEventListener("DOMContentLoaded", initPage);
