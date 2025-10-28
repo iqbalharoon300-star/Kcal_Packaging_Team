@@ -84,7 +84,12 @@ function addNotification(category, message) {
   showToast(message, "ok");
   renderSidebarNotifications();
 }
-
+function pushNotification(title, message) {
+  const notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+  const now = new Date().toLocaleString('en-GB', { hour12: true });
+  notifications.push({ title, message, time: now, read: false });
+  localStorage.setItem('notifications', JSON.stringify(notifications));
+}
 /* ------------------ Employees store ------------------ */
 function getEmployees() {
   return lsGet("kps_employees", []);
