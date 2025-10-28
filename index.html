@@ -1,33 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>KPS • Login</title>
-  <link rel="stylesheet" href="style.css" />
-<script src="app.js" defer></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kcal Packaging System – Login</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-<body data-page="login" class="login-bg">
-  <main class="login-wrap">
-    <div class="login-card">
-      <div class="login-logo"><img src="./assets/logo.png" alt="Kcal Logo" /></div>
-      <h1 class="login-title">Kcal Packaging System</h1>
-      <div class="login-sub">KPS • Attendance • Overtime • HR Portal</div>
-
-      <form id="login-form" class="login-form">
-  <label>User ID</label>
-  <input id="login-uid" type="text" placeholder="e.g. 10001" required />
-  
-  <label>Password</label>
-  <input id="login-pw" type="password" placeholder="••••••••" required />
-  
-  <button type="submit" class="btn btn-primary full">Sign In</button>
-</form>
-
-      <div class="login-hint">
-        Admin: UID <b>10001</b> / Password <b>Admin@123</b>
-      </div>
+<body data-page="login">
+  <!-- Loader -->
+  <div id="login-loader">
+    <div>
+      <div class="loader-ring"></div>
+      <p style="text-align:center;margin-top:10px;color:#12714e;font-weight:600;">
+        Loading KPS...
+      </p>
     </div>
-  </main>
+  </div>
+
+  <!-- Login Container -->
+  <div class="login-container fade-in" id="login-box" style="display:none;">
+    <img src="./assets/logo.png" alt="Kcal Logo" class="login-logo">
+    <h1>Kcal Packaging System</h1>
+    <p>KPS • Attendance • Overtime • HR Portal</p>
+
+    <form id="login-form">
+      <input type="text" id="login-uid" placeholder="User ID (e.g. 10001)" required>
+      <input type="password" id="login-pw" placeholder="Password" required>
+      <button type="submit">Sign In</button>
+    </form>
+
+    <div class="login-footer">
+      Admin: <strong>UID 10001</strong> / Password: <strong>Admin@123</strong><br>
+      Manager: UID 10032 / Password: Manager@123<br>
+      Supervisor: UID 10489 / Password: Supervisor@123<br>
+      Staff: UID 10366 / Password: User@123
+    </div>
+  </div>
+
+  <script>
+    // Smooth loading animation
+    window.addEventListener('load', () => {
+      const loader = document.getElementById('login-loader');
+      const box = document.getElementById('login-box');
+      setTimeout(() => {
+        loader.classList.add('hidden');
+        setTimeout(() => {
+          loader.remove();
+          box.style.display = 'block';
+        }, 500);
+      }, 1000); // show spinner for ~1 second
+    });
+  </script>
+
+  <script src="app.js" defer></script>
 </body>
 </html>
