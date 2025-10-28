@@ -8,78 +8,131 @@
   <script src="app.js" defer></script>
 </head>
 <body data-page="attendance">
-  <header class="top-nav">
-    <div class="nav-left">
-      <img src="./assets/logo.png" class="nav-logo" alt="logo"/>
-      <div class="brand"><div class="brand-title">Attendance</div><div class="brand-sub">Staff hours & overtime</div></div>
+
+  <!-- Top Navigation -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <img src="./assets/logo.png" class="brand-logo" alt="KCAL Logo">
+      <div class="brand-text">
+        <div class="brand-main">KCAL</div>
+        <div class="brand-sub">Healthy Food, Healthy Life</div>
+      </div>
     </div>
-    <nav class="nav-links">
+
+    <nav class="main-nav">
       <a href="dashboard.html">Dashboard</a>
       <a class="active" href="attendance.html">Attendance</a>
-      <a id="nav-employees-link" href="employees.html">Employees</a>
+      <a href="employees.html" id="nav-employees-link">Employees</a>
       <a href="overtime.html">Overtime</a>
       <a href="notifications.html">Notifications</a>
-      <a href="profile.html" onclick="localStorage.removeItem('kps_profile_view_uid')">Profile</a>
-      <a href="#" data-logout>Logout</a>
     </nav>
-    <div class="nav-user">
-      <div id="user-avatar-initials" class="avatar">HI</div>
-      <div class="user-meta">
-        <div id="user-name" class="user-name">—</div>
-        <div id="user-role" class="user-role">—</div>
+
+    <div class="user-nav">
+      <div class="user-chip" id="user-chip">
+        <div class="chip-avatar" id="chip-avatar">SA</div>
+        <div class="chip-info">
+          <div id="chip-name" class="chip-name">System Admin</div>
+          <div id="chip-role" class="chip-role">Admin</div>
+        </div>
+        <div class="chip-caret">▼</div>
+      </div>
+      <div class="user-dropdown" id="user-dropdown">
+        <button class="dropdown-item" data-goto-profile>Profile</button>
+        <button class="dropdown-item" data-goto-changepw>Change Password</button>
+        <button class="dropdown-item danger" data-logout>Sign Out</button>
       </div>
     </div>
   </header>
 
-  <main class="page">
-    <section class="attendance-controls">
-      <h2>Attendance Control</h2>
-      <div class="buttons">
-        <button id="checkin-btn" class="btn btn-primary">🕒 Check In</button>
-        <button id="checkout-btn" class="btn btn-secondary">✅ Check Out</button>
-      </div>
-      <div class="today-strip">
-        <div><b>Today:</b> <span id="today-date-label">—</span></div>
-        <div>IN: <span id="today-in">--:--</span></div>
-        <div>OUT: <span id="today-out">--:--</span></div>
-        <div>Duty: <span id="today-duty">0.00 hr</span></div>
-        <div>OT: <span id="today-ot">0.00 hr</span></div>
-        <div>Status: <span id="today-status">—</span></div>
-      </div>
-    </section>
+  <div class="layout">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-inner">
+        <!-- Profile card -->
+        <section class="profile-card">
+          <div class="profile-photo-shell">
+            <img id="dash-user-photo" src="./assets/default-avatar.png" class="profile-photo-img" alt="User Photo">
+          </div>
+          <div class="profile-meta">
+            <div id="dash-user-name" class="profile-name">User Name</div>
+            <div id="dash-user-role" class="profile-role">Role</div>
+            <div id="dash-user-section" class="profile-section">Section</div>
+          </div>
+        </section>
 
-    <section class="panel">
-      <div class="panel-title">Attendance Records</div>
-      <div class="table-container">
-        <table class="data-table">
-          <thead>
-          <tr>
-            <th>UID</th><th>Name</th><th>Date</th><th>IN</th><th>OUT</th><th>Duty</th><th>OT</th><th>Status</th><th>Action</th>
-          </tr>
-          </thead>
-          <tbody id="attendance-tbody"></tbody>
-        </table>
+        <!-- Notifications preview -->
+        <section class="side-panel">
+          <div class="side-panel-head">
+            <div class="side-panel-title">Notifications</div>
+            <a href="notifications.html" class="view-all-link">View All ›</a>
+          </div>
+          <ul id="sidebar-notif-list" class="notif-mini-list">
+            <!-- injected by JS -->
+          </ul>
+        </section>
       </div>
-    </section>
-  </main>
+    </aside>
 
-  <!-- Edit Attendance Modal -->
-  <div class="modal" id="edit-attendance-modal">
-    <div class="modal-box">
-      <div class="modal-header">
-        <h2>Edit Attendance</h2>
-        <button id="close-edit-modal" class="modal-close">×</button>
-      </div>
-      <form id="edit-attendance-form" class="modal-form">
-        <div class="form-grid">
-          <div class="form-group"><label>Employee UID</label><input id="edit-uid" type="text" readonly></div>
-          <div class="form-group"><label>Date</label><input id="edit-date" type="text" readonly></div>
-          <div class="form-group"><label>Check-IN</label><input id="edit-in" type="time" required></div>
-          <div class="form-group"><label>Check-OUT</label><input id="edit-out" type="time" required></div>
+    <!-- Main content -->
+    <main class="content-area">
+
+      <!-- Attendance controls -->
+      <section class="panel-block" style="margin-bottom:16px;">
+        <div class="panel-head">
+          <div class="panel-title">My Attendance Today</div>
+          <div class="panel-actions">
+            <button id="checkin-btn" class="btn btn-primary">🕒 Check In</button>
+            <button id="checkout-btn" class="btn btn-secondary">✅ Check Out</button>
+          </div>
         </div>
-        <button type="submit" class="btn-save">Save Changes</button>
-      </form>
-    </div>
+
+        <div class="today-strip" id="today-summary">
+          <!-- Filled with today's IN / OUT / Duty / OT -->
+          <!-- We'll inject text with JS -->
+          <div><b>Date:</b> <span id="att-today-date">--</span></div>
+          <div>IN: <span id="att-today-in">--</span></div>
+          <div>OUT: <span id="att-today-out">--</span></div>
+          <div>Duty: <span id="att-today-duty">0.00 hr</span></div>
+          <div>OT: <span id="att-today-ot">0.00 hr</span></div>
+          <div>Status: <span id="att-today-status">--</span></div>
+        </div>
+      </section>
+
+      <!-- Table of all attendance logs -->
+      <section class="panel-block">
+        <div class="panel-head">
+          <div class="panel-title">Attendance Records</div>
+        </div>
+
+        <div class="table-shell">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>UID</th>
+                <th>Name</th>
+                <th>Date</th>
+                <th>IN</th>
+                <th>OUT</th>
+                <th>Duty</th>
+                <th>OT</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="attendance-tbody">
+              <!-- Injected by JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <footer class="dash-footer">
+        Kcal Packaging System (KPS) — Developed by Haroon • All data confidential
+      </footer>
+    </main>
   </div>
+
+  <!-- Toast container -->
+  <div id="toast-area" class="toast-area"></div>
+
 </body>
 </html>
