@@ -204,6 +204,25 @@ function initLoginPage() {
     }
     showToast("Welcome " + user.name + " ✅", "success");
     pushNotification("Login", user.name + " logged in.");
+    /* ===== NOTIFICATION BADGE HELPERS ===== */
+function getUnreadCount() {
+  const notes = lsGet(KPS_KEYS.notifications, []);
+  return notes.filter(n => !n.read).length;
+}
+
+function updateNotifBadge() {
+  const badge = document.getElementById("notifBadge");
+  if (!badge) return;
+  const unread = getUnreadCount();
+  badge.textContent = unread;
+
+  // If 0, show as "0" but greyed softer style (optional)
+  if (unread === 0) {
+    badge.style.background = "#9da7a3";
+  } else {
+    badge.style.background = "#c62828";
+  }
+}
     // redirect to dashboard
     window.location.href = "dashboard.html";
   });
