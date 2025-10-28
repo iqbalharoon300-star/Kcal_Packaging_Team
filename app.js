@@ -302,7 +302,45 @@ function updateEmployee(uid, dataPatch) {
   if (!emp) return false;
   Object.assign(emp, dataPatch);
   saveAllUsers(list);
+// ===== SEND NOTICE LOGIC =====
+const btnSendNotice = document.getElementById("btnSendNotice");
+const noticeModal   = document.getElementById("noticeModal");
+const closeNotice   = document.getElementById("closeNoticeModal");
+const noticeForm    = document.getElementById("noticeForm");
 
+// Show button only for Admin
+if (session.role === "Admin") btnSendNotice.style.display = "inline-block";
+
+function openNoticeModal() {
+  noticeModal.style.display = "flex";
+  noticeForm.reset();
+}
+function closeNoticeModal() {
+  noticeModal.style.display = "none";
+}
+
+btnSendNotice?.addEventListener("click", openNoticeModal);
+closeNotice?.addEventListener("click", closeNoticeModal);
+
+noticeForm.addEventListener("submit", e => {
+  e.preventDefault();
+  const title = document.getElementById("noticeTitle").value.trim();
+  const msg   = document.getElementById("noticeMessage").value.trim();
+  if (!title || !msg) {
+    showToast("Please enter title and message", "error");
+    return;
+  }
+
+  // Save to localStorage as notification
+  const notices = lsGet("kps_notifications", []);
+  const now = new Date().toLocaleString('en-GB', { hour12:true });
+  notices.push({ title, message: msg, time: now, read: false });
+  lsSet("kps_notifications", notices);
+
+  pushNotification(title, msg);
+  showToast("Notice sent ✅");
+  closeNoticeModal();
+});
   // If currently logged in user is the same person, also sync session
   const session = getSessionUser();
   if (session && session.uid === uid) {
