@@ -1,224 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KPS Attendance </title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <title>KPS • Attendance </title>
+  <link rel="stylesheet" href="style.css" />
   <script src="app.js" defer></script>
 </head>
-
 <body data-page="attendance">
-  <!-- Sidebar -->
-  <div class="sidebar">
-    <div class="logo-section">
-      <img src="./assets/logo.png" alt="Kcal Logo" class="sidebar-logo">
-    </div>
-    <nav class="sidebar-nav">
-      <a href="dashboard.html">Dashboard</a>
-      <a href="attendance.html" class="active">Attendance</a>
-      <a href="overtime.html">Overtime</a>
-      <a href="deduction.html">Deduction</a>
-      <a href="employees.html">Employees</a>
-      <a href="notifications.html">Notifications</a>
-      <a href="request.html">Request</a>
-      <a href="profile.html">Profile</a>
-      <a href="#" data-logout>Logout</a>
-    </nav>
-  </div>
-
-  <!-- Main Content -->
-  <div class="main-content">
-    <!-- Top Nav -->
-    <header class="top-nav">
-      <div class="top-nav-left">
-      </div>
-  <div class="top-nav-right">
-  <!-- Bell / Notification Icon -->
-  <div class="notif-bell" onclick="window.location.href='notifications.html'">
-    <span class="bell-icon">🔔</span>
-    <span class="notif-badge" id="notifBadge">0</span>
-  </div>
-
-  <!-- User info / dropdown -->
-  <div class="user-info">
-    <div class="user-avatar" id="headerAvatar">SA</div>
-    <div class="user-details">
-      <span class="user-name" id="headerName">System Admin</span>
-      <span class="user-role" id="headerRole">Admin</span>
-    </div>
-    <div class="dropdown">
-      <button class="dropdown-btn">▼</button>
-      <div class="dropdown-menu">
-        <a href="profile.html">Profile</a>
-        <a href="#">Change Password</a>
-        <a href="#" data-logout>Sign Out</a>
+  <!-- HEADER BAR -->
+  <header class="kps-header">
+    <div class="header-left">
+      <div class="brand-mini">
+        <img src="assets/logo.png" alt="Kcal" class="brand-logo" />
+        <div class="brand-texts">
+          <div class="brand-name">KCAL</div>
+          <div class="brand-slogan">Healthy Food, Healthy Life</div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
-</header>
-    <!-- Attendance Controls -->
-    <section class="attendance-actions">
-      <h2>Mark Attendance</h2>
-      <div class="action-buttons">
-        <button id="checkInBtn" class="btn-primary" onclick="checkIn()">Check In</button>
-        <button id="checkOutBtn" class="btn-secondary" onclick="checkOut()">Check Out</button>
-        <button id="offDayBtn" class="btn-neutral" onclick="markOffDay()">Mark as Off Day</button>
-        <button id="resetBtn" class="btn-danger" onclick="resetAttendance()">Reset Attendance</button>
+
+    <div class="header-right">
+
+      <!-- Bell -->
+      <div class="notif-bell" onclick="window.location.href='notifications.html'">
+        <span class="bell-icon">🔔</span>
+        <span class="notif-badge" id="notifBadge">0</span>
       </div>
-    </section>
 
-    <!-- Attendance Table -->
-    <section class="attendance-table-section">
-      <h2>Today’s Attendance</h2>
-      <table class="attendance-table">
-        <thead>
-          <tr>
-            <th>UID</th>
-            <th>Name</th>
-            <th>Date</th>
-            <th>Check In</th>
-            <th>Check Out</th>
-            <th>Total Duty</th>
-            <th>Overtime (hrs)</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody id="attendanceData">
-          <!-- Rows inserted dynamically -->
-        </tbody>
-      </table>
-    </section>
+      <!-- User dropdown -->
+      <div class="user-block">
+        <div class="user-avatar" id="headerAvatar">SA</div>
+        <div class="user-info-text">
+          <div class="user-info-name" id="headerName">System Admin</div>
+          <div class="user-info-role" id="headerRole">Admin</div>
+        </div>
 
-    <!-- Footer -->
-    <footer>
-      <p>Kcal Packaging System (KPS) — Developed by Haroon • All data confidential</p>
-    </footer>
+        <div class="user-menu-wrapper">
+          <button class="user-menu-toggle">▼</button>
+          <div class="user-menu">
+            <a href="profile.html">Profile</a>
+            <a href="#" data-logout>Logout</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- mobile sidebar toggle -->
+      <button class="sidebar-toggle" id="sidebarToggle">☰</button>
+    </div>
+  </header>
+
+  <!-- LAYOUT WRAPPER -->
+  <div class="kps-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="kps-sidebar" id="appSidebar">
+      <nav>
+        <a href="dashboard.html" class="side-link"><span>🏠</span> Dashboard</a>
+        <a href="attendance.html" class="side-link"><span>🕒</span> Attendance</a>
+        <a href="employees.html" class="side-link"><span>👥</span> Employees</a>
+        <a href="overtime.html" class="side-link"><span>⏫</span> Overtime</a>
+        <a href="deduction.html" class="side-link"><span>💸</span> Deductions</a>
+        <a href="notifications.html" class="side-link"><span>🔔</span> Notifications</a>
+        <a href="request.html" class="side-link"><span>📄</span> Requests</a>
+        <a href="profile.html" class="side-link"><span>🙍‍♂️</span> Profile</a>
+        <a href="#" data-logout class="side-link logout"><span>⏻</span> Logout</a>
+      </nav>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="main-content">
+
+      <!-- PAGE TITLE / CONTROLS -->
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">KPS • Attendance </h1>
+          <p class="page-sub">Kcal Packaging System (KPS) — Developed by Haroon</p>
+        </div>
+        <div class="page-header-actions">
+          <!-- page buttons go here (Add Employee, etc.) -->
+        </div>
+      </div>
+
+      <!-- PAGE BODY CARDS GO HERE -->
+      <section class="card">
+        <h2 class="card-title">Card Title</h2>
+        <div class="card-body">
+          <!-- table / forms / info -->
+        </div>
+      </section>
+
+    </main>
   </div>
 
-  <!-- JS Logic -->
-  <script>
-    function getTodayDate() {
-      const now = new Date();
-      return now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-    }
+  <!-- TOAST -->
+  <div id="toastContainer"></div>
 
-    // Fetch Attendance Data
-    function loadAttendance() {
-      const attendanceData = JSON.parse(localStorage.getItem('attendance') || '[]');
-      const tbody = document.getElementById('attendanceData');
-      tbody.innerHTML = '';
-
-      attendanceData.forEach(row => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${row.uid}</td>
-          <td>${row.name}</td>
-          <td>${row.date}</td>
-          <td>${row.in || '-'}</td>
-          <td>${row.out || '-'}</td>
-          <td>${row.duty || '-'}</td>
-          <td>${row.ot || '-'}</td>
-          <td>${row.status}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    // Check In
-    function checkIn() {
-      const attendanceData = JSON.parse(localStorage.getItem('attendance') || '[]');
-      const today = getTodayDate();
-
-      if (attendanceData.some(a => a.date === today && a.in)) {
-        alert('Already checked in today!');
-        return;
-      }
-
-      const now = new Date();
-      const record = {
-        uid: '10001',
-        name: 'System Admin',
-        date: today,
-        in: now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
-        out: '',
-        duty: '',
-        ot: '',
-        status: 'Checked In'
-      };
-      attendanceData.push(record);
-      localStorage.setItem('attendance', JSON.stringify(attendanceData));
-      loadAttendance();
-      alert('Checked In Successfully ✅');
-    }
-
-    // Check Out
-    function checkOut() {
-      const attendanceData = JSON.parse(localStorage.getItem('attendance') || '[]');
-      const today = getTodayDate();
-      const record = attendanceData.find(a => a.date === today && a.in);
-
-      if (!record) {
-        alert('Please Check In first!');
-        return;
-      }
-
-      if (record.out) {
-        alert('Already Checked Out!');
-        return;
-      }
-
-      const now = new Date();
-      record.out = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-
-      // Calculate duty and OT (10 hrs standard + 1 hr break)
-      const inTime = new Date(`1970-01-01T${record.in}:00`);
-      const outTime = new Date(`1970-01-01T${record.out}:00`);
-      const diff = (outTime - inTime) / (1000 * 60 * 60);
-      const dutyHours = Math.max(diff - 1, 0); // minus 1hr break
-      const otHours = dutyHours > 10 ? (dutyHours - 10).toFixed(2) : 0;
-
-      record.duty = dutyHours.toFixed(2);
-      record.ot = otHours;
-      record.status = 'Present';
-      localStorage.setItem('attendance', JSON.stringify(attendanceData));
-      loadAttendance();
-      alert('Checked Out Successfully ✅');
-    }
-
-    // Mark as Off Day
-    function markOffDay() {
-      const attendanceData = JSON.parse(localStorage.getItem('attendance') || '[]');
-      const today = getTodayDate();
-
-      attendanceData.push({
-        uid: '10001',
-        name: 'System Admin',
-        date: today,
-        in: '',
-        out: '',
-        duty: '0',
-        ot: '0',
-        status: 'Off Day'
-      });
-      localStorage.setItem('attendance', JSON.stringify(attendanceData));
-      loadAttendance();
-      alert('Marked as Off Day ✅');
-    }
-
-    // Reset Attendance
-    function resetAttendance() {
-      const attendanceData = JSON.parse(localStorage.getItem('attendance') || '[]');
-      const today = getTodayDate();
-      const updated = attendanceData.filter(a => a.date !== today);
-      localStorage.setItem('attendance', JSON.stringify(updated));
-      loadAttendance();
-      alert('Attendance for today has been reset 🔄');
-    }
-
-    // Initialize
-    window.onload = loadAttendance;
-  </script>
 </body>
 </html>
