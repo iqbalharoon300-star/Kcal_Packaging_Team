@@ -1,21 +1,170 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>KPS • Deductions</title>
-  <link rel="stylesheet" href="style.css"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KPS Deductions • Developed by Haroon</title>
+  <link rel="stylesheet" href="style.css">
   <script src="app.js" defer></script>
 </head>
+
 <body data-page="deduction">
-  <header class="top-nav">
-    <div class="nav-left"><img src="./assets/logo.png" class="nav-logo"/><div class="brand"><div class="brand-title">Deductions</div><div class="brand-sub">Placeholder</div></div></div>
-    <nav class="nav-links">
-      <a href="dashboard.html">Dashboard</a><a href="attendance.html">Attendance</a>
-      <a href="employees.html">Employees</a><a href="overtime.html">Overtime</a>
-      <a href="notifications.html">Notifications</a><a href="profile.html" onclick="localStorage.removeItem('kps_profile_view_uid')">Profile</a><a href="#" data-logout>Logout</a>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="logo-section">
+      <img src="./assets/logo.png" alt="Kcal Logo" class="sidebar-logo">
+      <h2>KPS</h2>
+      <p>Packaging System</p>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="attendance.html">Attendance</a>
+      <a href="overtime.html">Overtime</a>
+      <a href="deduction.html" class="active">Deduction</a>
+      <a href="employees.html">Employees</a>
+      <a href="notifications.html">Notifications</a>
+      <a href="request.html">Request</a>
+      <a href="profile.html">Profile</a>
+      <a href="#" data-logout>Logout</a>
     </nav>
-  </header>
-  <main class="page"><section class="panel"><div class="panel-title">Coming soon</div></section></main>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Top Nav -->
+    <header class="top-nav">
+      <div class="top-nav-left">
+        <h1>Deductions Management</h1>
+        <p>Kcal Packaging System (KPS) — Developed by Haroon</p>
+      </div>
+      <div class="top-nav-right">
+        <div class="user-info">
+          <div class="user-avatar">SA</div>
+          <div class="user-details">
+            <span class="user-name">System Admin</span>
+            <span class="user-role">Admin</span>
+          </div>
+          <div class="dropdown">
+            <button class="dropdown-btn">▼</button>
+            <div class="dropdown-menu">
+              <a href="profile.html">Profile</a>
+              <a href="#">Change Password</a>
+              <a href="#" data-logout>Sign Out</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Add Deduction -->
+    <section class="deduction-actions">
+      <h2>Add Employee Deduction</h2>
+      <form id="deductionForm" class="deduction-form">
+        <div class="form-row">
+          <label for="uid">Employee UID</label>
+          <input type="text" id="uid" placeholder="e.g. 10123" required>
+        </div>
+        <div class="form-row">
+          <label for="name">Employee Name</label>
+          <input type="text" id="name" placeholder="e.g. Akif Abdul Wahid" required>
+        </div>
+        <div class="form-row">
+          <label for="reason">Reason</label>
+          <input type="text" id="reason" placeholder="e.g. Late Arrival" required>
+        </div>
+        <div class="form-row">
+          <label for="amount">Amount (AED)</label>
+          <input type="number" id="amount" min="0" step="0.5" required>
+        </div>
+        <div class="form-row">
+          <label for="date">Date</label>
+          <input type="date" id="date" required>
+        </div>
+        <div class="form-row">
+          <label for="approvedBy">Approved By</label>
+          <input type="text" id="approvedBy" placeholder="Manager / Supervisor Name" required>
+        </div>
+        <button type="submit" class="btn-primary">Save Deduction</button>
+      </form>
+    </section>
+
+    <!-- Deductions Table -->
+    <section class="deduction-table-section">
+      <h2>Deduction Records</h2>
+      <table class="attendance-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>UID</th>
+            <th>Name</th>
+            <th>Reason</th>
+            <th>Amount (AED)</th>
+            <th>Approved By</th>
+          </tr>
+        </thead>
+        <tbody id="deductionTable">
+          <!-- Dynamic rows -->
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <p>Kcal Packaging System (KPS) — Developed by Haroon • All data confidential</p>
+    </footer>
+  </div>
+
+  <!-- Inline JS for Deduction -->
+  <script>
+    function getTodayDate() {
+      const now = new Date();
+      return now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    }
+
+    function loadDeductions() {
+      const deductions = JSON.parse(localStorage.getItem('deductions') || '[]');
+      const tbody = document.getElementById('deductionTable');
+      tbody.innerHTML = '';
+
+      deductions.forEach(d => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${d.date}</td>
+          <td>${d.uid}</td>
+          <td>${d.name}</td>
+          <td>${d.reason}</td>
+          <td>${parseFloat(d.amount).toFixed(2)}</td>
+          <td>${d.approvedBy}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    document.getElementById('deductionForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const uid = document.getElementById('uid').value.trim();
+      const name = document.getElementById('name').value.trim();
+      const reason = document.getElementById('reason').value.trim();
+      const amount = parseFloat(document.getElementById('amount').value.trim());
+      const date = new Date(document.getElementById('date').value).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+      const approvedBy = document.getElementById('approvedBy').value.trim();
+
+      if (!uid || !name || !reason || isNaN(amount) || !date || !approvedBy) {
+        alert('Please fill in all fields!');
+        return;
+      }
+
+      const deductions = JSON.parse(localStorage.getItem('deductions') || '[]');
+      deductions.push({ uid, name, reason, amount, date, approvedBy });
+      localStorage.setItem('deductions', JSON.stringify(deductions));
+      loadDeductions();
+
+      document.getElementById('deductionForm').reset();
+      alert('Deduction Added Successfully ✅');
+    });
+
+    window.onload = loadDeductions;
+  </script>
 </body>
 </html>
