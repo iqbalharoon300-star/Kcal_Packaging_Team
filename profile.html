@@ -1,63 +1,285 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>KPS • Profile</title>
-  <link rel="stylesheet" href="style.css"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KPS Profile • Developed by Haroon</title>
+  <link rel="stylesheet" href="style.css">
   <script src="app.js" defer></script>
 </head>
+
 <body data-page="profile">
-<header class="top-nav">
-  <div class="nav-left">
-    <img src="./assets/logo.png" class="nav-logo" alt="logo"/>
-    <div class="brand"><div class="brand-title">My Profile</div><div class="brand-sub">Manage your information</div></div>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="logo-section">
+      <img src="./assets/logo.png" alt="Kcal Logo" class="sidebar-logo">
+      <h2>KPS</h2>
+      <p>Packaging System</p>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="attendance.html">Attendance</a>
+      <a href="overtime.html">Overtime</a>
+      <a href="deduction.html">Deduction</a>
+      <a href="employees.html">Employees</a>
+      <a href="notifications.html">Notifications</a>
+      <a href="request.html">Request</a>
+      <a href="profile.html" class="active">Profile</a>
+      <a href="#" data-logout>Logout</a>
+    </nav>
   </div>
-  <nav class="nav-links">
-    <a href="dashboard.html">Dashboard</a>
-    <a href="attendance.html">Attendance</a>
-    <a id="nav-employees-link" href="employees.html">Employees</a>
-    <a href="overtime.html">Overtime</a>
-    <a href="notifications.html">Notifications</a>
-    <a class="active" href="profile.html" onclick="localStorage.removeItem('kps_profile_view_uid')">Profile</a>
-    <a href="#" data-logout>Logout</a>
-  </nav>
-  <div class="nav-user">
-    <div id="user-avatar-initials" class="avatar">HI</div>
-    <div class="user-meta">
-      <div id="user-name" class="user-name">—</div>
-      <div id="user-role" class="user-role">—</div>
-    </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Top Nav -->
+    <header class="top-nav">
+      <div class="top-nav-left">
+        <h1>My Profile</h1>
+        <p>Kcal Packaging System (KPS) — Developed by Haroon</p>
+      </div>
+
+      <div class="top-nav-right">
+        <div class="user-info">
+          <div class="user-avatar" id="profileTopAvatar">SA</div>
+          <div class="user-details">
+            <span class="user-name" id="profileTopName">System Admin</span>
+            <span class="user-role" id="profileTopRole">Admin</span>
+          </div>
+          <div class="dropdown">
+            <button class="dropdown-btn">▼</button>
+            <div class="dropdown-menu">
+              <a href="profile.html">Profile</a>
+              <a href="#">Change Password</a>
+              <a href="#" data-logout>Sign Out</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Profile Card -->
+    <section class="profile-header-card">
+      <div class="profile-photo-wrapper">
+        <div class="profile-photo-circle" id="bigAvatarCircle">SA</div>
+        <!-- If you later support image upload:
+        <img id="bigAvatarImg" src="./assets/default-avatar.png" class="profile-photo-img" style="display:none;">
+        -->
+      </div>
+
+      <div class="profile-header-info">
+        <div class="profile-name-line">
+          <h2 id="profileName">System Admin</h2>
+          <span class="role-badge" id="profileRole">Admin</span>
+        </div>
+        <div class="profile-subline">
+          <span id="profileSection">Central Admin</span> · 
+          <span id="profileShift">Day Shift</span>
+        </div>
+        <div class="profile-uid-line">
+          UID: <span id="profileUID">10001</span> • Joined: <span id="profileJoin">2023-01-01</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Editable Info + Password -->
+    <section class="profile-forms-grid">
+      <!-- Contact / Personal Info -->
+      <div class="profile-panel">
+        <h3>Personal Info</h3>
+        <p class="panel-desc">Update your contact details. This is visible to Admin / HR.</p>
+
+        <form id="personalForm" class="profile-form">
+          <div class="form-row">
+            <label>Phone</label>
+            <input type="text" id="profilePhone" placeholder="e.g. +971 50 123 4567">
+          </div>
+
+          <div class="form-row">
+            <label>Email</label>
+            <input type="email" id="profileEmail" placeholder="e.g. name@company.com">
+          </div>
+
+          <button type="submit" class="btn-primary">Save Personal Info</button>
+        </form>
+      </div>
+
+      <!-- Password Change -->
+      <div class="profile-panel">
+        <h3>Change Password</h3>
+        <p class="panel-desc">Set a new password for your login (UID login stays same).</p>
+
+        <form id="passwordForm" class="profile-form">
+          <div class="form-row">
+            <label>Current Password</label>
+            <input type="password" id="currentPw" placeholder="Current Password" required>
+          </div>
+
+          <div class="form-row">
+            <label>New Password</label>
+            <input type="password" id="newPw" placeholder="New Password" required>
+          </div>
+
+          <div class="form-row">
+            <label>Confirm New Password</label>
+            <input type="password" id="confirmPw" placeholder="Repeat New Password" required>
+          </div>
+
+          <button type="submit" class="btn-secondary">Update Password</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <p>Kcal Packaging System (KPS) — Developed by Haroon • All data confidential</p>
+    </footer>
   </div>
-</header>
 
-<main class="page">
-  <section class="profile-grid">
-    <div class="profile-card">
-      <img id="profile-photo" class="profile-photo" src="./assets/default-avatar.png" alt="avatar"/>
-      <div class="profile-info">
-        <div id="profile-name" class="profile-name">—</div>
-        <div id="profile-role" class="profile-role">—</div>
-        <div>ID: <span id="profile-uid">—</span></div>
-      </div>
-      <div class="profile-edit">
-        <input id="profile-upload" type="file" accept="image/*"/>
-        <label>Email</label><input id="profile-email" type="email" placeholder="name@kcallife.com"/>
-        <label>Phone</label><input id="profile-phone" type="tel" placeholder="+971 .."/>
-        <button id="save-profile" class="btn btn-primary">Save Profile</button>
-      </div>
-    </div>
+  <!-- Inline JS for Profile Page -->
+  <script>
+    // Load current session user data
+    function getSessionLocal() {
+      try {
+        return JSON.parse(localStorage.getItem('kps_session') || 'null');
+      } catch {
+        return null;
+      }
+    }
 
-    <div class="panel">
-      <div class="panel-title">Recent Attendance (7 latest)</div>
-      <div class="table-container">
-        <table class="data-table">
-          <thead><tr><th>Date</th><th>IN</th><th>OUT</th><th>Duty</th><th>OT</th><th>Status</th></tr></thead>
-          <tbody id="profile-attendance-tbody"></tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-</main>
+    function getEmployeesLocal() {
+      try {
+        return JSON.parse(localStorage.getItem('kps_employees') || '[]');
+      } catch {
+        return [];
+      }
+    }
+
+    function saveEmployeesLocal(list) {
+      localStorage.setItem('kps_employees', JSON.stringify(list));
+    }
+
+    function initProfilePage() {
+      const sessionUser = getSessionLocal();
+      if (!sessionUser) {
+        // If somehow not logged in, send them to login
+        window.location.href = "index.html";
+        return;
+      }
+
+      // Fill header chip/top-nav avatar, name, role
+      const initials = sessionUser.name
+        .split(" ")
+        .map(part => part[0])
+        .join("")
+        .slice(0,2)
+        .toUpperCase();
+
+      const profileTopAvatar = document.getElementById("profileTopAvatar");
+      const profileTopName   = document.getElementById("profileTopName");
+      const profileTopRole   = document.getElementById("profileTopRole");
+      if (profileTopAvatar) profileTopAvatar.textContent = initials;
+      if (profileTopName)   profileTopName.textContent   = sessionUser.name;
+      if (profileTopRole)   profileTopRole.textContent   = sessionUser.role;
+
+      // Big avatar circle in the profile header
+      const bigCircle = document.getElementById("bigAvatarCircle");
+      if (bigCircle) {
+        bigCircle.textContent = initials;
+      }
+
+      // Profile identity info
+      document.getElementById("profileName").textContent    = sessionUser.name || "-";
+      document.getElementById("profileRole").textContent    = sessionUser.role || "-";
+      document.getElementById("profileSection").textContent = sessionUser.section || "—";
+      document.getElementById("profileShift").textContent   = sessionUser.shift || "—";
+      document.getElementById("profileUID").textContent     = sessionUser.uid || "—";
+      document.getElementById("profileJoin").textContent    = sessionUser.joinDate || "—";
+
+      // We’ll also load personal contact info (phone/email) from employee record if exists
+      const allEmployees = getEmployeesLocal();
+      const empRecord = allEmployees.find(e => e.uid === sessionUser.uid);
+
+      document.getElementById("profilePhone").value = empRecord && empRecord.phone ? empRecord.phone : (sessionUser.phone || "");
+      document.getElementById("profileEmail").value = empRecord && empRecord.email ? empRecord.email : (sessionUser.email || "");
+
+      // Save Personal Info form
+      const personalForm = document.getElementById("personalForm");
+      personalForm.addEventListener("submit", e => {
+        e.preventDefault();
+
+        const newPhone = document.getElementById("profilePhone").value.trim();
+        const newEmail = document.getElementById("profileEmail").value.trim();
+
+        // Update in employees list if exists, else ignore (admin might not be in employees list)
+        if (empRecord) {
+          empRecord.phone = newPhone;
+          empRecord.email = newEmail;
+          saveEmployeesLocal(allEmployees);
+        }
+
+        // Also patch current session user so dashboard shows updated info right away
+        sessionUser.phone = newPhone;
+        sessionUser.email = newEmail;
+        localStorage.setItem("kps_session", JSON.stringify(sessionUser));
+
+        alert("Personal info updated ✅");
+      });
+
+      // Password Change form
+      const pwForm = document.getElementById("passwordForm");
+      pwForm.addEventListener("submit", e => {
+        e.preventDefault();
+
+        const currentPw = document.getElementById("currentPw").value.trim();
+        const newPw     = document.getElementById("newPw").value.trim();
+        const confirmPw = document.getElementById("confirmPw").value.trim();
+
+        if (!currentPw || !newPw || !confirmPw) {
+          alert("Fill all password fields");
+          return;
+        }
+        if (newPw !== confirmPw) {
+          alert("New password and Confirm password do not match ❌");
+          return;
+        }
+
+        // Admin user may exist in hardcoded list; other users exist in employees array.
+        // We update only if currentPw matches.
+        let updated = false;
+
+        // Case 1: admin/special users not in employee list
+        // Check if this session user matches admin block we started with
+        // We will check local session password first, if available
+        if (sessionUser.password && sessionUser.password === currentPw) {
+          sessionUser.password = newPw;
+          localStorage.setItem("kps_session", JSON.stringify(sessionUser));
+          updated = true;
+        }
+
+        // Case 2: normal employee in employees list
+        if (empRecord && empRecord.password === currentPw) {
+          empRecord.password = newPw;
+          saveEmployeesLocal(allEmployees);
+          // also sync session
+          sessionUser.password = newPw;
+          localStorage.setItem("kps_session", JSON.stringify(sessionUser));
+          updated = true;
+        }
+
+        if (updated) {
+          alert("Password updated ✅");
+          // Clear fields
+          document.getElementById("currentPw").value = "";
+          document.getElementById("newPw").value = "";
+          document.getElementById("confirmPw").value = "";
+        } else {
+          alert("Current password is incorrect ❌");
+        }
+      });
+    }
+
+    // run on load
+    window.addEventListener("load", initProfilePage);
+  </script>
 </body>
 </html>
