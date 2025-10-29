@@ -1,181 +1,227 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KPS Overtime • Developed by Haroon</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <title>KPS • Overtime</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <link rel="stylesheet" href="style.css" />
   <script src="app.js" defer></script>
 </head>
 
 <body data-page="overtime">
-  <!-- Sidebar -->
-  <div class="sidebar">
-    <div class="logo-section">
-      <img src="./assets/logo.png" alt="Kcal Logo" class="sidebar-logo">
-      <h2>KPS</h2>
-      <p>Packaging System</p>
-    </div>
-    <nav class="sidebar-nav">
-      <a href="dashboard.html">Dashboard</a>
-      <a href="attendance.html">Attendance</a>
-      <a href="overtime.html" class="active">Overtime</a>
-      <a href="deduction.html">Deduction</a>
-      <a href="employees.html">Employees</a>
-      <a href="notifications.html">Notifications</a>
-      <a href="request.html">Request</a>
-      <a href="profile.html">Profile</a>
-      <a href="#" data-logout>Logout</a>
-    </nav>
-  </div>
 
-  <!-- Main Content -->
-  <div class="main-content">
-    <!-- Top Nav -->
-    <header class="top-nav">
-      <div class="top-nav-left">
-        <h1>Overtime Management</h1>
-        <p>Kcal Packaging System (KPS) — Developed by Haroon</p>
-      </div>
-   <div class="top-nav-right">
-  <!-- Bell / Notification Icon -->
-  <div class="notif-bell" onclick="window.location.href='notifications.html'">
-    <span class="bell-icon">🔔</span>
-    <span class="notif-badge" id="notifBadge">0</span>
-  </div>
-
-  <!-- User info / dropdown -->
-  <div class="user-info">
-    <div class="user-avatar" id="headerAvatar">SA</div>
-    <div class="user-details">
-      <span class="user-name" id="headerName">System Admin</span>
-      <span class="user-role" id="headerRole">Admin</span>
-    </div>
-    <div class="dropdown">
-      <button class="dropdown-btn">▼</button>
-      <div class="dropdown-menu">
-        <a href="profile.html">Profile</a>
-        <a href="#">Change Password</a>
-        <a href="#" data-logout>Sign Out</a>
+  <!-- HEADER -->
+  <header class="kps-header">
+    <div class="header-left">
+      <div class="brand-mini">
+        <div class="brand-logo">kcal</div>
+        <div class="brand-texts">
+          <div class="brand-name">Kcal Packaging System</div>
+          <div class="brand-slogan">Healthy Food, Healthy Life</div>
+        </div>
       </div>
     </div>
+
+    <div class="header-right">
+      <!-- Bell with unread badge -->
+      <div class="notif-bell" onclick="window.location.href='notifications.html'">
+        <span class="bell-icon">🔔</span>
+        <span class="notif-badge" id="notifBadge">0</span>
+      </div>
+
+      <!-- User info / dropdown -->
+      <div class="user-block">
+        <div class="user-avatar" id="headerAvatar">SA</div>
+        <div class="user-info-text">
+          <div class="user-info-name" id="headerName">System Admin</div>
+          <div class="user-info-role" id="headerRole">Admin</div>
+        </div>
+
+        <div class="user-menu-wrapper">
+          <button class="user-menu-toggle">▼</button>
+          <div class="user-menu">
+            <a href="profile.html">Profile</a>
+            <a href="#" data-logout>Logout</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile sidebar toggle -->
+      <button class="sidebar-toggle" id="sidebarToggle">☰</button>
+    </div>
+  </header>
+
+  <div class="kps-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="kps-sidebar" id="appSidebar">
+      <nav>
+        <a href="dashboard.html" class="side-link"><span>🏠</span> Dashboard</a>
+        <a href="attendance.html" class="side-link"><span>🕒</span> Attendance</a>
+        <a href="employees.html" class="side-link"><span>👥</span> Employees</a>
+        <a href="overtime.html" class="side-link active"><span>⏫</span> Overtime</a>
+        <a href="deduction.html" class="side-link"><span>💸</span> Deductions</a>
+        <a href="notifications.html" class="side-link"><span>🔔</span> Notifications</a>
+        <a href="request.html" class="side-link"><span>📄</span> Requests</a>
+        <a href="reports.html" class="side-link"><span>📊</span> Reports</a>
+        <a href="profile.html" class="side-link"><span>🙍‍♂️</span> Profile</a>
+        <a href="#" data-logout class="side-link logout"><span>⏻</span> Logout</a>
+      </nav>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+      <!-- PAGE HEADER -->
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Overtime</h1>
+          <p class="page-sub">
+            Auto OT = Duty &minus; 10 hrs (after 1 hr break) for Present staff only. Final OT = Auto OT + Approved OT.
+          </p>
+        </div>
+
+        <div class="page-header-actions" id="otHeaderActions">
+          <!-- We'll inject any future buttons here if needed -->
+          <button class="btn-secondary" onclick="window.location.href='reports.html'">Go to Reports</button>
+        </div>
+      </div>
+
+      <!-- SUMMARY / CHART CARD -->
+      <section class="card">
+        <h2 class="card-title">Overtime Summary (This Month)</h2>
+        <div class="card-body">
+
+          <!-- Filters row -->
+          <div class="form-grid">
+            <div class="form-field">
+              <label>Department / Section</label>
+              <select id="otSectionFilter">
+                <option value="All">All</option>
+                <option value="KMP Day">KMP Day</option>
+                <option value="KMP Night">KMP Night</option>
+                <option value="FuelUP">FuelUP</option>
+                <option value="Spring">Spring</option>
+                <option value="Kcal Life">Kcal Life</option>
+                <option value="Kcal Lunch">Kcal Lunch</option>
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label>Date</label>
+              <input type="date" id="otDateFilter" />
+            </div>
+
+            <div class="form-field">
+              <label>View</label>
+              <select id="otViewMode">
+                <option value="today">Today Only</option>
+                <option value="month">This Month</option>
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label>Actions</label>
+              <div style="display:flex;flex-wrap:wrap;gap:8px;">
+                <button class="btn-primary" id="btnOTApplyFilter">Apply Filter</button>
+                <button class="btn-secondary" id="btnOTExportExcel">Download Excel</button>
+                <button class="btn-secondary" id="btnOTExportPDF">Download PDF</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chart -->
+          <div style="margin-top:20px;">
+            <div style="font-size:13px;font-weight:600;color:var(--text-dark);margin-bottom:8px;">
+              Monthly Overtime Hours by Section
+            </div>
+            <div style="
+              background:#fff;
+              border:1px solid var(--border-card);
+              border-radius:var(--radius-md);
+              box-shadow:var(--shadow-card);
+              padding:16px;
+              max-width:100%;
+              overflow-x:auto;
+            ">
+              <!-- Canvas for chart (app.js will draw gradient bars here) -->
+              <canvas id="otChart" style="min-width:300px;max-width:100%;height:200px;"></canvas>
+            </div>
+            <div style="font-size:11px;color:var(--text-light);margin-top:8px;line-height:1.4;">
+              Visualization of Final OT hours (Auto OT + Approved OT) grouped by KMP Day, KMP Night, FuelUP, Spring, Kcal Life, Kcal Lunch.
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- TODAY'S OVERTIME -->
+      <section class="card">
+        <h2 class="card-title">Today's Overtime</h2>
+        <div class="card-body">
+          <table class="kps-table">
+            <thead>
+              <tr>
+                <th>UID</th>
+                <th>Name</th>
+                <th>Section</th>
+                <th>Date</th>
+                <th>In</th>
+                <th>Out</th>
+                <th>Duty (hrs)</th>
+                <th>Auto OT (hrs)</th>
+                <th>Approved OT (hrs)</th>
+                <th>Total OT (hrs)</th>
+              </tr>
+            </thead>
+            <tbody id="otTodayBody">
+              <!-- Filled by app.js -->
+            </tbody>
+          </table>
+
+          <p style="font-size:12px;color:var(--text-light);margin-top:10px;">
+            Click the "Approved OT (hrs)" cell to edit (Admin / Manager / Supervisor only).
+          </p>
+        </div>
+      </section>
+
+      <!-- MONTH SUMMARY OVERTIME -->
+      <section class="card">
+        <h2 class="card-title">Monthly Overtime Summary</h2>
+        <div class="card-body">
+          <table class="kps-table">
+            <thead>
+              <tr>
+                <th>UID</th>
+                <th>Name</th>
+                <th>Section</th>
+                <th>Total Auto OT (hrs)</th>
+                <th>Total Approved OT (hrs)</th>
+                <th>Final OT (hrs)</th>
+              </tr>
+            </thead>
+            <tbody id="otMonthBody">
+              <!-- Filled by app.js -->
+            </tbody>
+            <tfoot>
+              <tr style="font-weight:600;background:var(--bg-soft);">
+                <td colspan="5" style="text-align:right;">Grand Total OT (hrs)</td>
+                <td id="otMonthGrandTotal">0</td>
+              </tr>
+            </tfoot>
+          </table>
+
+          <p style="font-size:12px;color:var(--text-light);margin-top:10px;">
+            Monthly = current calendar month. Overtime is only counted for Present days.
+          </p>
+        </div>
+      </section>
+
+    </main>
   </div>
-</div>
-    </header>
 
-    <!-- Add Overtime Section -->
-    <section class="overtime-actions">
-      <h2>Add Approved Overtime</h2>
-      <form id="overtimeForm" class="overtime-form">
-        <div class="form-row">
-          <label for="uid">Employee UID</label>
-          <input type="text" id="uid" placeholder="e.g. 10015" required>
-        </div>
-        <div class="form-row">
-          <label for="name">Employee Name</label>
-          <input type="text" id="name" placeholder="e.g. Akif Abdul Wahid" required>
-        </div>
-        <div class="form-row">
-          <label for="date">Date</label>
-          <input type="date" id="date" required>
-        </div>
-        <div class="form-row">
-          <label for="hours">Approved OT (hrs)</label>
-          <input type="number" id="hours" min="0" step="0.25" required>
-        </div>
-        <div class="form-row">
-          <label for="approvedBy">Approved By</label>
-          <input type="text" id="approvedBy" placeholder="Manager / Supervisor Name" required>
-        </div>
-        <button type="submit" class="btn-primary">Save Overtime</button>
-      </form>
-    </section>
+  <!-- Toast container -->
+  <div id="toastContainer"></div>
 
-    <!-- Overtime Table -->
-    <section class="overtime-table-section">
-      <h2>Overtime Records</h2>
-      <table class="attendance-table">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>UID</th>
-            <th>Name</th>
-            <th>Attendance OT</th>
-            <th>Added OT</th>
-            <th>Total OT</th>
-            <th>Approved By</th>
-          </tr>
-        </thead>
-        <tbody id="overtimeTable">
-          <!-- Dynamic rows -->
-        </tbody>
-      </table>
-    </section>
-
-    <!-- Footer -->
-    <footer>
-      <p>Kcal Packaging System (KPS) — Developed by Haroon • All data confidential</p>
-    </footer>
-  </div>
-
-  <!-- Inline JS for Overtime -->
-  <script>
-    function getTodayDate() {
-      const now = new Date();
-      return now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-    }
-
-    function loadOvertime() {
-      const otData = JSON.parse(localStorage.getItem('overtime') || '[]');
-      const attendanceData = JSON.parse(localStorage.getItem('attendance') || '[]');
-      const tbody = document.getElementById('overtimeTable');
-      tbody.innerHTML = '';
-
-      // Combine attendance OT with manual OT
-      otData.forEach(ot => {
-        const attendanceMatch = attendanceData.find(a => a.date === ot.date && a.uid === ot.uid);
-        const attendanceOT = attendanceMatch ? parseFloat(attendanceMatch.ot || 0) : 0;
-        const totalOT = (attendanceOT + parseFloat(ot.hours)).toFixed(2);
-
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${ot.date}</td>
-          <td>${ot.uid}</td>
-          <td>${ot.name}</td>
-          <td>${attendanceOT}</td>
-          <td>${ot.hours}</td>
-          <td><strong>${totalOT}</strong></td>
-          <td>${ot.approvedBy}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    // Save New Overtime
-    document.getElementById('overtimeForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-
-      const uid = document.getElementById('uid').value.trim();
-      const name = document.getElementById('name').value.trim();
-      const date = new Date(document.getElementById('date').value).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-      const hours = parseFloat(document.getElementById('hours').value.trim());
-      const approvedBy = document.getElementById('approvedBy').value.trim();
-
-      if (!uid || !name || !date || isNaN(hours) || !approvedBy) {
-        alert('Please fill in all fields!');
-        return;
-      }
-
-      const otData = JSON.parse(localStorage.getItem('overtime') || '[]');
-      otData.push({ uid, name, date, hours, approvedBy });
-      localStorage.setItem('overtime', JSON.stringify(otData));
-      loadOvertime();
-
-      document.getElementById('overtimeForm').reset();
-      alert('Overtime Added Successfully ✅');
-    });
-
-    window.onload = loadOvertime;
-  </script>
 </body>
 </html>
