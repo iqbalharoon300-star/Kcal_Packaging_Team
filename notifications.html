@@ -1,136 +1,122 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KPS Notifications • Developed by Haroon</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <title>KPS • Notifications</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <link rel="stylesheet" href="style.css" />
   <script src="app.js" defer></script>
 </head>
 
 <body data-page="notifications">
-  <!-- Sidebar -->
-  <div class="sidebar">
-    <div class="logo-section">
-      <img src="./assets/logo.png" alt="Kcal Logo" class="sidebar-logo">
-      <h2>KPS</h2>
-      <p>Packaging System</p>
-    </div>
-    <nav class="sidebar-nav">
-      <a href="dashboard.html">Dashboard</a>
-      <a href="attendance.html">Attendance</a>
-      <a href="overtime.html">Overtime</a>
-      <a href="deduction.html">Deduction</a>
-      <a href="employees.html">Employees</a>
-      <a href="notifications.html" class="active">Notifications</a>
-      <a href="request.html">Request</a>
-      <a href="profile.html">Profile</a>
-      <a href="#" data-logout>Logout</a>
-    </nav>
-  </div>
 
-  <!-- Main Content -->
-  <div class="main-content">
-    <!-- Top Nav -->
-    <header class="top-nav">
-      <div class="top-nav-left">
-        <h1>System Notifications</h1>
-        <p>Kcal Packaging System (KPS) — Developed by Haroon</p>
-      </div>
-    <div class="top-nav-right">
-  <!-- Bell / Notification Icon -->
-  <div class="notif-bell" onclick="window.location.href='notifications.html'">
-    <span class="bell-icon">🔔</span>
-    <span class="notif-badge" id="notifBadge">0</span>
-  </div>
-
-  <!-- User info / dropdown -->
-  <div class="user-info">
-    <div class="user-avatar" id="headerAvatar">SA</div>
-    <div class="user-details">
-      <span class="user-name" id="headerName">System Admin</span>
-      <span class="user-role" id="headerRole">Admin</span>
-    </div>
-    <div class="dropdown">
-      <button class="dropdown-btn">▼</button>
-      <div class="dropdown-menu">
-        <a href="profile.html">Profile</a>
-        <a href="#">Change Password</a>
-        <a href="#" data-logout>Sign Out</a>
+  <!-- HEADER -->
+  <header class="kps-header">
+    <div class="header-left">
+      <div class="brand-mini">
+        <div class="brand-logo">kcal</div>
+        <div class="brand-texts">
+          <div class="brand-name">Kcal Packaging System</div>
+          <div class="brand-slogan">Healthy Food, Healthy Life</div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
-    </header>
 
-    <!-- Notifications Section -->
-    <section class="notifications-panel">
-      <h2>Latest Notifications</h2>
-      <div id="notificationList" class="notification-list">
-        <!-- Notifications will load here -->
+    <div class="header-right">
+      <!-- bell -->
+      <div class="notif-bell" onclick="window.location.href='notifications.html'">
+        <span class="bell-icon">🔔</span>
+        <span class="notif-badge" id="notifBadge">0</span>
       </div>
-    </section>
 
-    <!-- Footer -->
-    <footer>
-      <p>Kcal Packaging System (KPS) — Developed by Haroon • All data confidential</p>
-    </footer>
+      <!-- user -->
+      <div class="user-block">
+        <div class="user-avatar" id="headerAvatar">SA</div>
+        <div class="user-info-text">
+          <div class="user-info-name" id="headerName">System Admin</div>
+          <div class="user-info-role" id="headerRole">Admin</div>
+        </div>
+        <div class="user-menu-wrapper">
+          <button class="user-menu-toggle">▼</button>
+          <div class="user-menu">
+            <a href="profile.html">Profile</a>
+            <a href="#" data-logout>Logout</a>
+          </div>
+        </div>
+      </div>
+
+      <button class="sidebar-toggle" id="sidebarToggle">☰</button>
+    </div>
+  </header>
+
+  <div class="kps-layout">
+    <!-- SIDEBAR -->
+    <aside class="kps-sidebar" id="appSidebar">
+      <nav>
+        <a href="dashboard.html" class="side-link"><span>🏠</span> Dashboard</a>
+        <a href="attendance.html" class="side-link"><span>🕒</span> Attendance</a>
+        <a href="employees.html" class="side-link"><span>👥</span> Employees</a>
+        <a href="overtime.html" class="side-link"><span>⏫</span> Overtime</a>
+        <a href="deduction.html" class="side-link"><span>💸</span> Deductions</a>
+        <a href="notifications.html" class="side-link active"><span>🔔</span> Notifications</a>
+        <a href="request.html" class="side-link"><span>📄</span> Requests</a>
+        <a href="reports.html" class="side-link"><span>📊</span> Reports</a>
+        <a href="profile.html" class="side-link"><span>🙍‍♂️</span> Profile</a>
+        <a href="#" data-logout class="side-link logout"><span>⏻</span> Logout</a>
+      </nav>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main-content">
+
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Notifications</h1>
+          <p class="page-sub">
+            Department-wide notices, attendance updates, approvals, and HR actions.
+          </p>
+        </div>
+
+        <div class="page-header-actions">
+          <button class="btn-secondary" id="btnMarkAllRead">Mark All Read</button>
+        </div>
+      </div>
+
+      <!-- LATEST 5 -->
+      <section class="card">
+        <h2 class="card-title">Recent Activity (Latest 5)</h2>
+        <div class="card-body" id="recentNotifList">
+          <!-- app.js injects the 5 most recent notifications -->
+        </div>
+      </section>
+
+      <!-- FULL LIST -->
+      <section class="card">
+        <h2 class="card-title">Full Notification Log</h2>
+        <div class="card-body">
+          <table class="kps-table">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Title</th>
+                <th>Message</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="notifTableBody">
+              <!-- filled by app.js -->
+            </tbody>
+          </table>
+          <p style="font-size:12px;color:var(--text-light);margin-top:10px;">
+            Notifications older than 6 months are automatically cleared.
+          </p>
+        </div>
+      </section>
+
+    </main>
   </div>
 
-  <!-- Inline JS for Notifications -->
-  <script>
-    function loadNotifications() {
-      const data = JSON.parse(localStorage.getItem('notifications') || '[]');
-      const list = document.getElementById('notificationList');
-      list.innerHTML = '';
+  <div id="toastContainer"></div>
 
-      if (data.length === 0) {
-        list.innerHTML = '<p class="no-data">No notifications yet.</p>';
-        return;
-      }
-
-      data
-        .slice()
-        .reverse()
-        .forEach((n, index) => {
-          const div = document.createElement('div');
-          div.className = 'notification-item ' + (n.read ? 'read' : 'unread');
-          div.innerHTML = `
-            <div class="notif-header">
-              <span class="notif-title">${n.title}</span>
-              <span class="notif-time">${n.time}</span>
-            </div>
-            <div class="notif-body">${n.message}</div>
-          `;
-          div.addEventListener('click', () => markAsRead(index));
-          list.appendChild(div);
-        });
-    }
-
-    function markAsRead(index) {
-      const data = JSON.parse(localStorage.getItem('notifications') || '[]');
-      data[index].read = true;
-      localStorage.setItem('notifications', JSON.stringify(data));
-      loadNotifications();
-    }
-
-    // Simulate system notification
-    function addNotification(title, message) {
-      const data = JSON.parse(localStorage.getItem('notifications') || '[]');
-      const now = new Date().toLocaleString('en-GB', { hour12: true });
-      data.push({ title, message, time: now, read: false });
-      localStorage.setItem('notifications', JSON.stringify(data));
-      loadNotifications();
-    }
-
-    // Example: listen for localStorage events (auto-refresh)
-    window.addEventListener('storage', function(e) {
-      if (e.key === 'notifications') {
-        loadNotifications();
-      }
-    });
-
-    window.onload = loadNotifications;
-  </script>
 </body>
 </html>
