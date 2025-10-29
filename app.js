@@ -1588,3 +1588,30 @@ document.addEventListener("DOMContentLoaded", () => {
     renderProfilePage();
   }
 });
+/* =========================================================
+   AUTO PAGE TRANSITION LOADER
+   — Adds KCAL mini animation between page navigations
+========================================================= */
+
+document.addEventListener("DOMContentLoaded", () => {
+  const loader = document.getElementById("pageLoader");
+
+  // Find all internal navigation links (sidebar + buttons)
+  document.querySelectorAll("a[href$='.html']").forEach(link => {
+    link.addEventListener("click", e => {
+      const target = link.getAttribute("href");
+      // Skip if it's the current page
+      if (window.location.pathname.includes(target)) return;
+
+      // Show loader before navigating
+      if (loader) {
+        e.preventDefault();
+        loader.classList.add("active");
+
+        setTimeout(() => {
+          window.location.href = target;
+        }, 600); // 0.6 second delay for smooth fade
+      }
+    });
+  });
+});
