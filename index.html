@@ -2,107 +2,109 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Kcal Packaging System — Login</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kcal Packaging System (KPS) • Login</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <link rel="stylesheet" href="style.css" />
   <script src="app.js" defer></script>
+  <style>
+    /* Fullscreen intro */
+    #intro-screen {
+      position: fixed;
+      inset: 0;
+      background: #f7fdf9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 1s ease;
+    }
+    #intro-screen.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+    #intro-screen img {
+      width: 150px;
+      height: 150px;
+      object-fit: contain;
+      animation: pulse 2s infinite ease-in-out;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.08); opacity: 0.8; }
+    }
+
+    /* Hide login initially */
+    .login-wrapper {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 1s ease, transform 1s ease;
+    }
+    .login-wrapper.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
 </head>
-<body data-page="login" style="display:flex;align-items:center;justify-content:center;min-height:100vh;">
 
-  <div style="
-    background:#fff;
-    border:1px solid var(--border-card);
-    border-radius:var(--radius-lg);
-    box-shadow:var(--shadow-card);
-    width:100%;
-    max-width:360px;
-    padding:24px 24px 16px;
-    text-align:center;
-    font-size:14px;
-    line-height:1.4;
-    ">
-    <!-- Logo -->
-    <div style="margin-bottom:16px;display:flex;flex-direction:column;align-items:center;gap:12px;">
-      <div class="brand-logo" style="
-        width:56px;
-        height:56px;
-        border-radius:16px;
-        background:#0f2e24;
-        color:#fff;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        font-weight:600;
-        font-size:18px;
-        ">kcal</div>
-      <div style="font-weight:600;color:var(--text-dark);font-size:15px;">
-        Kcal Packaging System
-      </div>
-      <div style="font-size:12px;color:var(--text-mid);line-height:1.3;">
-        KPS • Attendance • Overtime • HR Portal
-      </div>
-    </div>
+<body data-page="login">
 
-    <!-- Login form -->
-    <form id="loginForm" style="display:flex;flex-direction:column;gap:10px;text-align:left;">
-      <div class="form-field" style="margin-bottom:0;">
-        <label>User ID</label>
-        <input
-          id="loginUID"
-          type="text"
-          placeholder="e.g. 10001"
-          style="width:100%;"
-        />
-      </div>
-
-      <div class="form-field" style="margin-bottom:0;">
-        <label>Password</label>
-        <input
-          id="loginPass"
-          type="password"
-          placeholder="Password"
-          style="width:100%;"
-        />
-      </div>
-
-      <button
-        type="submit"
-        class="btn-primary"
-        style="width:100%;text-align:center;justify-content:center;display:flex;">
-        Sign In
-      </button>
-    </form>
-
-    <!-- Demo credentials hint (you can remove later) -->
-    <div style="
-      font-size:11px;
-      color:var(--text-mid);
-      background:var(--bg-soft);
-      border:1px solid var(--border-card);
-      border-radius:var(--radius-md);
-      padding:12px;
-      margin-top:16px;
-      text-align:left;
-      line-height:1.5;
-    ">
-      <div><strong>Admin</strong>: UID 10001 / Password Admin@123</div>
-      <div><strong>Manager</strong>: UID 10032 / Password Manager@123</div>
-      <div><strong>Supervisor</strong>: UID 10489 / Password Supervisor@123</div>
-      <div><strong>Staff</strong>: UID 10366 / Password User@123</div>
-    </div>
-
-    <div style="
-      font-size:11px;
-      color:var(--text-light);
-      text-align:center;
-      margin-top:16px;
-    ">
-      © KPS — Developed by Haroon
-    </div>
+  <!-- INTRO ANIMATION -->
+  <div id="intro-screen">
+    <img src="Kcal.rll.gif" alt="Kcal Animation" />
   </div>
 
-  <!-- Toast container -->
-  <div id="toastContainer"></div>
+  <!-- LOGIN WRAPPER -->
+  <div class="login-wrapper">
+    <div class="login-card">
+      <div class="login-logo-section">
+        <img src="Kcal.rll.gif" alt="Kcal Logo" class="login-logo" />
+        <h1 class="login-title">Kcal Packaging System</h1>
+        <p class="login-subtitle">Healthy Food, Healthy Life</p>
+      </div>
 
+      <div class="login-form-section">
+        <h2>Employee Login</h2>
+        <p style="font-size:13px;color:var(--text-light);margin-bottom:16px;">
+          Please enter your <strong>UID</strong> and <strong>Password</strong> to access the system.
+        </p>
+
+        <div class="form-field">
+          <label for="loginUID">User ID (UID)</label>
+          <input type="text" id="loginUID" placeholder="Enter your UID" required />
+        </div>
+
+        <div class="form-field">
+          <label for="loginPassword">Password</label>
+          <input type="password" id="loginPassword" placeholder="Enter password" required />
+        </div>
+
+        <button class="btn-primary" id="btnLogin">Login</button>
+
+        <p id="loginError" style="color:#d43b3b;font-size:13px;margin-top:8px;display:none;">
+          Invalid UID or Password. Please try again.
+        </p>
+      </div>
+    </div>
+
+    <footer class="login-footer">
+      <p>© <span id="currentYear"></span> Kcal Packaging System (KPS) — Developed by <strong>Haroon Iqbal</strong></p>
+    </footer>
+  </div>
+
+  <script>
+    // Auto update footer year
+    document.getElementById("currentYear").textContent = new Date().getFullYear();
+
+    // Handle intro animation fade-out
+    window.addEventListener("load", () => {
+      const intro = document.getElementById("intro-screen");
+      const loginWrapper = document.querySelector(".login-wrapper");
+
+      setTimeout(() => {
+        intro.classList.add("fade-out");
+        loginWrapper.classList.add("show");
+      }, 2500); // 2.5s intro duration
+    });
+  </script>
 </body>
 </html>
