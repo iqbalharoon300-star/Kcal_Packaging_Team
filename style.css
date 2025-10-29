@@ -399,3 +399,161 @@ body {
   .sidebar-toggle { display: block; }
   .main-content { padding: 16px; }
 }
+/* =========================================================
+   KCAL PACKAGING SYSTEM (KPS)
+   Final Style Enhancements — Reports / Profile / Loader
+   Developed by Haroon Iqbal
+========================================================= */
+
+/* ----------- REPORTS PAGE CARDS ----------- */
+.report-card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 20px;
+  margin-bottom: 20px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.report-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+/* Reports Table Styling */
+#reportsTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+#reportsTable th, #reportsTable td {
+  border: 1px solid #e4e4e4;
+  padding: 10px 12px;
+  text-align: left;
+}
+#reportsTable th {
+  background: #d1f7e1;
+  font-weight: 600;
+}
+#reportsTable td {
+  background: #fff;
+}
+
+/* Export Buttons */
+.export-btn {
+  background: #00aa55;
+  color: #fff;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  margin-right: 10px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.export-btn:hover {
+  background: #00914b;
+}
+
+/* ----------- PROFILE PAGE ----------- */
+.profile-container {
+  max-width: 600px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.profile-container h2 {
+  text-align: center;
+  color: #007a3d;
+}
+.profile-photo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 15px;
+}
+.profile-photo img {
+  width: 110px;
+  height: 110px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid #00aa55;
+  margin-bottom: 8px;
+  transition: transform 0.3s ease;
+}
+.profile-photo img:hover {
+  transform: scale(1.05);
+}
+.profile-photo input[type="file"] {
+  font-size: 13px;
+  color: #555;
+}
+
+/* Profile Inputs */
+.profile-container input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+.profile-container button {
+  width: 100%;
+  background: #00aa55;
+  color: #fff;
+  border: none;
+  padding: 10px 0;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+.profile-container button:hover {
+  background: #00914b;
+}
+
+/* ----------- MINI PAGE LOADER ----------- */
+.page-loader {
+  position: fixed;
+  inset: 0;
+  background: rgba(255,255,255,0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+.page-loader.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+.page-loader img {
+  width: 90px;
+  height: 90px;
+  animation: pulse 1.2s infinite;
+}
+
+/* ----------- BUTTON GLOW ----------- */
+.btn-primary {
+  background: #00aa55;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 6px 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+.btn-primary:hover {
+  box-shadow: 0 0 8px rgba(0, 170, 85, 0.4);
+  transform: translateY(-2px);
+}
+
+/* Pulse animation shared with splash */
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.8; }
+}
