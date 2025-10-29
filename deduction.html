@@ -1,177 +1,220 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KPS Deductions • Developed by Haroon</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <title>KPS • Deductions</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <link rel="stylesheet" href="style.css" />
   <script src="app.js" defer></script>
 </head>
 
 <body data-page="deduction">
-  <!-- Sidebar -->
-  <div class="sidebar">
-    <div class="logo-section">
-      <img src="./assets/logo.png" alt="Kcal Logo" class="sidebar-logo">
-      <h2>KPS</h2>
-      <p>Packaging System</p>
-    </div>
-    <nav class="sidebar-nav">
-      <a href="dashboard.html">Dashboard</a>
-      <a href="attendance.html">Attendance</a>
-      <a href="overtime.html">Overtime</a>
-      <a href="deduction.html" class="active">Deduction</a>
-      <a href="employees.html">Employees</a>
-      <a href="notifications.html">Notifications</a>
-      <a href="request.html">Request</a>
-      <a href="profile.html">Profile</a>
-      <a href="#" data-logout>Logout</a>
-    </nav>
-  </div>
 
-  <!-- Main Content -->
-  <div class="main-content">
-    <!-- Top Nav -->
-    <header class="top-nav">
-      <div class="top-nav-left">
-        <h1>Deductions Management</h1>
-        <p>Kcal Packaging System (KPS) — Developed by Haroon</p>
-      </div>
-      <div class="top-nav-right">
-  <!-- Bell / Notification Icon -->
-  <div class="notif-bell" onclick="window.location.href='notifications.html'">
-    <span class="bell-icon">🔔</span>
-    <span class="notif-badge" id="notifBadge">0</span>
-  </div>
-
-  <!-- User info / dropdown -->
-  <div class="user-info">
-    <div class="user-avatar" id="headerAvatar">SA</div>
-    <div class="user-details">
-      <span class="user-name" id="headerName">System Admin</span>
-      <span class="user-role" id="headerRole">Admin</span>
-    </div>
-    <div class="dropdown">
-      <button class="dropdown-btn">▼</button>
-      <div class="dropdown-menu">
-        <a href="profile.html">Profile</a>
-        <a href="#">Change Password</a>
-        <a href="#" data-logout>Sign Out</a>
+  <!-- HEADER -->
+  <header class="kps-header">
+    <div class="header-left">
+      <div class="brand-mini">
+        <div class="brand-logo">kcal</div>
+        <div class="brand-texts">
+          <div class="brand-name">Kcal Packaging System</div>
+          <div class="brand-slogan">Healthy Food, Healthy Life</div>
+        </div>
       </div>
     </div>
+
+    <div class="header-right">
+      <!-- Notifications bell -->
+      <div class="notif-bell" onclick="window.location.href='notifications.html'">
+        <span class="bell-icon">🔔</span>
+        <span class="notif-badge" id="notifBadge">0</span>
+      </div>
+
+      <!-- User info -->
+      <div class="user-block">
+        <div class="user-avatar" id="headerAvatar">SA</div>
+        <div class="user-info-text">
+          <div class="user-info-name" id="headerName">System Admin</div>
+          <div class="user-info-role" id="headerRole">Admin</div>
+        </div>
+        <div class="user-menu-wrapper">
+          <button class="user-menu-toggle">▼</button>
+          <div class="user-menu">
+            <a href="profile.html">Profile</a>
+            <a href="#" data-logout>Logout</a>
+          </div>
+        </div>
+      </div>
+
+      <button class="sidebar-toggle" id="sidebarToggle">☰</button>
+    </div>
+  </header>
+
+  <div class="kps-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="kps-sidebar" id="appSidebar">
+      <nav>
+        <a href="dashboard.html" class="side-link"><span>🏠</span> Dashboard</a>
+        <a href="attendance.html" class="side-link"><span>🕒</span> Attendance</a>
+        <a href="employees.html" class="side-link"><span>👥</span> Employees</a>
+        <a href="overtime.html" class="side-link"><span>⏫</span> Overtime</a>
+        <a href="deduction.html" class="side-link active"><span>💸</span> Deductions</a>
+        <a href="notifications.html" class="side-link"><span>🔔</span> Notifications</a>
+        <a href="request.html" class="side-link"><span>📄</span> Requests</a>
+        <a href="reports.html" class="side-link"><span>📊</span> Reports</a>
+        <a href="profile.html" class="side-link"><span>🙍‍♂️</span> Profile</a>
+        <a href="#" data-logout class="side-link logout"><span>⏻</span> Logout</a>
+      </nav>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main-content">
+
+      <!-- HEADER -->
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Deductions</h1>
+          <p class="page-sub">
+            Track fines, adjustment, penalties, cash loans, etc. Visible to Admin / Manager / Supervisor.
+          </p>
+        </div>
+        <div class="page-header-actions" id="deductionHeaderActions">
+          <!-- "Add Deduction" button will appear only for Admin/Manager/Supervisor via app.js -->
+        </div>
+      </div>
+
+      <!-- FILTER / ADD -->
+      <section class="card">
+        <h2 class="card-title">Filters</h2>
+        <div class="card-body">
+
+          <div class="form-grid">
+            <div class="form-field">
+              <label>UID</label>
+              <input type="text" id="dedFilterUID" placeholder="e.g. 10045 (leave empty = all)">
+            </div>
+
+            <div class="form-field">
+              <label>Section</label>
+              <select id="dedFilterSection">
+                <option value="All">All</option>
+                <option value="KMP Day">KMP Day</option>
+                <option value="KMP Night">KMP Night</option>
+                <option value="FuelUP">FuelUP</option>
+                <option value="Spring">Spring</option>
+                <option value="Kcal Life">Kcal Life</option>
+                <option value="Kcal Lunch">Kcal Lunch</option>
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label>Date From</label>
+              <input type="date" id="dedFilterFrom">
+            </div>
+
+            <div class="form-field">
+              <label>Date To</label>
+              <input type="date" id="dedFilterTo">
+            </div>
+          </div>
+
+          <div style="margin-top:16px;display:flex;flex-wrap:wrap;gap:8px;">
+            <button class="btn-primary" id="btnDedApplyFilter">Apply Filter</button>
+            <button class="btn-secondary" id="btnDedExportExcel">Download Excel</button>
+            <button class="btn-secondary" id="btnDedExportPDF">Download PDF</button>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- DEDUCTION TABLE -->
+      <section class="card">
+        <h2 class="card-title">Deduction Records</h2>
+        <div class="card-body">
+          <table class="kps-table">
+            <thead>
+              <tr>
+                <th>UID</th>
+                <th>Name</th>
+                <th>Section</th>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Reason / Notes</th>
+                <th class="actions-cell">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="deductionTableBody">
+              <!-- filled by app.js -->
+            </tbody>
+            <tfoot>
+              <tr style="font-weight:600;background:var(--bg-soft);">
+                <td colspan="4" style="text-align:right;">Total Deductions</td>
+                <td id="deductionTotalAmount">0</td>
+                <td colspan="2"></td>
+              </tr>
+            </tfoot>
+          </table>
+
+          <p style="font-size:12px;color:var(--text-light);margin-top:10px;">
+            Only Admin / Manager / Supervisor can add, edit, or delete deductions.
+          </p>
+        </div>
+      </section>
+
+    </main>
   </div>
-</div>
-    </header>
 
-    <!-- Add Deduction -->
-    <section class="deduction-actions">
-      <h2>Add Employee Deduction</h2>
-      <form id="deductionForm" class="deduction-form">
-        <div class="form-row">
-          <label for="uid">Employee UID</label>
-          <input type="text" id="uid" placeholder="e.g. 10123" required>
-        </div>
-        <div class="form-row">
-          <label for="name">Employee Name</label>
-          <input type="text" id="name" placeholder="e.g. Akif Abdul Wahid" required>
-        </div>
-        <div class="form-row">
-          <label for="reason">Reason</label>
-          <input type="text" id="reason" placeholder="e.g. Late Arrival" required>
-        </div>
-        <div class="form-row">
-          <label for="amount">Amount (AED)</label>
-          <input type="number" id="amount" min="0" step="0.5" required>
-        </div>
-        <div class="form-row">
-          <label for="date">Date</label>
-          <input type="date" id="date" required>
-        </div>
-        <div class="form-row">
-          <label for="approvedBy">Approved By</label>
-          <input type="text" id="approvedBy" placeholder="Manager / Supervisor Name" required>
-        </div>
-        <button type="submit" class="btn-primary">Save Deduction</button>
-      </form>
-    </section>
+  <!-- Toast -->
+  <div id="toastContainer"></div>
 
-    <!-- Deductions Table -->
-    <section class="deduction-table-section">
-      <h2>Deduction Records</h2>
-      <table class="attendance-table">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>UID</th>
-            <th>Name</th>
-            <th>Reason</th>
-            <th>Amount (AED)</th>
-            <th>Approved By</th>
-          </tr>
-        </thead>
-        <tbody id="deductionTable">
-          <!-- Dynamic rows -->
-        </tbody>
-      </table>
-    </section>
+  <!-- ADD / EDIT DEDUCTION MODAL -->
+  <div class="modal-overlay" id="deductionModal">
+    <div class="modal">
+      <h2 id="dedModalTitle">Add Deduction</h2>
 
-    <!-- Footer -->
-    <footer>
-      <p>Kcal Packaging System (KPS) — Developed by Haroon • All data confidential</p>
-    </footer>
+      <div class="form-field">
+        <label>UID</label>
+        <input type="text" id="dedUID" placeholder="Employee UID">
+      </div>
+
+      <div class="form-field">
+        <label>Name</label>
+        <input type="text" id="dedName" placeholder="Employee Name">
+      </div>
+
+      <div class="form-field">
+        <label>Section</label>
+        <select id="dedSection">
+          <option value="KMP Day">KMP Day</option>
+          <option value="KMP Night">KMP Night</option>
+          <option value="FuelUP">FuelUP</option>
+          <option value="Spring">Spring</option>
+          <option value="Kcal Life">Kcal Life</option>
+          <option value="Kcal Lunch">Kcal Lunch</option>
+        </select>
+      </div>
+
+      <div class="form-field">
+        <label>Date</label>
+        <input type="date" id="dedDate">
+      </div>
+
+      <div class="form-field">
+        <label>Amount</label>
+        <input type="number" step="0.01" id="dedAmount" placeholder="0.00">
+      </div>
+
+      <div class="form-field">
+        <label>Reason / Notes</label>
+        <textarea id="dedReason" placeholder="Late / Damage / Advance / Penalty ..."></textarea>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-primary" id="saveDeductionBtn">Save</button>
+        <button class="btn-secondary" id="cancelDeductionBtn">Cancel</button>
+      </div>
+    </div>
   </div>
 
-  <!-- Inline JS for Deduction -->
-  <script>
-    function getTodayDate() {
-      const now = new Date();
-      return now.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-    }
-
-    function loadDeductions() {
-      const deductions = JSON.parse(localStorage.getItem('deductions') || '[]');
-      const tbody = document.getElementById('deductionTable');
-      tbody.innerHTML = '';
-
-      deductions.forEach(d => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${d.date}</td>
-          <td>${d.uid}</td>
-          <td>${d.name}</td>
-          <td>${d.reason}</td>
-          <td>${parseFloat(d.amount).toFixed(2)}</td>
-          <td>${d.approvedBy}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    document.getElementById('deductionForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-
-      const uid = document.getElementById('uid').value.trim();
-      const name = document.getElementById('name').value.trim();
-      const reason = document.getElementById('reason').value.trim();
-      const amount = parseFloat(document.getElementById('amount').value.trim());
-      const date = new Date(document.getElementById('date').value).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-      const approvedBy = document.getElementById('approvedBy').value.trim();
-
-      if (!uid || !name || !reason || isNaN(amount) || !date || !approvedBy) {
-        alert('Please fill in all fields!');
-        return;
-      }
-
-      const deductions = JSON.parse(localStorage.getItem('deductions') || '[]');
-      deductions.push({ uid, name, reason, amount, date, approvedBy });
-      localStorage.setItem('deductions', JSON.stringify(deductions));
-      loadDeductions();
-
-      document.getElementById('deductionForm').reset();
-      alert('Deduction Added Successfully ✅');
-    });
-
-    window.onload = loadDeductions;
-  </script>
 </body>
 </html>
