@@ -293,6 +293,25 @@
       </div>
     </div>
   </div>
+  <!-- Add Employee Modal -->
+<div id="employeeModal" class="modal">
+  <div class="modal-content">
+    <h2>Add Employee</h2>
+    <input type="text" id="empUID" placeholder="UID (e.g. 10123)">
+    <input type="text" id="empName" placeholder="Full Name">
+    <select id="empRole">
+      <option value="Staff">Staff</option>
+      <option value="Supervisor">Supervisor</option>
+      <option value="Manager">Manager</option>
+    </select>
+    <input type="text" id="empSection" placeholder="Section">
+    <input type="date" id="empJoinDate">
+    <input type="password" id="empPassword" placeholder="Password">
+    <button id="saveEmpBtn">Save</button>
+    <button id="closeEmpBtn" class="cancel-btn">Cancel</button>
+  </div>
+</div>
+
 <!-- Mini KCAL Loader -->
 <div class="page-loader" id="pageLoader">
   <img src="Kcal.rll.gif" alt="Loading...">
