@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Kcal Packaging System</title>
+  <title>Kcal Packaging System | Login</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body data-page="login">
@@ -12,19 +12,29 @@
     <img src="Kcal.rll.gif" alt="Loading...">
   </div>
 
+  <!-- Login Container -->
   <div class="login-container fade-in">
     <div class="login-box">
       <img src="kcal.png" alt="Kcal Logo" class="login-logo">
       <h2>Kcal Packaging System</h2>
       <p class="slogan">Healthy Food, Healthy Life</p>
 
-      <label>User ID</label>
-      <input type="text" id="loginUID" placeholder="Enter your UID">
+      <div class="login-form">
+        <label for="loginUID">User ID</label>
+        <input type="text" id="loginUID" placeholder="Enter your UID">
 
-      <label>Password</label>
-      <input type="password" id="loginPass" placeholder="Enter password">
+        <label for="loginPass">Password</label>
+        <input type="password" id="loginPass" placeholder="Enter password">
 
-      <button id="loginBtn">Login</button>
+        <button id="loginBtn" class="btn-primary">Login</button>
+      </div>
+
+      <div class="login-info">
+        <p><strong>Admin:</strong> UID <b>10001</b> / Password: <b>Admin@123</b></p>
+        <p><strong>Manager:</strong> UID <b>10002</b> / Password: <b>Manager@123</b></p>
+        <p><strong>Supervisor:</strong> UID <b>10003</b> / Password: <b>Supervisor@123</b></p>
+        <p><strong>Staff:</strong> UID <b>10366</b> / Password: <b>User@123</b></p>
+      </div>
 
       <p class="dev-credit">© 2025 Kcal Packaging System (KPS) — Developed by <strong>Haroon Iqbal</strong></p>
     </div>
