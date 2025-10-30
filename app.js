@@ -167,6 +167,21 @@ window.addEventListener("load", () => {
     setTimeout(() => loader.style.display = "none", 600);
   }
 });
+// Profile Dropdown Toggle
+document.addEventListener("DOMContentLoaded", () => {
+  const userBtn = document.getElementById("userMenuBtn");
+  const userMenu = document.getElementById("userDropdown");
+  if (userBtn && userMenu) {
+    userBtn.addEventListener("click", () => {
+      userMenu.classList.toggle("show");
+    });
+    document.addEventListener("click", (e) => {
+      if (!userBtn.contains(e.target) && !userMenu.contains(e.target)) {
+        userMenu.classList.remove("show");
+      }
+    });
+  }
+});
 
 // ---------- EVENT BINDING ----------
 document.addEventListener("DOMContentLoaded", () => {
