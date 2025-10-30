@@ -1,114 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Kcal Packaging System (KPS) • Login</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <link rel="stylesheet" href="style.css" />
-  <script src="app.js" defer></script>
-  <style>
-    /* Fullscreen intro */
-    #intro-screen {
-      position: fixed;
-      inset: 0;
-      background: #f7fdf9;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-      transition: opacity 1s ease;
-    }
-    #intro-screen.fade-out {
-      opacity: 0;
-      pointer-events: none;
-    }
-    #intro-screen img {
-      width: 150px;
-      height: 150px;
-      object-fit: contain;
-      animation: pulse 2s infinite ease-in-out;
-    }
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.08); opacity: 0.8; }
-    }
-
-    /* Hide login initially */
-    .login-wrapper {
-      opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 1s ease, transform 1s ease;
-    }
-    .login-wrapper.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  </style>
+  <meta charset="UTF-8">
+  <title>Kcal Packaging System</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body data-page="login">
 
-  <!-- INTRO ANIMATION -->
-  <div id="intro-screen">
-    <img src="Kcal.rll.gif" alt="Kcal Animation" />
+  <!-- KCAL Loader -->
+  <div class="page-loader active" id="pageLoader">
+    <img src="Kcal.rll.gif" alt="Loading...">
   </div>
 
-  <!-- LOGIN WRAPPER -->
-  <div class="login-wrapper">
-    <div class="login-card">
-      <div class="login-logo-section">
-        <img src="Kcal.rll.gif" alt="Kcal Logo" class="login-logo" />
-        <h1 class="login-title">Kcal Packaging System</h1>
-        <p class="login-subtitle">Healthy Food, Healthy Life</p>
-      </div>
+  <div class="login-container fade-in">
+    <div class="login-box">
+      <img src="kcal.png" alt="Kcal Logo" class="login-logo">
+      <h2>Kcal Packaging System</h2>
+      <p class="slogan">Healthy Food, Healthy Life</p>
 
-      <div class="login-form-section">
-        <h2>Employee Login</h2>
-        <p style="font-size:13px;color:var(--text-light);margin-bottom:16px;">
-          Please enter your <strong>UID</strong> and <strong>Password</strong> to access the system.
-        </p>
+      <label>User ID</label>
+      <input type="text" id="loginUID" placeholder="Enter your UID">
 
-        <div class="form-field">
-          <label for="loginUID">User ID (UID)</label>
-          <input type="text" id="loginUID" placeholder="Enter your UID" required />
-        </div>
+      <label>Password</label>
+      <input type="password" id="loginPass" placeholder="Enter password">
 
-        <div class="form-field">
-          <label for="loginPassword">Password</label>
-          <input type="password" id="loginPassword" placeholder="Enter password" required />
-        </div>
+      <button id="loginBtn">Login</button>
 
-        <button class="btn-primary" id="btnLogin">Login</button>
-
-        <p id="loginError" style="color:#d43b3b;font-size:13px;margin-top:8px;display:none;">
-          Invalid UID or Password. Please try again.
-        </p>
-      </div>
+      <p class="dev-credit">© 2025 Kcal Packaging System (KPS) — Developed by <strong>Haroon Iqbal</strong></p>
     </div>
-
-    <footer class="login-footer">
-      <p>© <span id="currentYear"></span> Kcal Packaging System (KPS) — Developed by <strong>Haroon Iqbal</strong></p>
-    </footer>
   </div>
-<!-- Mini KCAL Loader -->
-<div class="page-loader" id="pageLoader">
-  <img src="Kcal.rll.gif" alt="Loading...">
-</div>
 
-  <script>
-    // Auto update footer year
-    document.getElementById("currentYear").textContent = new Date().getFullYear();
-
-    // Handle intro animation fade-out
-    window.addEventListener("load", () => {
-      const intro = document.getElementById("intro-screen");
-      const loginWrapper = document.querySelector(".login-wrapper");
-
-      setTimeout(() => {
-        intro.classList.add("fade-out");
-        loginWrapper.classList.add("show");
-      }, 2500); // 2.5s intro duration
-    });
-  </script>
+  <script src="app.js"></script>
 </body>
 </html>
