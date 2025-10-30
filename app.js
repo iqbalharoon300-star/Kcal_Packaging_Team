@@ -159,6 +159,14 @@ function updateNotifBadge() {
   badge.textContent = unread;
   badge.style.display = unread > 0 ? "inline-block" : "none";
 }
+/* KCAL Loader Animation */
+window.addEventListener("load", () => {
+  const loader = document.getElementById("pageLoader");
+  if (loader) {
+    loader.classList.add("fade-out");
+    setTimeout(() => loader.style.display = "none", 600);
+  }
+});
 
 // ---------- EVENT BINDING ----------
 document.addEventListener("DOMContentLoaded", () => {
