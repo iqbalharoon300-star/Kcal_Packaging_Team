@@ -40,6 +40,22 @@
     </div>
   </div>
 
-  <script src="app.js"></script>
+    <script type="module">
+  // Import Firebase
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js";
+  import { getAuth } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js";
+  import { getFirestore } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js";
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    const firebaseConfig = {
+      apiKey: "AIzaSyB0fPDZpHEjxc7IMFd_f0_BrvTgqGJhySA",
+      authDomain: "kcal-packaging-workforce.firebaseapp.com",
+      projectId: "kcal-packaging-workforce",
+      storageBucket: "kcal-packaging-workforce.firebasestorage.app",
+      messagingSenderId: "1025039246589",
+      appId: "1:1025039246589:web:ce37f12ec000bc03e4ca94",
+      measurementId: "G-7EN3V2W0QW"
+};
+  </script>
+  
 </body>
 </html>
